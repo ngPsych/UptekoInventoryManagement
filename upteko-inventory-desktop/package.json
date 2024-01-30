@@ -1,0 +1,14 @@
+{
+  "name": "upteko-inventory-desktop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "alngu18@student.sdu.dk - Alexander Nguyen",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.2.0"
+  }
+}
