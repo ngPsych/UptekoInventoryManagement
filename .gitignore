@@ -1,2 +1,38 @@
+# electron dependencies
 upteko-inventory-desktop/node_modules/
+
+# electron misc
+upteko-inventory-desktop/.DS_STORE
+upteko-inventory-desktop/.env.local
+upteko-inventory-desktop/.env.development.local
+upteko-inventory-desktop/.env.test.local
+upteko-inventory-desktop/.env.production.local
+
+upteko-inventory-desktop/npm-debug.log*
+upteko-inventory-desktop/yarn-debug.log*
+upteko-inventory-desktop/yarn-error.log*
+
+# react dependencies
 upteko-inventory-desktop/app/node_modules/
+upteko-inventory-desktop/app/.pnp/
+upteko-inventory-desktop/app/.pnp.js
+
+# react production
+upteko-inventory-desktop/app/build/
+
+# react testing
+upteko-inventory-desktop/app/coverage/
+
+# react misc
+upteko-inventory-desktop/app/.DS_STORE
+upteko-inventory-desktop/app/.env.local
+upteko-inventory-desktop/app/.env.development.local
+upteko-inventory-desktop/app/.env.test.local
+upteko-inventory-desktop/app/.env.production.local
+
+upteko-inventory-desktop/app/npm-debug.log*
+upteko-inventory-desktop/app/yarn-debug.log*
+upteko-inventory-desktop/app/yarn-error.log*
+
+
+

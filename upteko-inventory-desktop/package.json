@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "start:dev": "npx electronmon --trace-warnings ."
   },
   "author": "alngu18@student.sdu.dk - Alexander Nguyen",
   "license": "ISC",
