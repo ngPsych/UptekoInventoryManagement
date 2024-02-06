@@ -4,7 +4,7 @@ import LoginPage from './pages/Login';
 import HomePage from './pages/Home';
 import logo from './logo.svg';
 import './App.css';
-import { User } from "./interfaces/User"
+import { User } from "./interfaces/IUser"
 import { getAllUsers } from "./services/firebase/userManagement"
 
 function App() {

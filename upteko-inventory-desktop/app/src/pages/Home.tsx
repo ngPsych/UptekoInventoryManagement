@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { signOutUser } from '../services/firebase/authentication';
-import { User } from "../interfaces/User";
+import { User } from "../interfaces/IUser";
 import { getAllUsers } from "../services/firebase/userManagement";
 
 
@@ -39,7 +39,7 @@ export default function HomePage() {
             <button onClick={handleLogout}>Logout</button> {/* Logout button */}
             <ul>
                 {users.map(user => (
-                    <li key={user.id}>{user.firstName} {user.lastName} - {user.email}</li>
+                    <li key={user.id}>{user.firstName} {user.lastName} - {user.email} - {user.role}</li>
                 ))}
             </ul>
         </div>

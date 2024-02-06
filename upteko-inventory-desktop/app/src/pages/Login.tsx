@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signIn } from '../services/firebase/authentication';
-import { LoginForm } from '../component/user/LoginForm'
+import { LoginForm } from '../component/Form/LoginForm'
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -25,15 +25,13 @@ export default function LoginPage() {
     };
 
     return (
-        <div>
-            <LoginForm 
-                email={email}
-                setEmail={setEmail}
-                password={password}
-                setPassword={setPassword}
-                handleSubmit={handleSubmit}
-                error={error}
-            />
-        </div>
+        <LoginForm 
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            handleSubmit={handleSubmit}
+            error={error}
+        />
     );
 };
