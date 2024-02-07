@@ -1,0 +1,118 @@
+/* NavBar.module.css */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    height: 5%;
+    user-select: none;
+}
+
+.logo img {
+    height: 50px; /* Adjust size as needed */
+    width: auto;
+}
+
+.pages {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pages ul {
+    list-style-type: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.pages li {
+    margin: 0 25px;
+    padding: 5px; /* Add padding to increase the clickable area */
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.pages li:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.pages a {
+    display: flex; /* Make the link a flex container */
+    align-items: center; /* Center the content vertically */
+    text-decoration: none;
+    color: white;
+    transition: color 0.3s ease;
+    padding: 5px 0; /* Padding for better click area */
+}
+
+.pages a img, .dropbtn img {
+    margin-right: 10px; /* Adjust the margin between the image and text */
+    height: 24px; /* Set a fixed height for the images */
+    width: auto; /* Maintain aspect ratio */
+    filter: invert(100%);
+}
+
+/* Style for the active link */
+.pages .active a {
+    color: #4CAF50; /* Highlight color */
+    font-weight: bold; /* Make the text bold */
+    border-bottom: 3px solid #4CAF50; /* Add a bottom border for emphasis */
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: #4CAF50; /* Button color */
+    color: white;
+    padding: 10px;
+    font-size: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dropdownContent {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdownContent a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdownContent a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Class to display the dropdown when isOpen is true */
+.showDropdown {
+    display: block;
+}
+
+/* .icon {
+    width: 2vh;
+    height: 2vh;
+    padding-right: 10px;
+    margin-top: 10px;
+    filter: invert(100%);
+} */
