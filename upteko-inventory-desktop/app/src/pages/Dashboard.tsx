@@ -4,6 +4,8 @@ import { User } from "../interfaces/IUser";
 import { getAllUsers } from "../services/firebase/userManagement";
 import { NavigationBar } from "../components/NavBar/NavBar";
 import { useRequireAuth } from "../hooks/useRequireAuth"
+import { getAllItems } from "../services/firebase/inventoryManagement"
+import { Item } from "../interfaces/IItem"
 
 export default function DashboardPage() {
     const [users, setUsers] = useState<User[]>([]);
@@ -11,16 +13,31 @@ export default function DashboardPage() {
     useRequireAuth();
 
     useEffect(() => {
-        // getAllUsers()
-        // .then(fetchedUsers => {
-        //     setUsers(fetchedUsers as User[]);
-        //     console.log(fetchedUsers);
-        // })
-        // .catch(error => {
-        //     console.error('Error fetching users:', error);
-        //     // Handle the error appropriately
-        // });
+        getAllUsers()
+        .then(users => {
+            setUsers(users as User[]);
+            console.log(users);
+        })
+        .catch(error => {
+            console.error('Error fetching users:', error);
+            // Handle the error appropriately
+        });
     }, []); 
+
+    const [items, setItems] = useState<Item[]>([]);
+
+    useEffect(() => {
+        getAllItems()
+        .then(items => {
+            setItems(items as Item[]);
+            console.log(items);
+        })
+        .catch(error => {
+            console.error("Error fetching items: ", error);
+        });
+    }, []);
+
+    
 
     return (
         <NavigationBar />

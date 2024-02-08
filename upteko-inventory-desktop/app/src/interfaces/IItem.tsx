@@ -1,11 +1,11 @@
 export interface Item {
-    itemNumber: string;
+    sku: string;
     name: string;
-    amount: number;
+    quantity: number;
     location: string;
     description: string;
     lastModified: string;
     supplier: string;
     supplierItemNumber: string;
-    reorderPoint: number;
+    minPoint: number;
 }
