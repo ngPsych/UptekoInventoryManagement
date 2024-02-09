@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
-import { getFileDownloadURL } from '../../services/firebase/storageManagement';
-import { getCurrentUserInfo } from '../../services/firebase/userManagement';
-import { getCurrentUser, signOutUser } from '../../services/firebase/authentication';
+import { useUserInfo } from '../../hooks/useUserInfo';
 import { User } from '../../interfaces/IUser'
+import uptekoLogoWhite from '../../assets/upteko/upteko_logo_white.png'
 import dashboardIcon from '../../assets/icons/dashboard.png';
 import inventoryIcon from '../../assets/icons/inventory.png';
 import assemblyIcon from '../../assets/icons/tools.png';
@@ -14,64 +13,21 @@ import userIcon from "../../assets/icons/user.png";
 
 export const NavigationBar = () => {
     const navigate = useNavigate();
-    const [imageURL, setImageURL] = useState<string | null>(null);
     const [isOpen, setIsOpen] = useState(false);
-    const [activePage, setActivePage] = useState('dashboard'); // Default active page
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const [userInfo, setUserInfo] = useState<User | null>(null);
+    const { userInfo, handleLogout } = useUserInfo();
 
-    const handleLogout = () => {
-        signOutUser()
-            .then(() => {
-                navigate('/'); // Redirect to login page after logout
-            })
-            .catch((error) => {
-                console.error('Logout error:', error);
-                // Handle error here, perhaps show a notification
-            });
+    const initialPage = window.location.hash.substr(2) || 'dashboard';
+    const [activePage, setActivePage] = useState(initialPage);
+
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const onLogout = () => {
+        handleLogout()
+            .then(() => navigate('/'))
+            .catch((error) => console.error('Logout error:', error));
     };
 
     useEffect(() => {
-        const fetchImageURL = async () => {
-            try {
-                const savedImageURL = localStorage.getItem('imageURL');
-                if (savedImageURL) {
-                    setImageURL(savedImageURL);
-                } else {
-                    const url = await getFileDownloadURL("upteko_logo_white.png");
-                    setImageURL(url);
-                    localStorage.setItem('imageURL', url);
-                }
-            } catch (error) {
-                console.error("Error fetching image URL: ", error);
-            }
-        };
-
-        fetchImageURL();
-
-        const fetchUserInfo = async () => {
-            const currentUser = getCurrentUser();
-            if (currentUser && currentUser.email) {
-                const savedUserInfo = localStorage.getItem('userInfo');
-                if (savedUserInfo) {
-                    setUserInfo(JSON.parse(savedUserInfo));
-                } else {
-                    getCurrentUserInfo(currentUser.email.toString())
-                        .then(userInfo => {
-                            setUserInfo(userInfo as User);
-                            localStorage.setItem('userInfo', JSON.stringify(userInfo));
-                        })
-                        .catch(error => {
-                            console.error("Error fetching user info: ", error);
-                        });
-                }
-            } else {
-                console.error("User email is not available.");
-            }
-        };
-
-        fetchUserInfo();
-
         const handleHashChange = () => {
             const hash = window.location.hash.substr(2);
             setActivePage(hash || 'dashboard');
@@ -109,7 +65,8 @@ export const NavigationBar = () => {
     return (
         <div className={styles.navbar}>
             <div className={styles.logo}>
-                {imageURL && <img src={imageURL} alt="Upteko Icon" draggable="false" />}
+                <img src={uptekoLogoWhite} alt=""/>
+                {/* {imageURL && <img src={imageURL} alt="Upteko Icon" draggable="false" />} */}
             </div>
             <div className={styles.pages}>
                 <ul>
@@ -154,7 +111,7 @@ export const NavigationBar = () => {
                 </button>
                 <div className={`${styles.dropdownContent} ${isOpen ? styles.showDropdown : ''}`}>
                     <a href="#" draggable="false">Settings</a>
-                    <a onClick={handleLogout} draggable="false">Sign out</a>
+                    <a href="javascript:void(0)" onClick={onLogout} draggable="false">Sign out</a>
                 </div>
             </div>
         </div>

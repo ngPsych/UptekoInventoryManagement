@@ -40,18 +40,19 @@ export default function DashboardPage() {
     
 
     return (
-        <NavigationBar />
-        // <div>
-            
-        //     <div>
-        //         <h2>Users</h2>
-        //         <button onClick={handleLogout}>Logout</button> {/* Logout button */}
-        //         <ul>
-        //             {users.map(user => (
-        //                 <li key={user.id}>{user.firstName} {user.lastName} - {user.email} - {user.role}</li>
-        //             ))}
-        //         </ul>
-        //     </div>
-        // </div>
+        <div>
+            <NavigationBar />
+            <div>
+                
+                <div>
+                    <h2>Users</h2>
+                    <ul>
+                        {users.map(user => (
+                            <li key={user.id}>{user.firstName} {user.lastName} - {user.email} - {user.role}</li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </div>
     );
 }

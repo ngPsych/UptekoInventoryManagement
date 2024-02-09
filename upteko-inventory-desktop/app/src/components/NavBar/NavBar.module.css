@@ -68,6 +68,7 @@
 .dropdown {
     position: relative;
     display: inline-block;
+    align-items: center;
 }
 
 .dropbtn {
@@ -81,6 +82,12 @@
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
+    min-width: 240px;
+    min-height: 40px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dropdownContent {
