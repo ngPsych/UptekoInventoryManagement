@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
 import { useUserInfo } from '../../hooks/useUserInfo';
-import { User } from '../../interfaces/IUser'
 import uptekoLogoWhite from '../../assets/upteko/upteko_logo_white.png'
 import dashboardIcon from '../../assets/icons/dashboard.png';
 import inventoryIcon from '../../assets/icons/inventory.png';

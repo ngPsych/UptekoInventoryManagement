@@ -1,58 +1,42 @@
-/* Container Style */
-.table-container {
-    margin: 20px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: white;
-}
-
-/* Table Style */
-.item-table {
+/* Table Container */
+.tableContainer {
+    overflow: auto;
     width: 100%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Styles */
+.tableContainer table {
     border-collapse: collapse;
+    width: 100%;
 }
 
-.item-table thead {
-    background-color: #f8f9fa; /* Light grey header */
-    color: #495057; /* Dark text for contrast */
+.tableContainer th,
+.tableContainer td {
+    border: 1px solid #e0e0e0;
+    padding: 12px;
 }
 
-.item-table th,
-.item-table td {
-    padding: 15px;
+/* Header Styles */
+.tableContainer th {
+    background-color: #d4d4d4;
+    color: #333;
+    font-weight: bold;
     text-align: left;
-    border-bottom: 1px solid #ddd;
 }
 
-/* Scrollable tbody */
-.item-table tbody {
-    display: block;
-    max-height: 520px; /* Adjust based on row height * 10 */
-    overflow-y: auto;
+/* Body Styles */
+.tableContainer td {
+    background-color: #fff;
+    color: #333;
 }
 
-.item-table tr {
-    display: block;
-    transition: background-color 0.3s ease;
+/* Striped Rows */
+.tableContainer tr:nth-child(even) td {
+    background-color: #f9f9f9;
 }
 
-/* Alternating row background for readability */
-.item-table tr:nth-child(odd) {
-    background-color: #f8f9fa; /* Slightly different shade for odd rows */
-}
-
-/* Scrollbar Styling (Optional) */
-.item-table::-webkit-scrollbar {
-    width: 8px;
-}
-
-.item-table::-webkit-scrollbar-thumb {
-    background: #dee2e6;
-    border-radius: 4px;
-}
-
-.item-table::-webkit-scrollbar-track {
-    background: #f8f9fa;
+/* Hover Effect */
+.tableContainer tr:hover td {
+    background-color: #f0f0f0;
 }

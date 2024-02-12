@@ -1,6 +1,7 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { Item } from "../../interfaces/IItem";
+import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
 
 const db = getFirestore(app);
 
@@ -74,6 +75,44 @@ export const getAllItems = async (): Promise<Item[]> => {
         return items;
     } catch (error) {
         console.error("Error fetching items: ", error);
+        throw error;
+    }
+};
+
+export const getAllSubassemblyItems = async (): Promise<SubassemblyItem[]> => {
+    try {
+        const inventorySubassemblyCollection = collection(db, "inventory_subassembly");
+        const inventorySubassemblyDocsSnapshot = await getDocs(inventorySubassemblyCollection);
+        const inventorySubassembly = inventorySubassemblyDocsSnapshot.docs.map(doc => ({
+            sku: doc.id,
+            quantity: doc.data().quantity,
+            last_modified: doc.data().last_modified
+        }));
+    
+        const subassemblies: SubassemblyItem[] = [];
+    
+        for (const invSubassembly of inventorySubassembly) {
+            const subassemblyDocRef = doc(db, "subassembly", invSubassembly.sku);
+            const subassemblyDocSnap = await getDoc(subassemblyDocRef);
+    
+            if (subassemblyDocSnap.exists()) {
+                const subassemblyData = subassemblyDocSnap.data() as any;
+                const subassemblyItem: SubassemblyItem = {
+                    sku: invSubassembly.sku,
+                    name: subassemblyData.name,
+                    quantity: invSubassembly.quantity,
+                    location: subassemblyData.location,
+                    description: subassemblyData.description,
+                    lastModified: invSubassembly.last_modified,
+                    minPoint: subassemblyData.min_point
+                };
+                subassemblies.push(subassemblyItem);
+            }
+        }
+
+        return subassemblies;
+    } catch (error) {
+        console.error("Error fetching subassembly items: ", error);
         throw error;
     }
 };
