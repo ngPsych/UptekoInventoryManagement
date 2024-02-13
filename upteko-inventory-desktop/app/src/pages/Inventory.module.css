@@ -19,10 +19,6 @@
     transition-duration: 0.4s;
 }
 
-.tableMode button:hover {
-    background-color: #45a049;
-}
-
 .tableMode button.activeButton {
     background-color: #4CAF50;
     font-weight: bold;
@@ -31,4 +27,12 @@
 .tableMode button.inactiveButton {
     background-color: #c0c0c0;
     color: #333;
+}
+
+.tableMode button.activeButton:hover {
+    background-color: #5bcf5f; /* Slightly lighter green */
+}
+
+.tableMode button.inactiveButton:hover {
+    background-color: #d9d9d9; /* Slightly lighter grey */
 }

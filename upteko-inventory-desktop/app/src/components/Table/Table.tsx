@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TableProps } from '../../interfaces/IColumnDefinition';
 import { formatFirestoreTimestamp } from '../../utils/timeFormat';
 import styles from './Table.module.css';
-import { MaterialPopupCard } from '../../components/PopupCard/PopupCard';
+import { PartPopupCard } from '../../components/PopupCard/PopupCard';
 
 export const Table: React.FC<TableProps> = ({ data, columns }) => {
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -37,7 +37,7 @@ export const Table: React.FC<TableProps> = ({ data, columns }) => {
           ))}
         </tbody>
       </table>
-      {selectedItem && <MaterialPopupCard item={selectedItem} onClose={handleClosePopup} />}
+      {selectedItem && <PartPopupCard item={selectedItem} onClose={handleClosePopup} />}
     </div>
   );
 };

@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Item } from '../../interfaces/IItem';
 import styles from './PopupCard.module.css';
 import { formatFirestoreTimestamp } from '../../utils/timeFormat';
-import { addNewMaterial } from '../../services/firebase/inventoryManagement';
+import { addNewPart } from '../../services/firebase/inventoryManagement';
 
 interface PopupCardProps {
     item?: Item;
     onClose: () => void;
 }
 
-export const MaterialPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
+export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
     return (
         <div className={styles.popupContainer} onClick={onClose}>
             <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
@@ -29,7 +29,7 @@ export const MaterialPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) =
     );
 };
 
-export const AddNewMaterialPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
+export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
     const [id, setId] = useState('');
     const [name, setName] = useState('');
     const [quantity, setQuantity] = useState(0);
@@ -42,11 +42,11 @@ export const AddNewMaterialPopupCard: React.FC<PopupCardProps> = ({ onClose }) =
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await addNewMaterial(id, name, quantity, location, description, supplier, supplierItemNumber, minPoint);
-            // Assuming addNewMaterial succeeds, you can do any additional logic here like showing a success message or closing the popup.
+            await addNewPart(id, name, quantity, location, description, supplier, supplierItemNumber, minPoint);
+            // Assuming addNewPart succeeds, you can do any additional logic here like showing a success message or closing the popup.
             onClose();
         } catch (error) {
-            console.error('Error adding new material:', error);
+            console.error('Error adding new part:', error);
             // Handle error appropriately, e.g., show an error message.
         }
     };
@@ -54,7 +54,7 @@ export const AddNewMaterialPopupCard: React.FC<PopupCardProps> = ({ onClose }) =
     return (
         <div className={styles.popupContainer} onClick={onClose}>
             <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
-                <h2>Add New Material</h2>
+                <h2>Add New Part</h2>
 
                 <form onSubmit={handleSubmit}>
                     <input type="text" placeholder="ID" value={id} onChange={(e) => setId(e.target.value)} />
@@ -66,7 +66,7 @@ export const AddNewMaterialPopupCard: React.FC<PopupCardProps> = ({ onClose }) =
                     <input type="text" placeholder="Supplier Item Number" value={supplierItemNumber} onChange={(e) => setSupplierItemNumber(e.target.value)} />
                     <input type="number" placeholder="Reorder Point" value={minPoint} onChange={(e) => setMinPoint(parseInt(e.target.value))} />
 
-                    <button type="submit">Add Material</button>
+                    <button type="submit">Add Part</button>
                 </form>
 
                 <button onClick={onClose}>Close</button>

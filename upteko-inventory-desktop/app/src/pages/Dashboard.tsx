@@ -4,7 +4,6 @@ import { User } from "../interfaces/IUser";
 import { getAllUsers } from "../services/firebase/userManagement";
 import { NavigationBar } from "../components/NavBar/NavBar";
 import { useRequireAuth } from "../hooks/useRequireAuth"
-import { getAllItems } from "../services/firebase/inventoryManagement"
 import { Item } from "../interfaces/IItem"
 
 export default function DashboardPage() {
@@ -22,20 +21,6 @@ export default function DashboardPage() {
             // Handle the error appropriately
         });
     }, []); 
-
-    const [items, setItems] = useState<Item[]>([]);
-
-    useEffect(() => {
-        getAllItems()
-        .then(items => {
-            setItems(items as Item[]);
-        })
-        .catch(error => {
-            console.error("Error fetching items: ", error);
-        });
-    }, []);
-
-    
 
     return (
         <div>

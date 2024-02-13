@@ -5,71 +5,37 @@ import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
 
 const db = getFirestore(app);
 
-export const getAllParts = async () => {
+export const getAllParts = async (): Promise<Item[]> => {
     try {
         const partsCollection = collection(db, "parts");
-        const partDocsSnapshot = await getDocs(partsCollection);
-        const parts = partDocsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        console.log("parts", parts);
-        return parts; // This will be an array of user objects
-    } catch (error) {
-        console.error("Error fetching parts: ", error);
-        throw error;
-    }
-};
-
-export const getAllInventoryParts = async () => {
-    try {
-        const inventoryPartsCollection = collection(db, "inventory_parts");
-        const inventoryPartDocsSnapshot = await getDocs(inventoryPartsCollection);
-        const inventoryParts = inventoryPartDocsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        console.log("inventoryparts", inventoryParts);
-        return inventoryParts; // This will be an array of user objects
-    } catch (error) {
-        console.error("Error fetching inventory parts: ", error);
-        throw error;
-    }
-};
-
-export const getAllItems = async (): Promise<Item[]> => {
-    try {
-        const inventoryPartsCollection = collection(db, "inventory_parts");
-        const inventoryPartDocsSnapshot = await getDocs(inventoryPartsCollection);
-        const inventoryParts = inventoryPartDocsSnapshot.docs.map(doc => ({
+        const partsDocsSnapshot = await getDocs(partsCollection);
+        const parts = partsDocsSnapshot.docs.map(doc => ({
             sku: doc.id,
+            name: doc.data().name,
             quantity: doc.data().quantity,
-            last_modified: doc.data().last_modified
+            location: doc.data().location,
+            description: doc.data().description,
+            last_modified: doc.data().last_modified,
+            supplier: doc.data().supplier,
+            supplier_item_number: doc.data().supplier_item_number,
+            min_point: doc.data().min_point
         }));
 
         const items: Item[] = [];
         
-        for (const inventoryPart of inventoryParts) {
-            const partDocRef = doc(db, "parts", inventoryPart.sku);
-            const partDocSnap = await getDoc(partDocRef);
-
-            if (partDocSnap.exists()) {
-                const partData = partDocSnap.data() as any; // Casting to any if no specific interface is available
-                const item: Item = {
-                    sku: inventoryPart.sku,
-                    name: partData.name,
-                    quantity: inventoryPart.quantity,
-                    location: partData.location,
-                    description: partData.description,
-                    lastModified: inventoryPart.last_modified, // Assuming date_created is the last modified timestamp
-                    supplier: partData.supplier,
-                    supplierItemNumber: partData.supplier_item_number,
-                    minPoint: partData.min_point
-                };
-                items.push(item);
-            }
+        for (const part of parts) {
+            const item: Item = {
+                sku: part.sku,
+                name: part.name,
+                quantity: part.quantity,
+                location: part.location,
+                description: part.description,
+                lastModified: part.last_modified,
+                supplier: part.supplier,
+                supplierItemNumber: part.supplier_item_number,
+                minPoint: part.min_point
+            };
+            items.push(item);
         }
         
         return items;
@@ -81,43 +47,41 @@ export const getAllItems = async (): Promise<Item[]> => {
 
 export const getAllSubassemblyItems = async (): Promise<SubassemblyItem[]> => {
     try {
-        const inventorySubassemblyCollection = collection(db, "inventory_subassembly");
-        const inventorySubassemblyDocsSnapshot = await getDocs(inventorySubassemblyCollection);
-        const inventorySubassembly = inventorySubassemblyDocsSnapshot.docs.map(doc => ({
+        const subassemblyCollection = collection(db, "subassembly");
+        const subassemblyDocsSnapshot = await getDocs(subassemblyCollection);
+        const subassemblies = subassemblyDocsSnapshot.docs.map(doc => ({
             sku: doc.id,
+            name: doc.data().name,
             quantity: doc.data().quantity,
-            last_modified: doc.data().last_modified
+            location: doc.data().location,
+            description: doc.data().description,
+            last_modified: doc.data().last_modified,
+            min_point: doc.data().min_point
         }));
     
-        const subassemblies: SubassemblyItem[] = [];
+        const subassemblyItems: SubassemblyItem[] = [];
     
-        for (const invSubassembly of inventorySubassembly) {
-            const subassemblyDocRef = doc(db, "subassembly", invSubassembly.sku);
-            const subassemblyDocSnap = await getDoc(subassemblyDocRef);
-    
-            if (subassemblyDocSnap.exists()) {
-                const subassemblyData = subassemblyDocSnap.data() as any;
-                const subassemblyItem: SubassemblyItem = {
-                    sku: invSubassembly.sku,
-                    name: subassemblyData.name,
-                    quantity: invSubassembly.quantity,
-                    location: subassemblyData.location,
-                    description: subassemblyData.description,
-                    lastModified: invSubassembly.last_modified,
-                    minPoint: subassemblyData.min_point
-                };
-                subassemblies.push(subassemblyItem);
-            }
+        for (const subassembly of subassemblies) {
+            const subassemblyItem: SubassemblyItem = {
+                sku: subassembly.sku,
+                name: subassembly.name,
+                quantity: subassembly.quantity,
+                location: subassembly.location,
+                description: subassembly.description,
+                lastModified: subassembly.last_modified,
+                minPoint: subassembly.min_point
+            };
+            subassemblyItems.push(subassemblyItem);
         }
 
-        return subassemblies;
+        return subassemblyItems;
     } catch (error) {
         console.error("Error fetching subassembly items: ", error);
         throw error;
     }
 };
 
-export const addNewMaterial = async (
+export const addNewPart = async (
     id: string,
     name: string,
     quantity: number,
@@ -130,18 +94,14 @@ export const addNewMaterial = async (
         // Adds a new document for "parts"
         await setDoc(doc(db, "parts", id), {
             name: name,
+            quantity: quantity,
             location: location,
             description: description,
             supplier: supplier,
             supplier_item_number: supplierItemNumber,
             min_point: minPoint,
-            date_created: serverTimestamp()
+            date_created: serverTimestamp(),
+            last_modified: serverTimestamp()
         });
 
-        // Adds a new document for "inventory_parts"
-        await setDoc(doc(db, "inventory_parts", id), {
-            last_modified: serverTimestamp(),
-            quantity: quantity
-        })
-    
 }

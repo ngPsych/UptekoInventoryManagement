@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getAllItems, getAllSubassemblyItems } from "../services/firebase/inventoryManagement";
+import { getAllParts, getAllSubassemblyItems } from "../services/firebase/inventoryManagement";
 import { NavigationBar } from '../components/NavBar/NavBar';
 import { Table } from "../components/Table/Table";
-import { AddNewMaterialPopupCard } from '../components/PopupCard/PopupCard';
+import { AddNewPartPopupCard } from '../components/PopupCard/PopupCard';
 import { useRequireAuth } from "../hooks/useRequireAuth";
 import { ColumnDefinition } from "../interfaces/IColumnDefinition";
 import { Item } from "../interfaces/IItem";
@@ -17,15 +17,15 @@ export default function InventoryPage() {
     const [error, setError] = useState<any>(null);
     const [searchInput, setSearchInput] = useState('');
     const [filteredItems, setFilteredItems] = useState<Item[] | SubassemblyItem[]>([]);
-    var [tableMode, setTableMode] = useState('Materials');
-    const [showAddMaterialPopup, setShowAddMaterialPopup] = useState(false);
+    var [tableMode, setTableMode] = useState('Parts');
+    const [showAddPartPopup, setShowAddPartPopup] = useState(false);
 
     useEffect(() => {
         const fetchItems = async () => {
             try {
                 var fetchedItems = null;
-                if (tableMode === "Materials") {
-                    fetchedItems = await getAllItems();
+                if (tableMode === "Parts") {
+                    fetchedItems = await getAllParts();
                     setItems(fetchedItems);
                 } else if (tableMode === "Sub-Assemblies") {
                     fetchedItems = await getAllSubassemblyItems();
@@ -81,10 +81,10 @@ export default function InventoryPage() {
 
             <div className={styles.tableMode}>
                 <button
-                    onClick={() => {setTableMode('Materials');}}
-                    className={tableMode === 'Materials' ? styles.activeButton : styles.inactiveButton}
+                    onClick={() => {setTableMode('Parts');}}
+                    className={tableMode === 'Parts' ? styles.activeButton : styles.inactiveButton}
                 >
-                    Materials
+                    Parts
                 </button>
                 <button
                     onClick={() => {setTableMode('Sub-Assemblies');}}
@@ -96,7 +96,7 @@ export default function InventoryPage() {
 
             <div>
                 <div>
-                    <button onClick={() => setShowAddMaterialPopup(true)}>Add new material</button>
+                    <button onClick={() => setShowAddPartPopup(true)}>Add new part</button>
                 </div>
 
                 <input
@@ -109,9 +109,9 @@ export default function InventoryPage() {
 
             <Table data={filteredItems} columns={itemColumns} />
 
-            {showAddMaterialPopup && (
-                <AddNewMaterialPopupCard
-                    onClose={() => setShowAddMaterialPopup(false)}
+            {showAddPartPopup && (
+                <AddNewPartPopupCard
+                    onClose={() => setShowAddPartPopup(false)}
                 />
             )}
         </div>
