@@ -1,18 +1,16 @@
-/* NavBar.module.css */
-
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: #333;
     color: white;
-    padding: 10px 20px;
+    padding: 15px 20px;
     height: 5%;
     user-select: none;
 }
 
 .logo img {
-    height: 50px; /* Adjust size as needed */
+    height: 50px;
     width: auto;
 }
 
@@ -31,7 +29,7 @@
 
 .pages li {
     margin: 0 25px;
-    padding: 5px; /* Add padding to increase the clickable area */
+    padding: 5px;
     position: relative;
     display: flex;
     align-items: center;
@@ -43,26 +41,26 @@
 }
 
 .pages a {
-    display: flex; /* Make the link a flex container */
-    align-items: center; /* Center the content vertically */
+    display: flex;
+    align-items: center;
     text-decoration: none;
     color: white;
     transition: color 0.3s ease;
-    padding: 5px 0; /* Padding for better click area */
+    padding: 5px 0;
 }
 
 .pages a img, .dropbtn img {
-    margin-right: 10px; /* Adjust the margin between the image and text */
-    height: 24px; /* Set a fixed height for the images */
-    width: auto; /* Maintain aspect ratio */
+    margin-right: 10px;
+    height: 24px;
+    width: auto;
     filter: invert(100%);
 }
 
 /* Style for the active link */
 .pages .active a {
-    color: #4CAF50; /* Highlight color */
-    font-weight: bold; /* Make the text bold */
-    border-bottom: 3px solid #4CAF50; /* Add a bottom border for emphasis */
+    color: #4CAF50;
+    font-weight: bold;
+    border-bottom: 3px solid #4CAF50;
 }
 
 .dropdown {
@@ -72,7 +70,7 @@
 }
 
 .dropbtn {
-    background-color: #4CAF50; /* Button color */
+    background-color: #4CAF50;
     color: white;
     padding: 10px;
     font-size: 20px;

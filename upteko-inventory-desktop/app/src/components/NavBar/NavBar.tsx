@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './NavBar.module.css';
 import { useUserInfo } from '../../hooks/useUserInfo';
@@ -20,11 +20,20 @@ export const NavigationBar = () => {
 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const onLogout = () => {
+    const handleSignOut = useCallback(() => {
         handleLogout()
             .then(() => navigate('/'))
             .catch((error) => console.error('Logout error:', error));
-    };
+    }, [handleLogout, navigate]);
+
+    const handleDropdownClick = useCallback((event: React.MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
+        const target = event.currentTarget.getAttribute('href');
+        if (target === '#signout') {
+            handleSignOut();
+            toggleDropdown(); // Close dropdown after sign-out
+        }
+    }, [handleSignOut]);
 
     useEffect(() => {
         const handleHashChange = () => {
@@ -109,8 +118,8 @@ export const NavigationBar = () => {
                     {userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : 'Loading...'}
                 </button>
                 <div className={`${styles.dropdownContent} ${isOpen ? styles.showDropdown : ''}`}>
-                    <a href="#" draggable="false">Settings</a>
-                    <a href="javascript:void(0)" onClick={onLogout} draggable="false">Sign out</a>
+                    <a href="#settings" draggable="false">Settings</a>
+                    <a href="#signout" onClick={handleDropdownClick} draggable="false">Sign out</a>
                 </div>
             </div>
         </div>

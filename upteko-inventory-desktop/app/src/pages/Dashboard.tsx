@@ -16,7 +16,6 @@ export default function DashboardPage() {
         getAllUsers()
         .then(users => {
             setUsers(users as User[]);
-            console.log(users);
         })
         .catch(error => {
             console.error('Error fetching users:', error);
@@ -30,7 +29,6 @@ export default function DashboardPage() {
         getAllItems()
         .then(items => {
             setItems(items as Item[]);
-            console.log(items);
         })
         .catch(error => {
             console.error("Error fetching items: ", error);

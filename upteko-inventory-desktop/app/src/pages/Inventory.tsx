@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { NavigationBar } from '../components/NavBar/NavBar';
-import { useRequireAuth } from "../hooks/useRequireAuth";
 import { getAllItems, getAllSubassemblyItems } from "../services/firebase/inventoryManagement";
+import { NavigationBar } from '../components/NavBar/NavBar';
 import { Table } from "../components/Table/Table";
+import { AddNewMaterialPopupCard } from '../components/PopupCard/PopupCard';
+import { useRequireAuth } from "../hooks/useRequireAuth";
 import { ColumnDefinition } from "../interfaces/IColumnDefinition";
 import { Item } from "../interfaces/IItem";
 import { SubassemblyItem } from "../interfaces/ISubassemblyItem";
@@ -17,6 +18,7 @@ export default function InventoryPage() {
     const [searchInput, setSearchInput] = useState('');
     const [filteredItems, setFilteredItems] = useState<Item[] | SubassemblyItem[]>([]);
     var [tableMode, setTableMode] = useState('Materials');
+    const [showAddMaterialPopup, setShowAddMaterialPopup] = useState(false);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -77,7 +79,7 @@ export default function InventoryPage() {
         <div>
             <NavigationBar />
 
-            <div>
+            <div className={styles.tableMode}>
                 <button
                     onClick={() => {setTableMode('Materials');}}
                     className={tableMode === 'Materials' ? styles.activeButton : styles.inactiveButton}
@@ -94,7 +96,7 @@ export default function InventoryPage() {
 
             <div>
                 <div>
-                    <button>Add new material</button>
+                    <button onClick={() => setShowAddMaterialPopup(true)}>Add new material</button>
                 </div>
 
                 <input
@@ -106,6 +108,12 @@ export default function InventoryPage() {
             </div>
 
             <Table data={filteredItems} columns={itemColumns} />
+
+            {showAddMaterialPopup && (
+                <AddNewMaterialPopupCard
+                    onClose={() => setShowAddMaterialPopup(false)}
+                />
+            )}
         </div>
     );
 }

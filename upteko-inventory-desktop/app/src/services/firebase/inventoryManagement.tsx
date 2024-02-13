@@ -1,5 +1,5 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, getDocs, doc, getDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { Item } from "../../interfaces/IItem";
 import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
 
@@ -116,3 +116,32 @@ export const getAllSubassemblyItems = async (): Promise<SubassemblyItem[]> => {
         throw error;
     }
 };
+
+export const addNewMaterial = async (
+    id: string,
+    name: string,
+    quantity: number,
+    location: string,
+    description: string,
+    supplier: string, 
+    supplierItemNumber: string,
+    minPoint: number) => {
+
+        // Adds a new document for "parts"
+        await setDoc(doc(db, "parts", id), {
+            name: name,
+            location: location,
+            description: description,
+            supplier: supplier,
+            supplier_item_number: supplierItemNumber,
+            min_point: minPoint,
+            date_created: serverTimestamp()
+        });
+
+        // Adds a new document for "inventory_parts"
+        await setDoc(doc(db, "inventory_parts", id), {
+            last_modified: serverTimestamp(),
+            quantity: quantity
+        })
+    
+}
