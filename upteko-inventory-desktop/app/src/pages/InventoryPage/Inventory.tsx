@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getAllParts, getAllSubassemblyItems } from "../services/firebase/inventoryManagement";
-import { NavigationBar } from '../components/NavBar/NavBar';
-import { Table } from "../components/Table/Table";
-import { AddNewPartPopupCard } from '../components/PopupCard/PopupCard';
-import { useRequireAuth } from "../hooks/useRequireAuth";
-import { ColumnDefinition } from "../interfaces/IColumnDefinition";
-import { Item } from "../interfaces/IItem";
-import { SubassemblyItem } from "../interfaces/ISubassemblyItem";
+import { subscribeToAllParts, subscribeToAllSubassemblyItems } from "../../services/firebase/inventoryManagement";
+import { NavigationBar } from '../../components/NavBar/NavBar';
+import { Table } from "../../components/Table/Table";
+import { AddNewPartPopupCard } from '../../components/PopupCard/PopupCard';
+import { useRequireAuth } from "../../hooks/useRequireAuth";
+import { ColumnDefinition } from "../../interfaces/IColumnDefinition";
+import { Item } from "../../interfaces/IItem";
+import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
 import styles from "./Inventory.module.css"
 
 export default function InventoryPage() {
@@ -19,36 +19,27 @@ export default function InventoryPage() {
     const [filteredItems, setFilteredItems] = useState<Item[] | SubassemblyItem[]>([]);
     var [tableMode, setTableMode] = useState('Parts');
     const [showAddPartPopup, setShowAddPartPopup] = useState(false);
-
+    
     useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                var fetchedItems = null;
-                if (tableMode === "Parts") {
-                    fetchedItems = await getAllParts();
-                    setItems(fetchedItems);
-                } else if (tableMode === "Sub-Assemblies") {
-                    fetchedItems = await getAllSubassemblyItems();
-                    setItems(fetchedItems);
-                }
-            } catch (error) {
-                setError(error);
-            } finally {
+        let unsubscribe = () => {}; // initialize with a no-op function
+
+        if (tableMode === "Parts") {
+            unsubscribe = subscribeToAllParts((newItems) => {
+                setItems(newItems);
                 setLoading(false);
-            }
-        };        
-    
-        fetchItems();
-    
-        // Add interval for auto-updating data every second
-        const intervalId = setInterval(() => {
-            fetchItems();
-        }, 1000);
-    
-        // Cleanup function to clear interval when component unmounts
-        return () => clearInterval(intervalId);
-    }, [tableMode]); // Include tableMode in the dependency array
-    
+            });
+        } else if (tableMode === "Sub-Assemblies") {
+            unsubscribe = subscribeToAllSubassemblyItems((newItems) => {
+                setItems(newItems);
+                setLoading(false);
+            });
+        }
+
+        // Cleanup function to unsubscribe when the component unmounts or tableMode changes
+        return () => {
+            unsubscribe();
+        };
+    }, [tableMode]);
 
     useEffect(() => {
         // Filter items based on search input

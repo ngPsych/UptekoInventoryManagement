@@ -4,6 +4,6 @@ export interface ColumnDefinition {
 }
 
 export interface TableProps {
-    data: any[]; // Array of data, could be Item or SubassemblyItems
+    data: any[]; // Array of data, Item or SubassemblyItems
     columns: ColumnDefinition[];
 }

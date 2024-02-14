@@ -30,9 +30,9 @@
 }
 
 .tableMode button.activeButton:hover {
-    background-color: #5bcf5f; /* Slightly lighter green */
+    background-color: #5bcf5f;
 }
 
 .tableMode button.inactiveButton:hover {
-    background-color: #d9d9d9; /* Slightly lighter grey */
+    background-color: #d9d9d9;
 }

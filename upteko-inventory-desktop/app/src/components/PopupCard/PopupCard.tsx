@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Item } from '../../interfaces/IItem';
 import styles from './PopupCard.module.css';
 import { formatFirestoreTimestamp } from '../../utils/timeFormat';
-import { addNewPart } from '../../services/firebase/inventoryManagement';
+import { addNewPart, CreateNewAssembly } from '../../services/firebase/inventoryManagement';
 
 interface PopupCardProps {
     item?: Item;
@@ -43,11 +43,11 @@ export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
         e.preventDefault();
         try {
             await addNewPart(id, name, quantity, location, description, supplier, supplierItemNumber, minPoint);
-            // Assuming addNewPart succeeds, you can do any additional logic here like showing a success message or closing the popup.
+            // Add on success, popup changes to "Added new part" then slowly fade away
             onClose();
         } catch (error) {
             console.error('Error adding new part:', error);
-            // Handle error appropriately, e.g., show an error message.
+            throw error;
         }
     };
 
@@ -67,9 +67,64 @@ export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
                     <input type="number" placeholder="Reorder Point" value={minPoint} onChange={(e) => setMinPoint(parseInt(e.target.value))} />
 
                     <button type="submit">Add Part</button>
+                    <button onClick={onClose}>Close</button>
                 </form>
+            </div>
+        </div>
+    );
+};
 
-                <button onClick={onClose}>Close</button>
+export const CreateNewAssemblyPopupCard: React.FC <PopupCardProps> = ({ onClose }) => {
+    const [name, setName] = useState('');
+    const [subNames, setSubNames] = useState<string[]>(['']);
+
+    const handleAddSubName = () => {
+        setSubNames([...subNames, '']);
+    };
+
+    const handleSubNameChange = (index: number, value: string) => {
+        const newSubNames = [...subNames];
+        newSubNames[index] = value;
+        setSubNames(newSubNames);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await CreateNewAssembly(name, subNames);
+            onClose();
+        } catch (error) {
+            console.log("Error creating new assembly");
+            throw error;
+        }
+
+    };
+
+    return (
+        <div className={styles.popupContainer} onClick={onClose}>
+            <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
+                <h2>Add Assembly</h2>
+                <form onSubmit={handleSubmit}>
+                    <div>
+                        <label>Name:</label>
+                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+                    </div>
+                    <div>
+                        <label>Sub-assembly:</label>
+                        {subNames.map((subName, index) => (
+                            <div key={index}>
+                                <input
+                                    type="text"
+                                    value={subName}
+                                    onChange={(e) => handleSubNameChange(index, e.target.value)}
+                                />
+                            </div>
+                        ))}
+                        <button type="button" onClick={handleAddSubName}>+</button>
+                    </div>
+                    <button type="submit">Submit</button>
+                    <button type="button" onClick={onClose}>Cancel</button>
+                </form>
             </div>
         </div>
     );
