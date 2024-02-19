@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, Dimensions } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 
@@ -23,10 +23,12 @@ export const QRCodeScanner = () => {
     return <View>No access to camera</View>
   }
 
+  const { width, height } = Dimensions.get('window');
+
   return (
     <View>
       <Camera
-        style={{width:250, height:500}}
+        style={{width:width, height:height}}
         type={type}
         flashMode={flash}
         ref={cameraRef}>
