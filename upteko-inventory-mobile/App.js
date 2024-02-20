@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import { QRCodeScanner } from './QRCodeScanner';
+import { QRCodeScanner } from './components/QRCodeScanner/QRCodeScanner';
 
 export default function App() {
   return (
