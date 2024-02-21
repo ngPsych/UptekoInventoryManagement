@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { QRCodeScanner } from './components/QRCodeScanner/QRCodeScanner';
@@ -19,7 +20,7 @@ export default function App() {
     // </View>
     
     <View>
-      <QRCodeScanner/>
+      {/* <QRCodeScanner/> */}
       <NavBar activeItem={activeItem} onSelect={handleSelect} />
     </View>
   );
