@@ -1,40 +1,47 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export const NavBar = ({ activeItem, onSelect }) => {
+export const NavBar = ({ activeItem }) => {
+    const navigation = useNavigation();
+
+    const onSelect = (screenName) => {
+        navigation.navigate(screenName);
+    };
+
     return (
         <View style={styles.container}>
-        <TouchableOpacity
-            style={[styles.button, activeItem === 'Inventory' && styles.activeButton]}
-            onPress={() => onSelect('Inventory')}>
-            <Text style={styles.buttonText}>Inventory</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={[styles.button, activeItem === 'Assembly' && styles.activeButton]}
-            onPress={() => onSelect('Assembly')}>
-            <Text style={styles.buttonText}>Assembly</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={[styles.button, activeItem === 'Scanner' && styles.activeButton]}
-            onPress={() => onSelect('Scanner')}>
-            <Text style={styles.buttonText}>Scanner</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={[styles.button, activeItem === 'Order' && styles.activeButton]}
-            onPress={() => onSelect('Order')}>
-            <Text style={styles.buttonText}>Order</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-            style={[styles.button, activeItem === 'Profile' && styles.activeButton]}
-            onPress={() => onSelect('Profile')}>
-            <Text style={styles.buttonText}>Profile</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.button, activeItem === 'Inventory' && styles.activeButton]}
+                onPress={() => onSelect('Inventory')}>
+                <Text style={styles.buttonText}>Inventory</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.button, activeItem === 'Assembly' && styles.activeButton]}
+                onPress={() => onSelect('Assembly')}>
+                <Text style={styles.buttonText}>Assembly</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.button, activeItem === 'Scanner' && styles.activeButton]}
+                onPress={() => onSelect('Scanner')}>
+                <Text style={styles.buttonText}>Scanner</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.button, activeItem === 'Order' && styles.activeButton]}
+                onPress={() => onSelect('Order')}>
+                <Text style={styles.buttonText}>Order</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                style={[styles.button, activeItem === 'Profile' && styles.activeButton]}
+                onPress={() => onSelect('Profile')}>
+                <Text style={styles.buttonText}>Profile</Text>
+            </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-        container: {
+    container: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
@@ -47,17 +54,17 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        },
-        button: {
+    },
+    button: {
         flex: 1,
         alignItems: 'center',
-        },
-        activeButton: {
+    },
+    activeButton: {
         borderBottomWidth: 2,
         borderBottomColor: 'blue',
-        },
-        buttonText: {
+    },
+    buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
-        },
+    },
 });

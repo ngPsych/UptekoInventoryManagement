@@ -10,7 +10,6 @@ export const QRCodeScanner = () => {
   const cameraRef = useRef(null);
   const [lastScanTimestamp, setLastScanTimestamp] = useState(0);
 
-
   useEffect(() => {
     (async () => {
       const cameraPermission = await Camera.requestCameraPermissionsAsync();
@@ -19,15 +18,12 @@ export const QRCodeScanner = () => {
   }, []);
 
   const handleScanButtonPress = () => {
-    // If already scanning, first stop scanning, then restart scanning after a short delay
     if (isScanning) {
       setIsScanning(false);
-      setTimeout(() => setIsScanning(true), 100); // Restart scanning after a brief pause
+      setTimeout(() => setIsScanning(true), 100);
     } else {
       setIsScanning(true);
     }
-  
-    // Ensure the scanned state is reset
     setScanned(false);
   };
   
@@ -35,19 +31,12 @@ export const QRCodeScanner = () => {
     if (!scanned) {
       setScanned(true);
       alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-  
-      // Reset the scanned state immediately
       setScanned(false);
-  
-      // Stop scanning after a successful scan
       setIsScanning(false);
-  
-      // Optionally, restart scanning after a brief pause
       setTimeout(() => setIsScanning(true), 100);
     }
   };
   
-
   if (hasCameraPermission === null) {
     return <View />;
   }
@@ -77,15 +66,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: 'center',
+    justifyContent: 'flex-end', // Align content at the bottom
   },
   camera: {
-    flex: 1,
-    borderRadius: 20,
+    ...StyleSheet.absoluteFillObject, // Fill the entire container
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 80, // Adjust this value as per your preference
     alignSelf: 'center',
   },
   button: {
