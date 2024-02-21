@@ -34,7 +34,7 @@ export const NavBar = ({ activeItem, onSelect }) => {
 };
 
 const styles = StyleSheet.create({
-    container: {
+        container: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
@@ -43,17 +43,21 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         borderTopWidth: 1,
         borderTopColor: '#ccc',
-    },
-    button: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        },
+        button: {
         flex: 1,
         alignItems: 'center',
-    },
-    activeButton: {
+        },
+        activeButton: {
         borderBottomWidth: 2,
         borderBottomColor: 'blue',
-    },
-    buttonText: {
+        },
+        buttonText: {
         fontSize: 16,
         fontWeight: 'bold',
-    },
+        },
 });
