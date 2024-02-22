@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Camera } from 'expo-camera';
 
 export const QRCodeScanner = () => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [isScanning, setIsScanning] = useState(false);
   const [scanned, setScanned] = useState(false);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [isScanningEnabled, setIsScanningEnabled] = useState(false); // Initially disable scanning
   const cameraRef = useRef(null);
-  const [lastScanTimestamp, setLastScanTimestamp] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -17,24 +15,30 @@ export const QRCodeScanner = () => {
     })();
   }, []);
 
-  const handleScanButtonPress = () => {
-    if (isScanning) {
-      setIsScanning(false);
-      setTimeout(() => setIsScanning(true), 100);
-    } else {
-      setIsScanning(true);
-    }
-    setScanned(false);
-  };
-  
   const handleBarCodeScanned = ({ type, data }) => {
     if (!scanned) {
       setScanned(true);
-      alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-      setScanned(false);
-      setIsScanning(false);
-      setTimeout(() => setIsScanning(true), 100);
+      setIsScanningEnabled(false); // Disable scanning after successful scan
+      if (validateItemNumber(data)) {
+        alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+      } else {
+        Alert.alert('INVALID ITEM NUMBER', 'Please scan a valid item number.');
+      }
     }
+  };
+
+  const validateItemNumber = (data) => {
+    // Define your item number patterns
+    const itemNumberPattern1 = /^P\d{6}$/; // P followed by 6 digits
+    const itemNumberPattern2 = /^A\d{6}$/; // A followed by 6 digits
+
+    // Check if data matches any of the patterns
+    return itemNumberPattern1.test(data) || itemNumberPattern2.test(data);
+  };
+
+  const toggleScanning = () => {
+    setIsScanningEnabled(!isScanningEnabled);
+    setScanned(false);+
   };
   
   if (hasCameraPermission === null) {
@@ -47,44 +51,51 @@ export const QRCodeScanner = () => {
 
   return (
     <View style={styles.container}>
-      <Camera
-        style={styles.camera}
-        type={type}
-        ref={cameraRef}
-        onBarCodeScanned={isScanning && !scanned ? handleBarCodeScanned : undefined}
-      />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleScanButtonPress}>
-          <Text style={styles.buttonText}>{isScanning ? 'Scanning...' : 'Scan'}</Text>
-        </TouchableOpacity>
-      </View>
+      {!isScanningEnabled && <Text style={styles.text}>Click Scan to start scanning QR Code</Text>}
+      {isScanningEnabled && (
+        <Camera
+          style={styles.camera}
+          type={Camera.Constants.Type.back}
+          ref={cameraRef}
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        />
+      )}
+      <TouchableOpacity style={styles.buttonContainer} onPress={toggleScanning}>
+        <Text style={styles.buttonText}>{isScanningEnabled ? 'Scanning' : 'Scan'}</Text>
+      </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    justifyContent: 'flex-end', // Align content at the bottom
+    justifyContent: 'center',
+  },
+  cameraContainer: {
+    flex: 1,
+    alignItems: 'center',
   },
   camera: {
-    ...StyleSheet.absoluteFillObject, // Fill the entire container
+    flex: 1,
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 80, // Adjust this value as per your preference
+    bottom: 70,
     alignSelf: 'center',
-  },
-  button: {
-    borderWidth: 1,
-    borderColor: 'blue',
+    backgroundColor: '#007bff',
     borderRadius: 5,
-    padding: 10,
-    backgroundColor: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   buttonText: {
-    color: 'blue',
+    color: '#fff',
     fontSize: 16,
+  },
+  text: {
+    backgroundColor: 'white',
+    padding: 10,
+    textAlign: 'center',
   },
 });
