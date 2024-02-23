@@ -1,8 +1,9 @@
 import React from 'react';
-import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { InventoryScreen } from '../screens/Inventory/InventoryScreen';
 import { AssemblyScreen } from '../screens/Assembly/AssemblyScreen';
-import { ScannerScreen } from '../screens/Scanner/ScannerScreen';
+// import { ScannerScreen } from '../screens/Scanner/ScannerScreen';
+import { ScannerNavigator } from './ScannerNavigator';
 import { OrderScreen } from '../screens/Order/OrderScreen';
 import { ProfileScreen } from '../screens/Profile/ProfileScreen';
 
@@ -11,10 +12,8 @@ const Stack = createStackNavigator();
 export const AppNavigator = () => {
     return (
         <Stack.Navigator
-            screenOptions={{
-                animationEnabled: false
-            }}
-        >
+            screenOptions={{ animationEnabled: false }}>
+                
             <Stack.Screen
                 name="Inventory"
                 component={InventoryScreen}
@@ -27,7 +26,7 @@ export const AppNavigator = () => {
             />
             <Stack.Screen
                 name="Scanner"
-                component={ScannerScreen}
+                component={ScannerNavigator}
                 options={{ headerLeft: null }}
             />
             <Stack.Screen

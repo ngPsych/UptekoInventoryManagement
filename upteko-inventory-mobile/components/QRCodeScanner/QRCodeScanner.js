@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Camera } from 'expo-camera';
+import { useNavigation } from '@react-navigation/native';
 
 export const QRCodeScanner = () => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [isScanningEnabled, setIsScanningEnabled] = useState(false); // Initially disable scanning
   const cameraRef = useRef(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -20,7 +22,7 @@ export const QRCodeScanner = () => {
       setScanned(true);
       setIsScanningEnabled(false); // Disable scanning after successful scan
       if (validateItemNumber(data)) {
-        alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+        navigation.navigate('PostScan', { currentScannedSKU: data }); // Pass data as parameter
       } else {
         Alert.alert('INVALID ITEM NUMBER', 'Please scan a valid item number.');
       }
@@ -38,7 +40,7 @@ export const QRCodeScanner = () => {
 
   const toggleScanning = () => {
     setIsScanningEnabled(!isScanningEnabled);
-    setScanned(false);+
+    setScanned(false);
   };
   
   if (hasCameraPermission === null) {
