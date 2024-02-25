@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { QRCodeScanner } from './components/QRCodeScanner/QRCodeScanner';
 import { NavBar } from './components/NavBar/NavBar';
 import { AppNavigator } from './navigation/AppNavigator';
 import { NavigationContainer } from '@react-navigation/native';
