@@ -1,10 +1,40 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NavBar } from '../../components/NavBar/NavBar';
+import { signOutUser } from '../../api/firebase/authentication';
 
-export const ProfileScreen = ({ navigation }) => {
+export const ProfileScreen = () => {
+    const navigation = useNavigation(); 
+
+    const handleSignOut = () => {
+        signOutUser()
+            .then(() => {
+                navigation.navigate('Login');
+            })
+            .catch(error => {
+                console.error('Sign out error:', error);
+            });
+    };
+
     return (
-        <View>
-            <Text>Profile</Text>
+        <View style={styles.container}>
+            <View style={styles.content}>
+                <Text>Profile</Text>
+                <Button title="Sign out" onPress={handleSignOut} />
+            </View>
+            <NavBar activeItem="Assembly" />
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    content: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});
