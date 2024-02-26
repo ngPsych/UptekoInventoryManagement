@@ -1,5 +1,5 @@
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import app from "./firebaseConfig";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 const db = getFirestore(app);
 
@@ -17,3 +17,17 @@ export const getPartBySKU = async ({ sku }) => {
         throw error;
     }
 };
+
+export const updateItemQuantity = async ({ collectionName, sku, quantity }) => {
+    try {
+        const itemRef = doc(db, collectionName, sku);
+        
+        await updateDoc(itemRef, {
+            quantity: quantity,
+            last_modified: serverTimestamp()
+        });
+    } catch (error) {
+        console.error("Error updating item quantity:", error);
+        throw error;
+    }
+}
