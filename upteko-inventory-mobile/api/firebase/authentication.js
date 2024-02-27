@@ -7,8 +7,8 @@ const auth = initializeAuth(app, {
 });
 
 
-export const signIn = ({ email, password }) => {
-    return signInWithEmailAndPassword(auth, email, password)
+export const signIn = async ({ email, password }) => {
+    return await signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
@@ -29,8 +29,8 @@ export const getCurrentUser = () => {
     }
 }
 
-export const signOutUser = () => {
-    return signOut(auth)
+export const signOutUser = async () => {
+    return await signOut(auth)
         .then(() => {
             // sign out success
         })
