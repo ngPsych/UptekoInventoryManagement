@@ -1,7 +1,8 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { Item } from "../../interfaces/IItem";
 import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
+import { AssemblyItem } from "../../interfaces/IAssemblyItem";
 
 const db = getFirestore(app);
 
@@ -95,3 +96,17 @@ export const CreateNewAssembly = async (id: string, suDocIDs: string[]) => {
         throw error;
     }
 }
+
+export const getAllAssemblyItems = (callback: (items: AssemblyItem[]) => void) => {
+    const assemblyCollection = collection(db, "assembly");
+
+    return onSnapshot(assemblyCollection, (snapshot) => {
+        const assemblyItems: AssemblyItem[] = snapshot.docs.map(doc => ({
+            id: doc.id,
+        }));
+        callback(assemblyItems);
+    }, (error) => {
+        console.error('Error getting assembly items: ', error);
+        throw error;
+    })
+};

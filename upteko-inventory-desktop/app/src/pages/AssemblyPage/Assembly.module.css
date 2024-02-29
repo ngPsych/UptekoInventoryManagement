@@ -1,0 +1,15 @@
+.assemblyContainer {
+    user-select: none;
+}
+
+.assemblyCardContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 3rem 4rem 0 6rem;
+}
+
+.assemblyCard {
+    flex-basis: calc(25% - 1rem);
+    margin: 0 1rem 1rem 0;
+}

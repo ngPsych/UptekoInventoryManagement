@@ -56,7 +56,6 @@
     filter: invert(100%);
 }
 
-/* Style for the active link */
 .pages .active a {
     color: #4CAF50;
     font-weight: bold;
@@ -109,7 +108,6 @@
     background-color: #f1f1f1;
 }
 
-/* Class to display the dropdown when isOpen is true */
 .showDropdown {
     display: block;
 }

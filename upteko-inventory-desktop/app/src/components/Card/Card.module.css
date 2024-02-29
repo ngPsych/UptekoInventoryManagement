@@ -1,0 +1,19 @@
+.cardContainer {
+    width: 25rem;
+    border-radius: 1rem;
+    box-shadow: 2px 3px 5px 5px #999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: box-shadow 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+.cardContainer:hover {
+    box-shadow: 1px 2px 9px 9px #999;
+}
+
+.cardImg {
+    width: 100%;
+    border-radius: 1rem 1rem 0 0;
+}
