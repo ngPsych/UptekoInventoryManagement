@@ -39,7 +39,7 @@ export default function AssemblyPage() {
             <div className={styles.assemblyCardContainer}>
                 {assemblyItems.map(item => (
                     <div key={item.id} className={styles.assemblyCard}>
-                        <Card imgSrc={Lark} title={item.id}/>
+                        <Card imgSrc={item.imageURL} title={item.id}/>
                     </div>
                 ))}
             </div>

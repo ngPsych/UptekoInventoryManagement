@@ -5,6 +5,7 @@ import { formatFirestoreTimestamp } from '../../utils/timeFormat';
 import { addNewPart, CreateNewAssembly } from '../../services/firebase/inventoryManagement';
 import { QRCodeGenerator } from '../QRCode/QRCodeGenerator';
 import { useReactToPrint } from 'react-to-print';
+import { getFileDownloadURL, uploadFile } from '../../services/firebase/storageManagement';
 
 interface PopupCardProps {
     item?: Item;
@@ -91,6 +92,7 @@ export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
 export const CreateNewAssemblyPopupCard: React.FC <PopupCardProps> = ({ onClose }) => {
     const [name, setName] = useState('');
     const [subNames, setSubNames] = useState<string[]>(['']);
+    const [imageFile, setImageFile] = useState<File | null>(null);
 
     const handleAddSubName = () => {
         setSubNames([...subNames, '']);
@@ -102,10 +104,25 @@ export const CreateNewAssemblyPopupCard: React.FC <PopupCardProps> = ({ onClose 
         setSubNames(newSubNames);
     };
 
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            setImageFile(file);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await CreateNewAssembly(name, subNames);
+            let imageURL = '';
+            if (imageFile) {
+                imageURL = await uploadFile(imageFile, `images/${name}`)
+            } else {
+                imageURL = await getFileDownloadURL("images/Default.png");
+            }
+
+            console.log("Image uploaded:", imageURL);
+            await CreateNewAssembly(imageURL, name, subNames);
             onClose();
         } catch (error) {
             console.log("Error creating new assembly");
@@ -135,6 +152,10 @@ export const CreateNewAssemblyPopupCard: React.FC <PopupCardProps> = ({ onClose 
                             </div>
                         ))}
                         <button type="button" onClick={handleAddSubName}>+</button>
+                    </div>
+                    <div>
+                        <label>Upload Image:</label>
+                        <input type="file" accept="image/*" onChange={handleImageUpload} />
                     </div>
                     <button type="submit">Submit</button>
                     <button type="button" onClick={onClose}>Cancel</button>

@@ -72,11 +72,12 @@ export const addNewPart = async (
         });
 };
 
-export const CreateNewAssembly = async (id: string, suDocIDs: string[]) => {
+export const CreateNewAssembly = async (imageURL: string, id: string, suDocIDs: string[]) => {
     try {
         const assemblyDocRef = doc(db, "assembly", id);
         await setDoc(assemblyDocRef, {
-            quantity: 0
+            quantity: 0,
+            imageURL: imageURL,
         });
 
         for (const subDocID of suDocIDs) {
@@ -102,6 +103,7 @@ export const getAllAssemblyItems = (callback: (items: AssemblyItem[]) => void) =
 
     return onSnapshot(assemblyCollection, (snapshot) => {
         const assemblyItems: AssemblyItem[] = snapshot.docs.map(doc => ({
+            imageURL: doc.data().imageURL,
             id: doc.id,
         }));
         callback(assemblyItems);
