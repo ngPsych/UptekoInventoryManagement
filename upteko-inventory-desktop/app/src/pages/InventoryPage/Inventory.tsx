@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { subscribeToAllParts, subscribeToAllSubassemblyItems } from "../../services/firebase/inventoryManagement";
+import { subscribeToInventoryParts, subscribeToInventorySubassemblyItems } from "../../services/firebase/inventoryManagement";
 import { NavigationBar } from '../../components/NavBar/NavBar';
 import { Table } from "../../components/Table/Table";
 import { AddNewPartPopupCard } from '../../components/PopupCard/PopupCard';
@@ -24,12 +24,12 @@ export default function InventoryPage() {
         let unsubscribe = () => {}; // initialize with a no-op function
 
         if (tableMode === "Parts") {
-            unsubscribe = subscribeToAllParts((newItems) => {
+            unsubscribe = subscribeToInventoryParts((newItems) => {
                 setItems(newItems);
                 setLoading(false);
             });
         } else if (tableMode === "Sub-Assemblies") {
-            unsubscribe = subscribeToAllSubassemblyItems((newItems) => {
+            unsubscribe = subscribeToInventorySubassemblyItems((newItems) => {
                 setItems(newItems);
                 setLoading(false);
             });

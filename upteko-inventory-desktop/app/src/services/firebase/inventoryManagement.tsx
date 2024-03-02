@@ -1,12 +1,12 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot, DocumentSnapshot } from "firebase/firestore";
 import { Item } from "../../interfaces/IItem";
 import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
 import { AssemblyItem } from "../../interfaces/IAssemblyItem";
 
 const db = getFirestore(app);
 
-export const subscribeToAllParts = (callback: (items: Item[]) => void) => {
+export const subscribeToInventoryParts = (callback: (items: Item[]) => void) => {
     const partsCollection = collection(db, "parts");
 
     return onSnapshot(partsCollection, (snapshot) => {
@@ -28,7 +28,7 @@ export const subscribeToAllParts = (callback: (items: Item[]) => void) => {
     });
 };
 
-export const subscribeToAllSubassemblyItems = (callback: (items: SubassemblyItem[]) => void) => {
+export const subscribeToInventorySubassemblyItems = (callback: (items: SubassemblyItem[]) => void) => {
     const subassemblyCollection = collection(db, "subassembly");
 
     return onSnapshot(subassemblyCollection, (snapshot) => {
@@ -72,7 +72,7 @@ export const addNewPart = async (
         });
 };
 
-export const CreateNewAssembly = async (imageURL: string, id: string, suDocIDs: string[]) => {
+export const createNewAssembly = async (imageURL: string, id: string, suDocIDs: string[]) => {
     try {
         const assemblyDocRef = doc(db, "assembly", id);
         await setDoc(assemblyDocRef, {
@@ -84,6 +84,7 @@ export const CreateNewAssembly = async (imageURL: string, id: string, suDocIDs: 
             const subDocRef = doc(db, `assembly/${id}/subassembly`, subDocID);
 
             await setDoc(subDocRef, {
+                imageURL: "https://firebasestorage.googleapis.com/v0/b/uptekoinventory.appspot.com/o/images%2FAlba?alt=media&token=a806efdb-c916-4642-add0-957b405f8d2a",
                 name: subDocID,
                 dateCreated: serverTimestamp(),
                 lastModified: serverTimestamp(),
@@ -98,7 +99,7 @@ export const CreateNewAssembly = async (imageURL: string, id: string, suDocIDs: 
     }
 }
 
-export const getAllAssemblyItems = (callback: (items: AssemblyItem[]) => void) => {
+export const subscribeToAssemblyItems = (callback: (items: AssemblyItem[]) => void) => {
     const assemblyCollection = collection(db, "assembly");
 
     return onSnapshot(assemblyCollection, (snapshot) => {
@@ -109,6 +110,21 @@ export const getAllAssemblyItems = (callback: (items: AssemblyItem[]) => void) =
         callback(assemblyItems);
     }, (error) => {
         console.error('Error getting assembly items: ', error);
+        throw error;
+    })
+};
+
+export const subscribeToSubassemblyItems = (id: string, callback: (items: AssemblyItem[]) => void) => {
+    const subassemblyColleciton = collection(db, `assembly/${id}/subassembly`)
+
+    return onSnapshot(subassemblyColleciton, (snapshot) => {
+        const subassemblyItems : AssemblyItem[] = snapshot.docs.map(doc => ({
+            imageURL: doc.data().imageURL,
+            id: doc.id,
+        }));
+        callback(subassemblyItems);
+    }, (error) => {
+        console.error('Error getting subassembly items: ', error);
         throw error;
     })
 };

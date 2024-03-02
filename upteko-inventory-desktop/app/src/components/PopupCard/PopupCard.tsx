@@ -2,10 +2,11 @@ import React, { useState, useRef } from 'react';
 import { Item } from '../../interfaces/IItem';
 import styles from './PopupCard.module.css';
 import { formatFirestoreTimestamp } from '../../utils/timeFormat';
-import { addNewPart, CreateNewAssembly } from '../../services/firebase/inventoryManagement';
+import { addNewPart, createNewAssembly } from '../../services/firebase/inventoryManagement';
 import { QRCodeGenerator } from '../QRCode/QRCodeGenerator';
 import { useReactToPrint } from 'react-to-print';
 import { getFileDownloadURL, uploadFile } from '../../services/firebase/storageManagement';
+import QRCode from 'qrcode.react';
 
 interface PopupCardProps {
     item?: Item;
@@ -19,10 +20,24 @@ export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
         content: () => componentRef.current,
     });
 
+    const downloadQRCode = () => {
+        const canvas = document.querySelector('canvas'); // Get the canvas element
+        const pngUrl = canvas?.toDataURL('image/png'); // Convert the canvas to a PNG image
+        if (pngUrl && item?.sku) {
+            const downloadLink = document.createElement('a');
+            downloadLink.href = pngUrl;
+            downloadLink.download = `${item.sku}.png`; // Set the download filename using the SKU
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        }
+    };
+
     return (
         <div className={styles.popupContainer} onClick={onClose}>
             <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
                 <button onClick={handlePrint}>Print</button>
+                <button onClick={downloadQRCode}>Download QR Code</button>
                     <div className={styles.printable} ref={componentRef}>
                         <QRCodeGenerator itemNumber={item?.sku ?? 'undefined'} size={150} />
                         <h2>{item?.sku}</h2>
@@ -122,7 +137,7 @@ export const CreateNewAssemblyPopupCard: React.FC <PopupCardProps> = ({ onClose 
             }
 
             console.log("Image uploaded:", imageURL);
-            await CreateNewAssembly(imageURL, name, subNames);
+            await createNewAssembly(imageURL, name, subNames);
             onClose();
         } catch (error) {
             console.log("Error creating new assembly");

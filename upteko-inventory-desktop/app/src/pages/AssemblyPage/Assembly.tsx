@@ -4,8 +4,7 @@ import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/PopupCard';
 import { Card } from '../../components/Card/Card';
-import Lark from "../../assets/upteko/Lark.jpg";
-import { getAllAssemblyItems } from '../../services/firebase/inventoryManagement';
+import { subscribeToAssemblyItems, subscribeToSubassemblyItems } from '../../services/firebase/inventoryManagement';
 import { AssemblyItem } from '../../interfaces/IAssemblyItem';
 
 export default function AssemblyPage() {
@@ -13,22 +12,58 @@ export default function AssemblyPage() {
 
     const [showCreateNewAssemblyPopup, setShowCreateNewAssemblyPupop] = useState(false);
     const [assemblyItems, setAssemblyItems] = useState<AssemblyItem[]>([]);
+    const [subassemblyItems, setSubassemblyItems] = useState<AssemblyItem[]>([]);
+    const [selectedAssemblyId, setSelectedAssemblyId] = useState<string | null>(null);
 
     useEffect(() => {
-        const unsubscribe = getAllAssemblyItems(items => {
+        const unsubscribeAssembly = subscribeToAssemblyItems(items => {
             setAssemblyItems(items);
         });
 
-        // Return a cleanup function to unsubscribe when the component unmounts
         return () => {
-            unsubscribe();
+            unsubscribeAssembly();
         };
     }, []);
+
+    useEffect(() => {
+        if (selectedAssemblyId) {
+            const unsubscribeSubassembly = subscribeToSubassemblyItems(selectedAssemblyId, items => {
+                setSubassemblyItems(items);
+            });
+            return () => {
+                unsubscribeSubassembly();
+            };
+        } else {
+            // Clear subassembly items if no assembly is selected
+            setSubassemblyItems([]);
+        }
+    }, [selectedAssemblyId]);
+
+    const handleAssemblyCardClick = (assemblyId: string) => {
+        setSelectedAssemblyId(assemblyId);
+    };
+
+    const handleBackButtonClick = () => {
+        setSelectedAssemblyId(null);
+    };
+
+    // Remember to add functionality for this one
+    const handleAddSubassemblyButtonClick = () => {
+
+    }
 
     return (
         <div className={styles.assemblyContainer}>
             <NavigationBar />
-            <button onClick={() => setShowCreateNewAssemblyPupop(true)}>Create new assembly</button>
+            {!selectedAssemblyId && (
+                <button onClick={() => setShowCreateNewAssemblyPupop(true)}>Create new assembly</button>
+            )}
+            {selectedAssemblyId && (
+                <div>
+                    <button onClick={handleBackButtonClick}>Back</button>
+                    <button onClick={handleAddSubassemblyButtonClick}>Add subassembly</button>
+                </div>
+            )}
 
             {showCreateNewAssemblyPopup && (
                 <CreateNewAssemblyPopupCard
@@ -37,11 +72,19 @@ export default function AssemblyPage() {
             )}
 
             <div className={styles.assemblyCardContainer}>
-                {assemblyItems.map(item => (
-                    <div key={item.id} className={styles.assemblyCard}>
-                        <Card imgSrc={item.imageURL} title={item.id}/>
-                    </div>
-                ))}
+                {subassemblyItems.length === 0 ? (
+                    assemblyItems.map(item => (
+                        <div key={item.id} className={styles.assemblyCard} onClick={() => handleAssemblyCardClick(item.id)}>
+                            <Card imgSrc={item.imageURL} title={item.id}/>
+                        </div>
+                    ))
+                ) : (
+                    subassemblyItems.map(item => (
+                        <div key={item.id} className={styles.assemblyCard}>
+                            <Card imgSrc={item.imageURL} title={item.id} />
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );
