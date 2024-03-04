@@ -1,0 +1,112 @@
+.popupContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popupCard {
+    background-color: white;
+    width: 20%;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.popupCard h2 {
+    margin-top: 0;
+}
+
+.assemblyField {
+    margin-bottom: 20px;
+}
+
+.assemblyField label {
+    font-weight: bold;
+}
+
+.assemblyField input {
+    width: 95%;
+    padding: 0.5rem;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.uploadImage {
+    margin-bottom: 20px;
+}
+
+.uploadImage label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.uploadImage input[type="file"] {
+    cursor: pointer;
+    background-color: #ffffff;
+    color: black;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+
+.subAssemblyField {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.subAssemblyField span {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.subAssemblyField input {
+    flex: 1;
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.subAssemblyField button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.subAssemblyField button:hover {
+    background-color: #419744;
+}
+
+.formButtonContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.formButtonContainer button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 0.5rem;
+}
+
+.formButtonContainer button:hover {
+    background-color: #419744;
+}

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import styles from './Assembly.module.css';
 import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
-import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/PopupCard';
+import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
-import { subscribeToAssemblyItems, subscribeToSubassemblyItems } from '../../services/firebase/inventoryManagement';
+import { subscribeToAssemblyItems, subscribeToSubassemblyItems } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem } from '../../interfaces/IAssemblyItem';
 
 export default function AssemblyPage() {

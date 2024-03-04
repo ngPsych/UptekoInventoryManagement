@@ -1,17 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { Item } from '../../interfaces/IItem';
 import styles from './PopupCard.module.css';
 import { formatFirestoreTimestamp } from '../../utils/timeFormat';
-import { addNewPart, createNewAssembly } from '../../services/firebase/inventoryManagement';
+import { addNewPart } from '../../services/firebase/inventoryManagement';
+import { createNewAssembly } from '../../services/firebase/assemblyManagement';
 import { QRCodeGenerator } from '../QRCode/QRCodeGenerator';
 import { useReactToPrint } from 'react-to-print';
-import { getFileDownloadURL, uploadFile } from '../../services/firebase/storageManagement';
-import QRCode from 'qrcode.react';
-
-interface PopupCardProps {
-    item?: Item;
-    onClose: () => void;
-}
+import PopupCardProps from '../../interfaces/IPopupCardProps';
 
 export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
     const componentRef = useRef<HTMLDivElement>(null);
@@ -98,82 +92,6 @@ export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
 
                     <button type="submit">Add Part</button>
                     <button onClick={onClose}>Close</button>
-                </form>
-            </div>
-        </div>
-    );
-};
-
-export const CreateNewAssemblyPopupCard: React.FC <PopupCardProps> = ({ onClose }) => {
-    const [name, setName] = useState('');
-    const [subNames, setSubNames] = useState<string[]>(['']);
-    const [imageFile, setImageFile] = useState<File | null>(null);
-
-    const handleAddSubName = () => {
-        setSubNames([...subNames, '']);
-    };
-
-    const handleSubNameChange = (index: number, value: string) => {
-        const newSubNames = [...subNames];
-        newSubNames[index] = value;
-        setSubNames(newSubNames);
-    };
-
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0];
-            setImageFile(file);
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            let imageURL = '';
-            if (imageFile) {
-                imageURL = await uploadFile(imageFile, `images/${name}`)
-            } else {
-                imageURL = await getFileDownloadURL("images/Default.png");
-            }
-
-            console.log("Image uploaded:", imageURL);
-            await createNewAssembly(imageURL, name, subNames);
-            onClose();
-        } catch (error) {
-            console.log("Error creating new assembly");
-            throw error;
-        }
-
-    };
-
-    return (
-        <div className={styles.popupContainer} onClick={onClose}>
-            <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
-                <h2>Add Assembly</h2>
-                <form onSubmit={handleSubmit}>
-                    <div>
-                        <label>Name:</label>
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-                    </div>
-                    <div>
-                        <label>Sub-assembly:</label>
-                        {subNames.map((subName, index) => (
-                            <div key={index}>
-                                <input
-                                    type="text"
-                                    value={subName}
-                                    onChange={(e) => handleSubNameChange(index, e.target.value)}
-                                />
-                            </div>
-                        ))}
-                        <button type="button" onClick={handleAddSubName}>+</button>
-                    </div>
-                    <div>
-                        <label>Upload Image:</label>
-                        <input type="file" accept="image/*" onChange={handleImageUpload} />
-                    </div>
-                    <button type="submit">Submit</button>
-                    <button type="button" onClick={onClose}>Cancel</button>
                 </form>
             </div>
         </div>
