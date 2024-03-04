@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { subscribeToInventoryParts } from '../../services/firebase/inventoryManagement';
 import styles from './AddMaterialsPopupCard.module.css';
 import ExitConfirmationPopup from './ExitConfirmationPopup';
+import CustomSelect from '../DropDown/CustomSelect';
 
 interface AddMaterialsPopupCardProps {
     onClose: () => void;
@@ -48,11 +49,11 @@ const AddMaterialsPopupCard: React.FC<AddMaterialsPopupCardProps> = ({ onClose, 
     };
 
     return (
-        <>
+        <div>
             <div className={styles.overlay}>
                 <div className={styles.popup} ref={popupRef}>
                     <div className={styles.selectContainer}>
-                        <select
+                        {/* <select
                             value={selectedMaterial ? selectedMaterial.sku : ''}
                             onChange={(e) => {
                                 const selectedSku = e.target.value;
@@ -66,8 +67,15 @@ const AddMaterialsPopupCard: React.FC<AddMaterialsPopupCardProps> = ({ onClose, 
                                     [{material.sku}] {material.name}
                                 </option>
                             ))}
-                        </select>
+                        </select> */}
+                        <CustomSelect
+                            options={materials.map(material => ({
+                            value: material.sku,
+                            label: `[${material.sku}] ${material.name}`
+                            }))}
+                        />
                     </div>
+
                     <div className={styles.buttonContainer}>
                         <button onClick={handleMaterialSelect}>Select</button>
                         <button onClick={onClose}>Cancel</button>
@@ -80,7 +88,7 @@ const AddMaterialsPopupCard: React.FC<AddMaterialsPopupCardProps> = ({ onClose, 
                     onCancelExit={() => setShowConfirmation(false)}
                 />
             )}
-        </>
+        </div>
     );
 };
 

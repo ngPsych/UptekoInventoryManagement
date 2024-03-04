@@ -9,6 +9,7 @@ import { AssemblyItem } from '../../interfaces/IAssemblyItem';
 
 export default function AssemblyPage() {
     useRequireAuth();
+    const MemoizedAssemblyCard = React.memo(Card);
 
     const [showCreateNewAssemblyPopup, setShowCreateNewAssemblyPupop] = useState(false);
     const [assemblyItems, setAssemblyItems] = useState<AssemblyItem[]>([]);
@@ -75,13 +76,13 @@ export default function AssemblyPage() {
                 {subassemblyItems.length === 0 ? (
                     assemblyItems.map(item => (
                         <div key={item.id} className={styles.assemblyCard} onClick={() => handleAssemblyCardClick(item.id)}>
-                            <Card imgSrc={item.imageURL} title={item.id}/>
+                            <MemoizedAssemblyCard imgSrc={item.imageURL} title={item.id}/>
                         </div>
                     ))
                 ) : (
                     subassemblyItems.map(item => (
                         <div key={item.id} className={styles.assemblyCard}>
-                            <Card imgSrc={item.imageURL} title={item.id} />
+                            <MemoizedAssemblyCard imgSrc={item.imageURL} title={item.id} />
                         </div>
                     ))
                 )}

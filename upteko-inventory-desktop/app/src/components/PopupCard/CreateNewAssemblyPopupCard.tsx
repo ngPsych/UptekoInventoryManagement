@@ -11,12 +11,17 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
     const [subNames, setSubNames] = useState<string[]>(['1']);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [showAddMaterialsPopup, setShowAddMaterialsPopup] = useState(false);
+    const [alertText, setAlertText] = useState('');
 
     // Function to add a new sub-assembly field
     const handleAddSubName = () => {
-        const newCount = subAssemblyCount + 1; // Increment the count
-        setSubAssemblyCount(newCount);
-        setSubNames([...subNames, newCount.toString()]); // Add the new count as a string
+        if (subNames.length < 10) {
+            const newCount = subAssemblyCount + 1;
+            setSubAssemblyCount(newCount);
+            setSubNames([...subNames, newCount.toString()]);
+        } else {
+            setAlertText("Cannot exceed 10 subassemblies!");
+        }
     };
 
     // Function to remove a sub-assembly field
@@ -28,12 +33,10 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
             newSubNames.splice(index, 1);
             setSubNames(newSubNames);
         }
-    };
 
-    const handleSubNameChange = (index: number, value: string) => {
-        const newSubNames = [...subNames];
-        newSubNames[index] = value;
-        setSubNames(newSubNames);
+        if (subNames.length === 10) {
+            setAlertText('');
+        }
     };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,13 +100,15 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
                                 </button>
                             </div>
                         ))}
-                        <button type="button" onClick={handleAddSubName}>+</button>
-                        {subNames.length > 1 && (
-                            <button type="button" onClick={() => handleRemoveSubName(subNames.length - 1)}>-</button>
-                        )}
+                        <div className={styles.subassemblyButtonContainer}>
+                            <button type="button" onClick={handleAddSubName}>+</button>
+                            {subNames.length > 1 && (
+                                <button type="button" onClick={() => handleRemoveSubName(subNames.length - 1)}>-</button>
+                            )}
+                        </div>
                     </div>
 
-
+                    <div className={styles.alert}>{alertText}</div>
 
                     <div className={styles.formButtonContainer}>
                         <button type="submit">Submit</button>

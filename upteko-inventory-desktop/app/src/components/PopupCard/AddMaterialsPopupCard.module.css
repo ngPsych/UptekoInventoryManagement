@@ -16,9 +16,12 @@
     padding: 20px;
     border-radius: 8px;
     width: 300px; /* Adjust width as needed */
-    max-height: 80vh; /* Adjust max height as needed */
+    height: 30%;
     overflow-y: auto; /* Enable scrolling if needed */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    display: flex;
+    flex-direction: column; /* Arrange children vertically */
+    justify-content: space-between; /* Align items to the start and end */
 }
 
 .popup select {
@@ -29,10 +32,24 @@
     border-radius: 4px;
 }
 
-.button-container {
+.buttonContainer {
     display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.buttonContainer button {
+    margin: 5px 10px 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    box-shadow: 1px 1px 5px black;
+    padding: 5px;
+}
+
+.buttonContainer button:hover {
+    background-color: #419744
 }
 
 .confirmation {
@@ -44,15 +61,8 @@
     margin-bottom: 10px;
 }
 
-.confirmation button {
-    padding: 10px 20px;
-    margin: 0 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.confirmation button:hover {
-    background-color: #f0f0f0;
+.selectContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
