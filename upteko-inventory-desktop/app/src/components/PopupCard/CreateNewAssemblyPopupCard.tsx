@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { createNewAssembly } from '../../services/firebase/assemblyManagement';
+import { createNewAssembly, testCreateNewAssembly } from '../../services/firebase/assemblyManagement';
 import { getFileDownloadURL, uploadFile } from '../../services/firebase/storageManagement';
 import AddMaterialsPopupCard from './AddMaterialsPopupCard';
 import PopupCardProps from '../../interfaces/IPopupCardProps';
@@ -12,6 +12,10 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [showAddMaterialsPopup, setShowAddMaterialsPopup] = useState(false);
     const [alertText, setAlertText] = useState('');
+    const [subAssemblyInputs, setSubAssemblyInputs] = useState<string[]>(['']);
+    const [materialSKUInputs, setMaterialSKUInputs] = useState<string[]>([]);
+    const [materialNameInputs, setMaterialNameInputs] = useState<string[]>([]);
+    const [selectedMaterials, setSelectedMaterials] = useState<{ [key: string]: { sku: string; name: string }[] }>({});
 
     // Function to add a new sub-assembly field
     const handleAddSubName = () => {
@@ -57,7 +61,8 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
             }
 
             console.log("Image uploaded:", imageURL);
-            await createNewAssembly(imageURL, name, subNames);
+            // await createNewAssembly(imageURL, name, subAssemblyInputs);
+            await testCreateNewAssembly(imageURL, name, subAssemblyInputs, materialSKUInputs, [1, 2], materialNameInputs);
             onClose();
         } catch (error) {
             console.log("Error creating new assembly");
@@ -67,11 +72,21 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
 
     const handleOpenAddMaterialsPopup = () => {
         setShowAddMaterialsPopup(true);
+        console.log(subAssemblyInputs);
     };
 
     const handleSelectMaterial = (material: { sku: string; name: string }) => {
         // Handle the selected material
-        console.log('Selected Material:', material);
+        const newMaterialSKUInputs = [...materialSKUInputs, material.sku];
+        const newMaterialNameInputs = [...materialNameInputs, material.name];
+        setMaterialSKUInputs(newMaterialSKUInputs);
+        setMaterialNameInputs(newMaterialNameInputs);
+    };
+
+    const handleSubAssemblyInputChange = (index: number, value: string) => {
+        const newSubAssemblyInputs = [...subAssemblyInputs];
+        newSubAssemblyInputs[index] = value;
+        setSubAssemblyInputs(newSubAssemblyInputs);
     };
 
     return (
@@ -91,10 +106,14 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
 
                     <div>
                         <h3>Sub-assembly</h3>
-                        {subNames.map((subName, index) => (
+                        {subNames.map((subInput, index) => (
                             <div key={index} className={styles.subAssemblyField}>
-                                <span>{subName}. </span>
-                                <input type="text" className={styles.inputField} />
+                                <span>{index + 1}. </span>
+                                <input 
+                                    type="text" 
+                                    className={styles.inputField}
+                                    onChange={(e) => handleSubAssemblyInputChange(index, e.target.value)} 
+                                />
                                 <button type="button" onClick={handleOpenAddMaterialsPopup}>
                                     Add Materials
                                 </button>

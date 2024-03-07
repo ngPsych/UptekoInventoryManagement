@@ -42,9 +42,15 @@ const AddMaterialsPopupCard: React.FC<AddMaterialsPopupCardProps> = ({ onClose, 
         };
     }, [onClose, selectedMaterial]);
 
+    const handleSelectMaterial = (material: { sku: string; name: string }) => {
+        setSelectedMaterial(material);
+    };
+
     const handleMaterialSelect = () => {
         if (selectedMaterial) {
+            onSelectMaterial(selectedMaterial);
             setShowConfirmation(true);
+            console.log("SELECTED MATERIAL:", selectedMaterial)
         }
     };
 
@@ -53,26 +59,12 @@ const AddMaterialsPopupCard: React.FC<AddMaterialsPopupCardProps> = ({ onClose, 
             <div className={styles.overlay}>
                 <div className={styles.popup} ref={popupRef}>
                     <div className={styles.selectContainer}>
-                        {/* <select
-                            value={selectedMaterial ? selectedMaterial.sku : ''}
-                            onChange={(e) => {
-                                const selectedSku = e.target.value;
-                                const material = materials.find((m) => m.sku === selectedSku);
-                                setSelectedMaterial(material || null);
-                            }}
-                        >
-                            <option value="">Select a material</option>
-                            {materials.map((material) => (
-                                <option key={material.sku} value={material.sku}>
-                                    [{material.sku}] {material.name}
-                                </option>
-                            ))}
-                        </select> */}
                         <CustomSelect
                             options={materials.map(material => ({
                             value: material.sku,
                             label: `[${material.sku}] ${material.name}`
                             }))}
+                            onSelect={handleSelectMaterial} // Pass onSelect callback
                         />
                     </div>
 
