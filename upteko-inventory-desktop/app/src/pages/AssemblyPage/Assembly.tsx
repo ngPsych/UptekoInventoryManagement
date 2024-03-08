@@ -6,6 +6,7 @@ import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNew
 import { Card } from '../../components/Card/Card';
 import { subscribeToAssemblyItems, subscribeToSubassemblyItems } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem } from '../../interfaces/IAssemblyItem';
+import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
 
 export default function AssemblyPage() {
     useRequireAuth();
@@ -15,6 +16,8 @@ export default function AssemblyPage() {
     const [assemblyItems, setAssemblyItems] = useState<AssemblyItem[]>([]);
     const [subassemblyItems, setSubassemblyItems] = useState<AssemblyItem[]>([]);
     const [selectedAssemblyId, setSelectedAssemblyId] = useState<string | null>(null);
+
+    const [showTest, setShowTest] = useState(false);
 
     useEffect(() => {
         const unsubscribeAssembly = subscribeToAssemblyItems(items => {
@@ -57,7 +60,10 @@ export default function AssemblyPage() {
         <div className={styles.assemblyContainer}>
             <NavigationBar />
             {!selectedAssemblyId && (
-                <button onClick={() => setShowCreateNewAssemblyPupop(true)}>Create new assembly</button>
+                <div>
+                    <button onClick={() => setShowCreateNewAssemblyPupop(true)}>Create new assembly</button>
+                    <button onClick={() => setShowTest(true)}>CREATE TEST</button>
+                </div>
             )}
             {selectedAssemblyId && (
                 <div>
@@ -69,6 +75,13 @@ export default function AssemblyPage() {
             {showCreateNewAssemblyPopup && (
                 <CreateNewAssemblyPopupCard
                     onClose={() => setShowCreateNewAssemblyPupop(false)}
+                />
+            )}
+
+            {/* remove below later, this is for testing*/}
+            {showTest && (
+                <CreatePopup
+                    onClose={() => setShowTest(false)}
                 />
             )}
 
