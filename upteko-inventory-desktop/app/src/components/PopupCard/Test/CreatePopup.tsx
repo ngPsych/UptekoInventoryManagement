@@ -3,6 +3,7 @@ import styles from './CreatePopup.module.css'
 import PopupCardProps from '../../../interfaces/IPopupCardProps';
 import { getFileDownloadURL, uploadFile } from '../../../services/firebase/storageManagement';
 import AddMatPopup from './AddMatPopup';
+import { testCreateNewAssembly } from '../../../services/firebase/assemblyManagement';
 
 export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
     const [name, setName] = useState('');
@@ -25,7 +26,7 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
 
             console.log("Image uploaded:", imageURL);
             // await createNewAssembly(imageURL, name, subAssemblyInputs);
-            //await testCreateNewAssembly(imageURL, name, subAssemblyInputs, materialSKUInputs, [1, 2], materialNameInputs);
+            await testCreateNewAssembly(imageURL, name, subNames, selectedMaterials);
             onClose();
         } catch (error) {
             console.log("Error creating new assembly");

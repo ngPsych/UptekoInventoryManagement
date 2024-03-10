@@ -62,7 +62,7 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
 
             console.log("Image uploaded:", imageURL);
             // await createNewAssembly(imageURL, name, subAssemblyInputs);
-            await testCreateNewAssembly(imageURL, name, subAssemblyInputs, materialSKUInputs, [1, 2], materialNameInputs);
+            // await testCreateNewAssembly(imageURL, name, subAssemblyInputs, materialSKUInputs, [1, 2], materialNameInputs);
             onClose();
         } catch (error) {
             console.log("Error creating new assembly");
