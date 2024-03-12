@@ -12,7 +12,7 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
     const [subAssemblyCount, setSubAssemblyCount] = useState(0); // Used to track added subassembly
     const [showAddMatPopup, setShowAddMatPopup] = useState(false);
     const [seletedSubAssemblyIndex, setSelectedSubAssemblyIndex] = useState(0);
-    const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: { sku: string; name: string }[] }>({});
+    const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: { sku: string; name: string, quantity: number }[] }>({});
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -24,7 +24,6 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
                 imageURL = await getFileDownloadURL("images/Default.png");
             }
 
-            console.log("Image uploaded:", imageURL);
             // await createNewAssembly(imageURL, name, subAssemblyInputs);
             await testCreateNewAssembly(imageURL, name, subNames, selectedMaterials);
             onClose();
@@ -70,23 +69,13 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
         setShowAddMatPopup(true);
         setSelectedSubAssemblyIndex(index);
     }
-
-    const handleSelectedMaterial = (index: number, material: { sku: string, name: string }) => {
-        // Create a copy of selectedMaterials to avoid mutating state directly
-        const newSelectedMaterials = { ...selectedMaterials };
-
-        // Check if the array for the given index exists
-        if (!newSelectedMaterials[index]) {
-            // If it doesn't exist, create a new array with the material object
-            newSelectedMaterials[index] = [{ sku: material.sku, name: material.name }];
-        } else {
-            // If it exists, push the material object into the existing array
-            newSelectedMaterials[index].push({ sku: material.sku, name: material.name });
-        }
-
-        // Update the state with the new selected materials
-        setSelectedMaterials(newSelectedMaterials);
-    };
+    const handleSelectedMaterial = (index: number, materials: { sku: string; name: string, quantity: number }[]) => {
+        setSelectedMaterials(prevState => {
+            const newSelectedMaterials = { ...prevState };
+            newSelectedMaterials[index] = materials;
+            return newSelectedMaterials;
+        });
+    };    
 
     const materialTest = () => {
         console.log(selectedMaterials)
@@ -128,7 +117,7 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
                         <div className={styles.subassemblyButtonContainer}>
                             <button type="button" onClick={handleAddSubassembly}>+</button>
                             {subNames.length > 1 && (
-                                <button type="button" onClick={() => handleRemoveSubassembly(subNames.length -1)}>-</button>
+                                <button type="button" onClick={() => handleRemoveSubassembly(subNames.length - 1)}>-</button>
                             )}
                         </div>
                     </div>

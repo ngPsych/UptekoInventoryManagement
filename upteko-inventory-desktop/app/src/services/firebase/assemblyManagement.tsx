@@ -4,7 +4,7 @@ import { AssemblyItem } from "../../interfaces/IAssemblyItem";
 
 const db = getFirestore(app);
 
-export const testCreateNewAssembly = async (imageURL: string, id: string, subAsssemblyDocIDs: string[], selectedMaterials: { [key: number]: { sku: string; name: string}[] }) => {
+export const testCreateNewAssembly = async (imageURL: string, id: string, subAsssemblyDocIDs: string[], selectedMaterials: { [key: number]: { sku: string; name: string, quantity: number}[] }) => {
     try {
         const assemblyDocRef = doc(db, "assembly", id);
         await setDoc(assemblyDocRef, {
@@ -30,7 +30,7 @@ export const testCreateNewAssembly = async (imageURL: string, id: string, subAss
                 for (let i = 0; i < selectedMaterials[subassemblyIndex].length; i++) {
                     const materialsNeededDocRef = doc(db, `assembly/${id}/subassembly/${subassemblyDocID}/materialsNeeded`, selectedMaterials[subassemblyIndex][i].sku);
                     await setDoc(materialsNeededDocRef, {
-                        quantity: 10,
+                        quantity: selectedMaterials[subassemblyIndex][i].quantity,
                         name: selectedMaterials[subassemblyIndex][i].name,
                     });
                 }

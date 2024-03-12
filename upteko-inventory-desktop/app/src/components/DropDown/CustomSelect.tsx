@@ -9,6 +9,7 @@ interface Option {
 interface CustomSelectProps {
     options: Option[];
     onSelect: (material: { sku: string; name: string }) => void; // Update the function signature
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({ options, onSelect }) => {

@@ -19,10 +19,11 @@
     border: 1px solid #ccc;
     border-top: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1;
 }
 
 .searchInput {
-    width: calc(100% - 20px);
+    width: calc(100% - 21px);
     padding: 10px;
     border: 1px solid #ccc;
     border-bottom: none;

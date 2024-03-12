@@ -59,13 +59,13 @@ const AddMaterialsPopupCard: React.FC<AddMaterialsPopupCardProps> = ({ onClose, 
             <div className={styles.overlay}>
                 <div className={styles.popup} ref={popupRef}>
                     <div className={styles.selectContainer}>
-                        <CustomSelect
+                        {/* <CustomSelect
                             options={materials.map(material => ({
                             value: material.sku,
                             label: `[${material.sku}] ${material.name}`
                             }))}
                             onSelect={handleSelectMaterial} // Pass onSelect callback
-                        />
+                        /> */}
                     </div>
 
                     <div className={styles.buttonContainer}>
