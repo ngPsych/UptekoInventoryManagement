@@ -45,3 +45,7 @@
 .option:hover {
     background-color: #f4f4f4;
 }
+
+.disabled {
+    opacity: 0.5;
+}

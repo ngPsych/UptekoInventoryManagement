@@ -8,11 +8,12 @@ interface Option {
 
 interface CustomSelectProps {
     options: Option[];
-    onSelect: (material: { sku: string; name: string }) => void; // Update the function signature
+    onSelect: (material: { sku: string; name: string }) => void;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    disabled?: boolean; // Add disabled prop with optional boolean type
 }
 
-const CustomSelect: React.FC<CustomSelectProps> = ({ options, onSelect }) => {
+const CustomSelect: React.FC<CustomSelectProps> = ({ options, onSelect, disabled = false }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedOption, setSelectedOption] = useState<Option | null>(null);
@@ -45,17 +46,15 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, onSelect }) => {
 
     const handleSelectOption = (option: Option) => {
         const { value, label } = option;
-        // Assuming the option label format is "[sku] name"
-        const [sku, name] = label.split('] '); // Extract SKU and name from the label
-        onSelect({ sku: sku.slice(1), name }); // Pass the extracted SKU and name to onSelect
+        const [sku, name] = label.split(']');
+        onSelect({ sku: sku.trim(), name: name.trim() });
         setSelectedOption(option);
         setIsOpen(false);
     };
-    
 
     return (
-        <div className={styles.customSelect} ref={selectRef}>
-            <div className={styles.selectedOption} onClick={handleToggleOpen}>
+        <div className={`${styles.customSelect} ${disabled ? styles.disabled : ''}`} ref={selectRef}>
+            <div className={styles.selectedOption} onClick={!disabled ? handleToggleOpen : undefined}>
                 {selectedOption ? selectedOption.label : "Select an option"}
             </div>
             {isOpen && (
@@ -72,7 +71,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, onSelect }) => {
                             <li
                                 key={option.value}
                                 className={styles.option}
-                                onClick={() => handleSelectOption(option)}
+                                onClick={!disabled ? () => handleSelectOption(option) : undefined}
                             >
                                 {option.label}
                             </li>

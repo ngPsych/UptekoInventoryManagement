@@ -17,6 +17,9 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [selectMaterialNames, setSelectMaterialNames] = useState<string[]>(['', '', '', '', '']);
     const [materialCount, setMaterialCount] = useState(selectMaterialNames.length);
+    const [selectMaterialQuantities, setSelectMaterialQuantities] = useState<number[]>(Array.from({ length: selectMaterialNames.length }, () => 1));
+    const [inputsEnabled, setInputsEnabled] = useState<boolean[]>(Array.from({ length: selectMaterialNames.length }, () => false));
+    const [selectInputsEnabled, setSelectInputsEnabled] = useState<boolean[]>(Array.from({ length: selectMaterialNames.length }, (_, i) => i === 0));
 
     const handleSelectMaterialChange = (index: number, event: React.ChangeEvent<HTMLInputElement>) => {
         const newCustomSelect = [...selectMaterialNames];
@@ -51,14 +54,41 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
         };
     }, [onClose, selectedMaterials]);
 
-    // This is the handler for the CustomSelect when selecting a material
-    const handleSelectMaterial = (material: { sku: string; name: string }, quantity: number) => {
-        setSelectedMaterials([...selectedMaterials, { ...material, quantity }]);
+// This is the handler for the CustomSelect when selecting a material
+    const handleSelectMaterial = (material: { sku: string; name: string }, quantity: number, index: number) => {
+        const existingMaterialIndex = selectedMaterials.findIndex(item => item && item.sku === material.sku);
+
+        if (existingMaterialIndex !== -1) {
+            // If material already exists at index, update it with new sku and name
+            const updatedMaterials = [...selectedMaterials];
+            updatedMaterials[existingMaterialIndex] = { ...updatedMaterials[existingMaterialIndex], sku: material.sku, name: material.name };
+            setSelectedMaterials(updatedMaterials);
+        } else {
+            // Otherwise, add new material at index with provided quantity
+            setSelectedMaterials(prevMaterials => [
+                ...prevMaterials.slice(0, index),
+                { ...material, quantity },
+                ...prevMaterials.slice(index + 1)
+            ]);
+        }
+
+        // Handles quantity input fields
+        const newInputsEnabled = [...inputsEnabled];
+        newInputsEnabled[index] = true;
+        setInputsEnabled(newInputsEnabled);
+
+        // Handles selection fields
+        const newSelectInputsEnabled = [...selectInputsEnabled];
+        if (index < selectMaterialNames.length - 1) {
+            newSelectInputsEnabled[index + 1] = true;
+        }
+        setSelectInputsEnabled(newSelectInputsEnabled);
     };
 
     // To add more selects
     const handleAddSelectMaterial = () => {
         setSelectMaterialNames([...selectMaterialNames, '']);
+        setSelectMaterialQuantities([...selectMaterialQuantities, 1]); // Set initial quantity as 1 for new select
         const newCount = materialCount + 1;
         setMaterialCount(newCount);
     }
@@ -69,8 +99,11 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
             const newCount = materialCount - 1;
             setMaterialCount(newCount);
             const newSelectMaterialNames = [...selectMaterialNames];
+            const newSelectMaterialQuantities = [...selectMaterialQuantities];
             newSelectMaterialNames.splice(index, 1)
+            newSelectMaterialQuantities.splice(index, 1)
             setSelectMaterialNames(newSelectMaterialNames)
+            setSelectMaterialQuantities(newSelectMaterialQuantities)
             if (selectedMaterials.length >= materialCount) {
                 const newSelectedMaterials = selectedMaterials.slice(0, -1);
                 setSelectedMaterials(newSelectedMaterials);
@@ -100,10 +133,16 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
     }
     
     const handleQuantityInputChange = (index: number, value: string) => {
-        const newCustomSelect = [...selectMaterialNames];
-        newCustomSelect[index] = value;
-        setSelectMaterialNames(newCustomSelect);
-    }    
+        const parsedValue = parseInt(value);
+        if (!isNaN(parsedValue)) {
+            const newQuantities = [...selectMaterialQuantities];
+            newQuantities[index] = parsedValue;
+            setSelectMaterialQuantities(newQuantities);
+            const newSelectedMaterials = [...selectedMaterials];
+            newSelectedMaterials[index].quantity = parsedValue;
+            setSelectedMaterials(newSelectedMaterials);
+        }
+    }
 
     const handleTest = () => {
         console.log(selectedMaterials);
@@ -127,23 +166,28 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
                                 value: material.sku,
                                 label: `[${material.sku}] ${material.name}`
                             }))}
-                            onSelect={(material) => handleSelectMaterial(material, parseInt((document.getElementsByClassName(styles.quantityInput)[index] as HTMLInputElement).value))}
+                            onSelect={(material) => handleSelectMaterial(material, parseInt((document.getElementsByClassName(styles.quantityInput)[index] as HTMLInputElement).value), index)}
                             onChange={(event) => handleSelectMaterialChange(index, event)}
+                            disabled={!selectInputsEnabled[index]} // Disable CustomSelect if selectInputsEnabled for the index is false
                         />
                         
                         <input 
                             type="number" 
                             className={styles.quantityInput} 
                             min="1" 
-                            value={selectMaterialNames[index]} 
+                            value={selectMaterialQuantities[index]} 
                             onChange={(e) => handleQuantityInputChange(index, e.target.value)}
+                            disabled={!inputsEnabled[index]} // Disable input if inputsEnabled for the index is false
+                            title={!inputsEnabled[index] ? "Please select material first" : ""} // Tooltip message for hover
                         />
                     </div>
                 ))}
 
                 <div className={styles.materialButtonContainer}>
                     <button onClick={handleAddSelectMaterial}>+</button>
-                    <button onClick={() => handleRemoveSelectMaterial(selectMaterialNames.length - 1)}>-</button>
+                    {selectMaterialNames.length > 1 && (
+                        <button onClick={() => handleRemoveSelectMaterial(selectMaterialNames.length - 1)}>-</button>
+                    )}
                 </div>
 
                 <div className={styles.alertText}></div>

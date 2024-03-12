@@ -94,6 +94,16 @@
     border-color: #007bff; /* Adjust border color on focus */
 }
 
+.quantityInput:disabled {
+    background-color: #f2f2f2;
+    cursor: not-allowed;
+}
+
+.quantityInput:disabled:hover {
+    cursor: not-allowed;
+    border-color: #ff0000;
+}
+
 .materialButtonContainer button {
     width: 20px;
     height: 20px;

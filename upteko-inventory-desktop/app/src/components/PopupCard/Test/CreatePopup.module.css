@@ -14,9 +14,11 @@
 .popupCard {
     background-color: white;
     width: 20%;
+    height: 58%;
     padding: 1vw;
     border-radius: 1rem;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
 button {
@@ -99,7 +101,7 @@ button {
 .formButtonContainer {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 25px;
 }
 
 .formButtonContainer button {
