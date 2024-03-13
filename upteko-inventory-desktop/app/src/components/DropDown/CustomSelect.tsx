@@ -46,11 +46,21 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, onSelect, disabled
 
     const handleSelectOption = (option: Option) => {
         const { value, label } = option;
-        const [sku, name] = label.split(']');
-        onSelect({ sku: sku.trim(), name: name.trim() });
-        setSelectedOption(option);
-        setIsOpen(false);
+        const matches = label.match(/\[(.*?)\](.*)/); // Regex to capture text inside brackets
+        if (matches && matches.length >= 3) {
+            const sku = matches[1].trim();
+            const name = matches[2].trim();
+            onSelect({ sku, name });
+            setSelectedOption(option);
+            setIsOpen(false);
+        } else {
+            // If the label format doesn't match, fallback to using the whole label
+            onSelect({ sku: value, name: label });
+            setSelectedOption(option);
+            setIsOpen(false);
+        }
     };
+    
 
     return (
         <div className={`${styles.customSelect} ${disabled ? styles.disabled : ''}`} ref={selectRef}>
