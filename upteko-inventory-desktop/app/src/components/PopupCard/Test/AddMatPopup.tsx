@@ -123,7 +123,7 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
             // Show a message indicating that not all materials are selected
             const alertText = document.querySelector(`.${styles.alertText}`);
             if (alertText) {
-                alertText.textContent = "Please select a material for each item.";
+                alertText.textContent = "Please select a material for each option or remove the non-selected.";
                 alertText.classList.add(styles.showAlert);
                 setTimeout(() => {
                     alertText.classList.remove(styles.showAlert);
