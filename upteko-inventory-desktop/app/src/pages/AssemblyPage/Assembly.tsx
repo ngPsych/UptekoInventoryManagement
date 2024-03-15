@@ -4,9 +4,10 @@ import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
-import { subscribeToAssemblyItems, subscribeToSubassemblyItems } from '../../services/firebase/assemblyManagement';
-import { AssemblyItem } from '../../interfaces/IAssemblyItem';
+import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded } from '../../services/firebase/assemblyManagement';
+import { AssemblyItem, Material } from '../../interfaces/IAssembly';
 import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
+import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialListPopupCard';
 
 export default function AssemblyPage() {
     useRequireAuth();
@@ -16,6 +17,9 @@ export default function AssemblyPage() {
     const [assemblyItems, setAssemblyItems] = useState<AssemblyItem[]>([]);
     const [subassemblyItems, setSubassemblyItems] = useState<AssemblyItem[]>([]);
     const [selectedAssemblyId, setSelectedAssemblyId] = useState<string | null>(null);
+    const [selectedSubAssemblyId, setSelectedSubAssemblyId] = useState<string | null>(null);
+    const [materials, setMaterials] = useState<Material[]>([]);
+    const [showMaterialListPopup, setShowMaterialListPopup] = useState(false);
 
     const [showTest, setShowTest] = useState(false);
 
@@ -43,10 +47,32 @@ export default function AssemblyPage() {
         }
     }, [selectedAssemblyId]);
 
+    useEffect(() => {
+        // Checks if assembly and sub-assembly have been selected
+        if (selectedAssemblyId && selectedSubAssemblyId) {
+            getMaterialsNeeded(selectedAssemblyId, selectedSubAssemblyId)
+            .then(materials => {
+                setMaterials(materials as Material[]);
+            })
+            .catch(error => {
+                console.error("[Assembly] Error fetching materials:", error);
+                throw error;
+            })
+        } else {
+            setMaterials([]);
+        }
+    }, [selectedAssemblyId, selectedSubAssemblyId]);
+
     const handleAssemblyCardClick = (assemblyId: string) => {
         setSelectedAssemblyId(assemblyId);
     };
 
+    const handleSubAssemblyCardClick = (subAssemblyId: string) => {
+        setSelectedSubAssemblyId(subAssemblyId);
+        setShowMaterialListPopup(true);
+    }
+
+// ----- BUTTON HANDLERS ----- //
     const handleBackButtonClick = () => {
         setSelectedAssemblyId(null);
     };
@@ -85,6 +111,14 @@ export default function AssemblyPage() {
                 />
             )}
 
+            {showMaterialListPopup && (
+                <MaterialListPopupCard
+                    onClose={() => setShowMaterialListPopup(false)}
+                    subAssemblyId={selectedSubAssemblyId}
+                    materials={materials}
+                />
+            )}
+
             <div className={styles.assemblyCardContainer}>
                 {subassemblyItems.length === 0 ? (
                     assemblyItems.map(item => (
@@ -94,7 +128,7 @@ export default function AssemblyPage() {
                     ))
                 ) : (
                     subassemblyItems.map(item => (
-                        <div key={item.id} className={styles.assemblyCard}>
+                        <div key={item.id} className={styles.assemblyCard} onClick={() => handleSubAssemblyCardClick(item.id)}>
                             <MemoizedAssemblyCard imgSrc={item.imageURL} title={item.id} />
                         </div>
                     ))

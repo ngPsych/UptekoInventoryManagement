@@ -200,7 +200,8 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
             </div>
 
             {showConfirmation && (
-                <ExitConfirmationPopup 
+                <ExitConfirmationPopup
+                    confirmationText='Are you sure you want to exit without submitting?'
                     onConfirmExit={onClose}
                     onCancelExit={() => setShowConfirmation(false)}
                 />

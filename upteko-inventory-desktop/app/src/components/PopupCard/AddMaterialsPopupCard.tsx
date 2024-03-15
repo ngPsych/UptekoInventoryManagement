@@ -74,12 +74,12 @@ const AddMaterialsPopupCard: React.FC<AddMaterialsPopupCardProps> = ({ onClose, 
                     </div>
                 </div>
             </div>
-            {showConfirmation && (
+            {/* {showConfirmation && (
                 <ExitConfirmationPopup
                     onConfirmExit={onClose}
                     onCancelExit={() => setShowConfirmation(false)}
                 />
-            )}
+            )} */}
         </div>
     );
 };

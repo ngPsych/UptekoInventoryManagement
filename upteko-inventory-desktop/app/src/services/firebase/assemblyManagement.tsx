@@ -1,6 +1,6 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, doc, setDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
-import { AssemblyItem } from "../../interfaces/IAssemblyItem";
+import { getFirestore, collection, doc, setDoc, serverTimestamp, onSnapshot, getDocs } from "firebase/firestore";
+import { AssemblyItem } from "../../interfaces/IAssembly";
 
 const db = getFirestore(app);
 
@@ -100,3 +100,19 @@ export const subscribeToSubassemblyItems = (id: string, callback: (items: Assemb
         throw error;
     })
 };
+
+export const getMaterialsNeeded = async (assemblyId: string, subAssemblyId: string) => {
+    try {
+        const materialsNeededCollection = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/materialsNeeded`)
+        const materialsNeededDocsSnapshot = await getDocs(materialsNeededCollection);
+        const materials = materialsNeededDocsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+
+        return materials;
+    } catch (error) {
+        console.error(`Error fetching materials needed for [assemblyID: ${assemblyId}] [sub-assemblyID: ${subAssemblyId}]:`, error);
+        throw error;
+    }
+}

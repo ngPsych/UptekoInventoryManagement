@@ -2,15 +2,16 @@ import React from 'react';
 import styles from './ExitConfirmationPopup.module.css';
 
 interface ExitConfirmationPopupProps {
+    confirmationText: string;
     onConfirmExit: () => void;
     onCancelExit: () => void;
 }
 
-const ExitConfirmationPopup: React.FC<ExitConfirmationPopupProps> = ({ onConfirmExit, onCancelExit }) => {
+const ExitConfirmationPopup: React.FC<ExitConfirmationPopupProps> = ({ confirmationText, onConfirmExit, onCancelExit }) => {
     return (
         <div className={styles.overlay}>
             <div className={styles.popup}>
-                <p>Are you sure you want to exit without submitting?</p>
+                <p>{confirmationText}</p>
                 <div className={styles.buttonContainer}>
                     <button onClick={onConfirmExit}>Yes</button>
                     <button onClick={onCancelExit}>No</button>

@@ -1,5 +1,5 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot, DocumentSnapshot } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot, DocumentSnapshot, updateDoc } from "firebase/firestore";
 import { Item } from "../../interfaces/IItem";
 import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
 
@@ -70,3 +70,34 @@ export const addNewPart = async (
             last_modified: serverTimestamp()
         });
 };
+
+export const updateItemQuantity = async (collection: string, sku: string, quantity: number, action: string) => {
+    try {
+        const itemRef = doc(db, collection, sku);
+
+        // Get the current document
+        const docSnap = await getDoc(itemRef);
+
+        if (docSnap.exists()) {
+            // Get current quantity
+            const currentQuantity = docSnap.data().quantity || 0;
+
+            // Calculate new quantity (use add to add and remove to subtract)
+            let newQuantity = action === "add" ? currentQuantity + quantity : currentQuantity - quantity;
+
+            // Ensure the quantity doesn't go negative
+            newQuantity = Math.max(newQuantity, 0);
+
+            await updateDoc(itemRef, {
+                quantity: newQuantity,
+                last_modified: serverTimestamp(),
+            });
+        } else {
+            console.error(`[inventoryManagement] No item found with SKU: ${sku}`);
+            throw new Error(`No item found with SKU: ${sku}`);
+        }
+    } catch (error) {
+        console.error("[inventoryManagement] Error updating item quantity:", error);
+        throw error;
+    }
+}
