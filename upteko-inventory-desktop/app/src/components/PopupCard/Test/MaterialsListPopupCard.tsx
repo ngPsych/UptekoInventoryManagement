@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from './MaterialListPopupCard.module.css';
+import styles from './MaterialsListPopupCard.module.css';
 import { Material } from '../../../interfaces/IAssembly';
 import { updateItemQuantity } from '../../../services/firebase/inventoryManagement';
 import ExitConfirmationPopup from '../ExitConfirmationPopup';

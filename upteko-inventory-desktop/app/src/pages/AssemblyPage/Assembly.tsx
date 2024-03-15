@@ -7,7 +7,7 @@ import { Card } from '../../components/Card/Card';
 import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem, Material } from '../../interfaces/IAssembly';
 import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
-import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialListPopupCard';
+import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialsListPopupCard';
 
 export default function AssemblyPage() {
     useRequireAuth();
