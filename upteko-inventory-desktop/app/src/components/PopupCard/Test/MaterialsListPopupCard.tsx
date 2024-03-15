@@ -3,6 +3,7 @@ import styles from './MaterialsListPopupCard.module.css';
 import { Material } from '../../../interfaces/IAssembly';
 import { updateItemQuantity } from '../../../services/firebase/inventoryManagement';
 import ExitConfirmationPopup from '../ExitConfirmationPopup';
+import QRCodeGenerator from '../../QRCode/QRCodeGenerator';
 
 interface MaterialListPopupCardProps {
     onClose: () => void;
@@ -77,6 +78,10 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
                 {/* SUBASSEMBLY IMAGE*/}
 
                 {/* QR CODE CONTAINER*/}
+                <div>
+                    <QRCodeGenerator itemNumber={`CONFIRM:${subAssemblyId}` ?? 'undefined'} size={150}/>
+                    <p>To confirm the sub-assembly is finished, please scan the QR code in the App.</p>
+                </div>
             </div>
 
             {showExitConfirmation && (
