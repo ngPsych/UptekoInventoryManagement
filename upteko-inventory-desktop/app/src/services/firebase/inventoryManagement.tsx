@@ -1,7 +1,7 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot, DocumentSnapshot, updateDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot, updateDoc, query, collectionGroup } from "firebase/firestore";
 import { Item } from "../../interfaces/IItem";
-import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
+import { SubAssemblyItem } from "../../interfaces/IAssembly";
 
 const db = getFirestore(app);
 
@@ -27,24 +27,35 @@ export const subscribeToInventoryParts = (callback: (items: Item[]) => void) => 
     });
 };
 
-export const subscribeToInventorySubassemblyItems = (callback: (items: SubassemblyItem[]) => void) => {
-    const subassemblyCollection = collection(db, "subassembly");
+export const subscribeToAllSubAssemblies = (callback: (items: SubAssemblyItem[]) => void): () => void => {
+    // Collection group query for 'subassembly' collections
+    const subassemblyGroupQuery = query(collectionGroup(db, "subassembly"));
 
-    return onSnapshot(subassemblyCollection, (snapshot) => {
-        const items: SubassemblyItem[] = snapshot.docs.map(doc => ({
-            sku: doc.id,
-            name: doc.data().name,
-            quantity: doc.data().quantity,
-            location: doc.data().location,
-            description: doc.data().description,
-            lastModified: doc.data().last_modified,
-            minPoint: doc.data().min_point
-        }));
-        callback(items);
+    const unsubscribe = onSnapshot(subassemblyGroupQuery, (snapshot) => {
+        const subassemblies: SubAssemblyItem[] = [];
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            subassemblies.push({
+                sku: doc.id,
+                assembly: data.assembly,
+                name: data.name,
+                quantity: data.quantity,
+                minPoint: data.min_point,
+                location: data.location,
+                imageURL: data.imageURL,
+                lastModified: data.last_modified,
+                dateCreated: data.date_created
+            });
+        });
+
+        callback(subassemblies);
     }, (error) => {
-        console.error("Error fetching subassembly items: ", error);
+        console.error("[inventoryManagement] Error subscribing to Sub-Assemblies:", error);
         throw error;
     });
+
+    return unsubscribe;
 };
 
 export const addNewPart = async (
@@ -100,4 +111,4 @@ export const updateItemQuantity = async (collection: string, sku: string, quanti
         console.error("[inventoryManagement] Error updating item quantity:", error);
         throw error;
     }
-}
+};

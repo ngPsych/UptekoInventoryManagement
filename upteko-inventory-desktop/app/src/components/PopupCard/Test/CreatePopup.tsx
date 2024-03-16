@@ -24,9 +24,9 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
                 imageURL = await getFileDownloadURL("images/Default.png");
             }
 
+            onClose();
             // await createNewAssembly(imageURL, name, subAssemblyInputs);
             await testCreateNewAssembly(imageURL, name, subNames, selectedMaterials);
-            onClose();
         } catch (error) {
             console.log("Error creating new assembly");
             throw error;
@@ -75,11 +75,7 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
             newSelectedMaterials[index] = materials;
             return newSelectedMaterials;
         });
-    };    
-
-    const materialTest = () => {
-        console.log(selectedMaterials)
-    }
+    };
 
     return (
         <div className={styles.popupContainer} onClick={onClose}>
@@ -125,7 +121,6 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
                     <div className={styles.formButtonContainer}>
                         <button type="submit">Submit</button>
                         <button type="button" onClick={onClose}>Cancel</button>
-                        <button type="button" onClick={materialTest}>Testing</button>
                     </div>
 
                 </form>

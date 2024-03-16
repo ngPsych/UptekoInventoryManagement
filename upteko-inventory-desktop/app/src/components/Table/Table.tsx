@@ -30,7 +30,12 @@ export const Table: React.FC<TableProps> = ({ data, columns }) => {
             <tr key={rowIndex} onClick={() => handleRowClick(item)}>
               {columns.map((column, colIndex) => (
                 <td key={colIndex}>
-                  {column.accessor === 'lastModified' && item.lastModified ? formatFirestoreTimestamp(item.lastModified) : item[column.accessor]}
+                  {column.accessor === 'lastModified' && item.lastModified ? 
+                    formatFirestoreTimestamp(item.lastModified) : 
+                    column.accessor === 'dateCreated' && item.dateCreated ?
+                      formatFirestoreTimestamp(item.dateCreated) :
+                      item[column.accessor]
+                  }
                 </td>
               ))}
             </tr>

@@ -5,7 +5,7 @@ import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
 import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded } from '../../services/firebase/assemblyManagement';
-import { AssemblyItem, Material } from '../../interfaces/IAssembly';
+import { AssemblyItem, Material, SubAssemblyItem } from '../../interfaces/IAssembly';
 import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
 import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialsListPopupCard';
 
@@ -15,7 +15,7 @@ export default function AssemblyPage() {
 
     const [showCreateNewAssemblyPopup, setShowCreateNewAssemblyPupop] = useState(false);
     const [assemblyItems, setAssemblyItems] = useState<AssemblyItem[]>([]);
-    const [subassemblyItems, setSubassemblyItems] = useState<AssemblyItem[]>([]);
+    const [subassemblyItems, setSubassemblyItems] = useState<SubAssemblyItem[]>([]);
     const [selectedAssemblyId, setSelectedAssemblyId] = useState<string | null>(null);
     const [selectedSubAssemblyId, setSelectedSubAssemblyId] = useState<string | null>(null);
     const [materials, setMaterials] = useState<Material[]>([]);
@@ -114,6 +114,7 @@ export default function AssemblyPage() {
             {showMaterialListPopup && (
                 <MaterialListPopupCard
                     onClose={() => setShowMaterialListPopup(false)}
+                    assemblyId={selectedAssemblyId}
                     subAssemblyId={selectedSubAssemblyId}
                     materials={materials}
                 />
@@ -128,8 +129,8 @@ export default function AssemblyPage() {
                     ))
                 ) : (
                     subassemblyItems.map(item => (
-                        <div key={item.id} className={styles.assemblyCard} onClick={() => handleSubAssemblyCardClick(item.id)}>
-                            <MemoizedAssemblyCard imgSrc={item.imageURL} title={item.id} />
+                        <div key={item.sku} className={styles.assemblyCard} onClick={() => handleSubAssemblyCardClick(item.sku)}>
+                            <MemoizedAssemblyCard imgSrc={item.imageURL} title={item.name} />
                         </div>
                     ))
                 )}

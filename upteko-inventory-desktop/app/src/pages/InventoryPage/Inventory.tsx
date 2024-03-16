@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { subscribeToInventoryParts, subscribeToInventorySubassemblyItems } from "../../services/firebase/inventoryManagement";
+import { subscribeToInventoryParts, subscribeToAllSubAssemblies } from "../../services/firebase/inventoryManagement";
 import { NavigationBar } from '../../components/NavBar/NavBar';
 import { Table } from "../../components/Table/Table";
 import { AddNewPartPopupCard } from '../../components/PopupCard/PopupCard';
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { ColumnDefinition } from "../../interfaces/IColumnDefinition";
 import { Item } from "../../interfaces/IItem";
-import { SubassemblyItem } from "../../interfaces/ISubassemblyItem";
 import styles from "./Inventory.module.css"
+import { SubAssemblyItem } from '../../interfaces/IAssembly';
 
 export default function InventoryPage() {
     useRequireAuth();
 
-    const [items, setItems] = useState<Item[] | SubassemblyItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<any>(null);
+    const [items, setItems] = useState<(Item | SubAssemblyItem)[]>([]);
     const [searchInput, setSearchInput] = useState('');
-    const [filteredItems, setFilteredItems] = useState<Item[] | SubassemblyItem[]>([]);
-    var [tableMode, setTableMode] = useState('Parts');
+    const [filteredItems, setFilteredItems] = useState<(Item | SubAssemblyItem)[]>([]);
+    const [tableMode, setTableMode] = useState('Parts');
     const [showAddPartPopup, setShowAddPartPopup] = useState(false);
+    const [columns, setColumns] = useState<ColumnDefinition[]>([]);
     
     useEffect(() => {
         let unsubscribe = () => {}; // initialize with a no-op function
@@ -26,12 +25,13 @@ export default function InventoryPage() {
         if (tableMode === "Parts") {
             unsubscribe = subscribeToInventoryParts((newItems) => {
                 setItems(newItems);
-                setLoading(false);
+                setColumns(itemColumns);
             });
         } else if (tableMode === "Sub-Assemblies") {
-            unsubscribe = subscribeToInventorySubassemblyItems((newItems) => {
+            unsubscribe = subscribeToAllSubAssemblies((newItems) => {
                 setItems(newItems);
-                setLoading(false);
+                setColumns(subAssemblyColumns);
+                console.log(newItems);
             });
         }
 
@@ -61,6 +61,17 @@ export default function InventoryPage() {
         { header: 'Supplier Item Number', accessor: 'supplierItemNumber' },
         { header: 'Reorder Point', accessor: 'minPoint' }
     ];
+
+    const subAssemblyColumns: ColumnDefinition[] = [
+        { header: 'SKU', accessor: 'sku' },
+        { header: 'Assembly', accessor: 'assembly'},
+        { header: 'Name', accessor: 'name' },
+        { header: 'Quantity', accessor: 'quantity' },
+        { header: 'Min. Point', accessor: 'minPoint' },
+        { header: 'Location', accessor: 'location' },
+        { header: 'Last Modified', accessor: 'lastModified' },
+        { header: 'Date Created', accessor: 'dateCreated' },
+    ]
 
     const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchInput(e.target.value);
@@ -98,7 +109,7 @@ export default function InventoryPage() {
                 />
             </div>
 
-            <Table data={filteredItems} columns={itemColumns} />
+            <Table data={filteredItems} columns={columns} />
 
             {showAddPartPopup && (
                 <AddNewPartPopupCard

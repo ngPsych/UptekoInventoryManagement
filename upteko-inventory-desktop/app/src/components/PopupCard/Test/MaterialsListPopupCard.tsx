@@ -7,11 +7,12 @@ import QRCodeGenerator from '../../QRCode/QRCodeGenerator';
 
 interface MaterialListPopupCardProps {
     onClose: () => void;
+    assemblyId: string | null;
     subAssemblyId: string | null;
     materials: Material[];
 }
 
-const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, subAssemblyId, materials }) => {
+const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, assemblyId, subAssemblyId, materials }) => {
     const [checkedMaterials, setCheckedMaterials] = useState<{ [id: string]: boolean }>({});
     const [showExitConfirmation, setShowExitConfirmation] = useState(false);
 
