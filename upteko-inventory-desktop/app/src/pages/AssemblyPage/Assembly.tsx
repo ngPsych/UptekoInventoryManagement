@@ -23,6 +23,55 @@ export default function AssemblyPage() {
 
     const [showTest, setShowTest] = useState(false);
 
+// ----- ContextMenu handler ----- //
+    // State for context menu with type annotation
+    const [contextMenuState, setContextMenuState] = useState<{
+        visible: boolean;
+        position: { top: number; left: number };
+        cardId: string | null; // Assuming cardId is of type string
+    }>({
+        visible: false,
+        position: { top: 0, left: 0 },
+        cardId: null
+    });
+
+    // Function to handle context menu with type annotations
+    const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>, cardId: string) => {
+        event.preventDefault();
+        setContextMenuState({
+            visible: true,
+            position: { top: event.clientY, left: event.clientX },
+            cardId
+        });
+    };
+
+    // Function to handle Modify action
+    const handleModify = () => {
+        console.log("Modify functionality here");
+        setContextMenuState({ ...contextMenuState, visible: false });
+        console.log(contextMenuState);
+    };
+    
+    const handleDelete = () => {
+        console.log("Delete functionality here");
+        setContextMenuState({ ...contextMenuState, visible: false });
+    };
+
+    const handleClickOutside = (event: MouseEvent) => {
+        const target = event.target as Element;
+        if (!target.closest('.cardContainer')) {
+            setContextMenuState({ ...contextMenuState, visible: false });
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [contextMenuState]);
+
+// ----- SUBS ----- //
     useEffect(() => {
         const unsubscribeAssembly = subscribeToAssemblyItems(items => {
             setAssemblyItems(items);
@@ -124,13 +173,31 @@ export default function AssemblyPage() {
                 {subassemblyItems.length === 0 ? (
                     assemblyItems.map(item => (
                         <div key={item.id} className={styles.assemblyCard} onClick={() => handleAssemblyCardClick(item.id)}>
-                            <MemoizedAssemblyCard imgSrc={item.imageURL} title={item.id}/>
+                            <MemoizedAssemblyCard
+                                imgSrc={item.imageURL}
+                                title={item.id}
+                                onContextMenu={handleContextMenu}
+                                cardId={item.id}
+                                isContextMenuVisible={contextMenuState.cardId === item.id && contextMenuState.visible}
+                                contextMenuPosition={contextMenuState.position}
+                                handleModify={handleModify}
+                                handleDelete={handleDelete}
+                            />
                         </div>
                     ))
                 ) : (
                     subassemblyItems.map(item => (
                         <div key={item.sku} className={styles.assemblyCard} onClick={() => handleSubAssemblyCardClick(item.sku)}>
-                            <MemoizedAssemblyCard imgSrc={item.imageURL} title={item.name} />
+                            <MemoizedAssemblyCard
+                                imgSrc={item.imageURL}
+                                title={item.name}
+                                onContextMenu={handleContextMenu}
+                                cardId={item.sku}
+                                isContextMenuVisible={contextMenuState.cardId === item.sku && contextMenuState.visible}
+                                contextMenuPosition={contextMenuState.position}
+                                handleModify={handleModify}
+                                handleDelete={handleDelete}
+                            />
                         </div>
                     ))
                 )}
