@@ -87,7 +87,7 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
 
             {showExitConfirmation && (
                 <ExitConfirmationPopup 
-                    confirmationText="Do you want to save the progress?"
+                    confirmationText="Do you want to exit? Progress will be saved."
                     onConfirmExit={onClose}
                     onCancelExit={() => handleNoSaveProgress()}
                 />

@@ -4,10 +4,12 @@ import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
-import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded } from '../../services/firebase/assemblyManagement';
+import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem, Material, SubAssemblyItem } from '../../interfaces/IAssembly';
 import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
 import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialsListPopupCard';
+import ExitConfirmationPopup from '../../components/PopupCard/ExitConfirmationPopup';
+import { deleteImage } from '../../services/firebase/storageManagement';
 
 export default function AssemblyPage() {
     useRequireAuth();
@@ -20,11 +22,7 @@ export default function AssemblyPage() {
     const [selectedSubAssemblyId, setSelectedSubAssemblyId] = useState<string | null>(null);
     const [materials, setMaterials] = useState<Material[]>([]);
     const [showMaterialListPopup, setShowMaterialListPopup] = useState(false);
-
     const [showTest, setShowTest] = useState(false);
-
-// ----- ContextMenu handler ----- //
-    // State for context menu with type annotation
     const [contextMenuState, setContextMenuState] = useState<{
         visible: boolean;
         position: { top: number; left: number };
@@ -34,7 +32,9 @@ export default function AssemblyPage() {
         position: { top: 0, left: 0 },
         cardId: null
     });
-
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    
+// ----- ContextMenu handler ----- //
     // Function to handle context menu with type annotations
     const handleContextMenu = (event: React.MouseEvent<HTMLDivElement>, cardId: string) => {
         event.preventDefault();
@@ -46,16 +46,29 @@ export default function AssemblyPage() {
     };
 
     // Function to handle Modify action
-    const handleModify = () => {
+    const handleModifyAssembly = () => {
         console.log("Modify functionality here");
         setContextMenuState({ ...contextMenuState, visible: false });
-        console.log(contextMenuState);
     };
     
-    const handleDelete = () => {
-        console.log("Delete functionality here");
-        setContextMenuState({ ...contextMenuState, visible: false });
+    const handleDeleteAssembly = () => {
+        // Function to delete a chosen assembly
+        if (contextMenuState.cardId) {
+            setShowDeleteConfirmation(false);
+            deleteAssembly(contextMenuState.cardId);
+            deleteImage(contextMenuState.cardId);
+        } else {
+            console.log("[Assembly] Missing ID to delete Assembly");
+        }
     };
+
+    const handleModifySubAssembly = (assemblyId: string) => {
+
+    }
+
+    const handleDeleteSubAssembly = (assemblyId: string) => {
+
+    }
 
     const handleClickOutside = (event: MouseEvent) => {
         const target = event.target as Element;
@@ -169,6 +182,14 @@ export default function AssemblyPage() {
                 />
             )}
 
+            {showDeleteConfirmation && (
+                <ExitConfirmationPopup
+                    confirmationText="Do you want to DELETE this assembly?"
+                    onConfirmExit={handleDeleteAssembly}
+                    onCancelExit={() => setShowDeleteConfirmation(false)}
+                />
+            )}
+
             <div className={styles.assemblyCardContainer}>
                 {subassemblyItems.length === 0 ? (
                     assemblyItems.map(item => (
@@ -180,8 +201,8 @@ export default function AssemblyPage() {
                                 cardId={item.id}
                                 isContextMenuVisible={contextMenuState.cardId === item.id && contextMenuState.visible}
                                 contextMenuPosition={contextMenuState.position}
-                                handleModify={handleModify}
-                                handleDelete={handleDelete}
+                                handleModify={handleModifyAssembly}
+                                handleDelete={() => {setShowDeleteConfirmation(true); setContextMenuState({ ...contextMenuState, visible: false })}}
                             />
                         </div>
                     ))
@@ -195,8 +216,8 @@ export default function AssemblyPage() {
                                 cardId={item.sku}
                                 isContextMenuVisible={contextMenuState.cardId === item.sku && contextMenuState.visible}
                                 contextMenuPosition={contextMenuState.position}
-                                handleModify={handleModify}
-                                handleDelete={handleDelete}
+                                handleModify={handleModifyAssembly}
+                                handleDelete={handleDeleteAssembly}
                             />
                         </div>
                     ))

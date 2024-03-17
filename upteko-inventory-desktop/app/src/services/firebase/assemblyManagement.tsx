@@ -1,5 +1,5 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, doc, setDoc, serverTimestamp, onSnapshot, getDocs } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, serverTimestamp, onSnapshot, getDocs, deleteDoc } from "firebase/firestore";
 import { AssemblyItem, SubAssemblyItem } from "../../interfaces/IAssembly";
 
 const db = getFirestore(app);
@@ -37,8 +37,6 @@ export const testCreateNewAssembly = async (imageURL: string, id: string, subAss
                 }
             }
         }
-        
-
     } catch (error) {
         console.log(error);
         throw error;
@@ -68,6 +66,16 @@ export const createNewAssembly = async (imageURL: string, id: string, suDocIDs: 
         }
     } catch (error) {
         console.log(error);
+        throw error;
+    }
+}
+
+export const deleteAssembly = async (assemblyId: string) => {
+    try {
+        const assemblyDocRef = doc(db, "assembly", assemblyId);
+        await deleteDoc(assemblyDocRef);
+    } catch (error) {
+        console.log(`[assemblyManagement] Error deleting assembly ${assemblyId}:`, error);
         throw error;
     }
 }

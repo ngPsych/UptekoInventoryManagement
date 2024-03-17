@@ -55,7 +55,7 @@ export const CreateNewAssemblyPopupCard: React.FC<PopupCardProps> = ({ onClose }
         try {
             let imageURL = '';
             if (imageFile) {
-                imageURL = await uploadFile(imageFile, `images/${name}`)
+                imageURL = await uploadFile(imageFile, `images/${name}`);
             } else {
                 imageURL = await getFileDownloadURL("images/Default.png");
             }
