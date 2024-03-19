@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import styles from "./Card.module.css";
+import { currentUserOngoingSubAssemblyExist } from "../../services/firebase/assemblyManagement";
 
 interface CardProps {
     imgSrc: string;
@@ -10,6 +11,10 @@ interface CardProps {
     contextMenuPosition: { top: number; left: number };
     handleModify: () => void;
     handleDelete: () => void;
+    // progressExist: boolean;
+    selectedAssemblyId?: string | null;
+    subAssemblyId?: string;
+    userFullName?: string;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -20,9 +25,25 @@ export const Card: React.FC<CardProps> = ({
     isContextMenuVisible,
     contextMenuPosition,
     handleModify,
-    handleDelete
+    handleDelete,
+    // progressExist,
+    selectedAssemblyId,
+    subAssemblyId,
+    userFullName,
 }) => {
     const cardRef = useRef<HTMLDivElement>(null);
+    const [progressExist, setProgressExist] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchProgressExistence = async () => {
+            if (selectedAssemblyId && subAssemblyId && userFullName) {
+                const exists = await currentUserOngoingSubAssemblyExist(selectedAssemblyId, subAssemblyId, userFullName);
+                setProgressExist(exists);
+            }
+        };
+
+        fetchProgressExistence();
+    }, [selectedAssemblyId, subAssemblyId, userFullName]);
 
     return (
         <div 
@@ -30,8 +51,13 @@ export const Card: React.FC<CardProps> = ({
             ref={cardRef} 
             onContextMenu={(e) => onContextMenu(e, cardId)}
         >
+            {progressExist && (
+                <div className={styles.progressIndicator}>!</div>
+            )}
             <img className={styles.cardImg} src={imgSrc} alt={title} />
             <h1>{title}</h1>
+
+
             {isContextMenuVisible && (
                 <div 
                     className={styles.contextMenu} 

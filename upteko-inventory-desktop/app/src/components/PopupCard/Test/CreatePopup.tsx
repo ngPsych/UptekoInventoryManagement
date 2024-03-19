@@ -77,6 +77,8 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
         });
     };
 
+    console.log(selectedMaterials);
+
     return (
         <div className={styles.popupContainer} onClick={onClose}>
             <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>

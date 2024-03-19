@@ -4,12 +4,13 @@ import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
-import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly } from '../../services/firebase/assemblyManagement';
+import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, getProgressCheckedMaterials } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem, Material, SubAssemblyItem } from '../../interfaces/IAssembly';
 import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
-import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialsListPopupCard';
+import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialListPopupCard';
 import ExitConfirmationPopup from '../../components/PopupCard/ExitConfirmationPopup';
 import { deleteImage } from '../../services/firebase/storageManagement';
+import { useUserInfo } from '../../hooks/useUserInfo';
 
 export default function AssemblyPage() {
     useRequireAuth();
@@ -33,6 +34,23 @@ export default function AssemblyPage() {
         cardId: null
     });
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const currentUser = useUserInfo();
+    const [checkedProgressMaterials, setCheckedProgressMaterials] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchCheckedMaterials = async () => {
+            try {
+                if (selectedAssemblyId  && selectedSubAssemblyId) {
+                    const mats = await getProgressCheckedMaterials(selectedAssemblyId, selectedSubAssemblyId, (currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName));
+                    setCheckedProgressMaterials(mats);
+                }
+            } catch (error) {
+                console.error("Error fetching checked materials:", error);
+            }
+        };
+
+        fetchCheckedMaterials();
+    }, [selectedAssemblyId, selectedSubAssemblyId, (currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName)]);
     
 // ----- ContextMenu handler ----- //
     // Function to handle context menu with type annotations
@@ -129,6 +147,7 @@ export default function AssemblyPage() {
         setSelectedAssemblyId(assemblyId);
     };
 
+// ----- SUB-ASSEMBLY CARD ----- //
     const handleSubAssemblyCardClick = (subAssemblyId: string) => {
         setSelectedSubAssemblyId(subAssemblyId);
         setShowMaterialListPopup(true);
@@ -179,6 +198,7 @@ export default function AssemblyPage() {
                     assemblyId={selectedAssemblyId}
                     subAssemblyId={selectedSubAssemblyId}
                     materials={materials}
+                    defaultCheckedIds={checkedProgressMaterials}
                 />
             )}
 
@@ -218,6 +238,9 @@ export default function AssemblyPage() {
                                 contextMenuPosition={contextMenuState.position}
                                 handleModify={handleModifyAssembly}
                                 handleDelete={handleDeleteAssembly}
+                                selectedAssemblyId={selectedAssemblyId}
+                                subAssemblyId={item.sku}
+                                userFullName={currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName}
                             />
                         </div>
                     ))

@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999; /* Ensures the overlay is on top */
+    z-index: 10000; /* Ensures the overlay is on top */
 }
 
 .popup {
@@ -22,6 +22,7 @@
     display: flex;
     flex-direction: column; /* Arrange children vertically */
     justify-content: flex-start; /* Align items to the start and end */
+    z-index: 9999;
 }
 
 .popup select {

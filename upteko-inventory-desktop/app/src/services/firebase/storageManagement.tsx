@@ -32,9 +32,17 @@ export const uploadFile = async (file: File, filePath: string) => {
 export const deleteImage = async (imageName: string) => {
     try {
         const storageRef = ref(storage, `images/${imageName}`);
-        await deleteObject(storageRef);
+        // Check if the image exists by trying to get its download URL
+        try {
+            await getDownloadURL(storageRef);
+            // If successful, delete the image
+            await deleteObject(storageRef);
+        } catch (downloadUrlError) {
+            // If error occurs, it means the image does not exist, so do nothing
+            console.log(`[storageManagement] Image does not exist or could not retrieve URL: ${imageName}`);
+        }
     } catch (error) {
-        console.error("[storageManagement] Error deleting image:", error);
+        console.error("[storageManagement] Error during image deletion process:", error);
         throw error;
     }
 }

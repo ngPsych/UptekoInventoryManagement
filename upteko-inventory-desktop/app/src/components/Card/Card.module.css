@@ -8,6 +8,7 @@
     transition: box-shadow 0.3s ease;
     margin-bottom: 2rem;
     height: 20rem;
+    position: relative;
 }
 
 
@@ -40,4 +41,19 @@
 
 .contextMenu > div:hover {
     background: #f0f0f0;
+}
+
+.progressIndicator {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
 }
