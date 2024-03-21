@@ -77,7 +77,9 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
         });
     };
 
-    console.log(selectedMaterials);
+    const test = () => {
+        console.log(selectedMaterials);
+    }
 
     return (
         <div className={styles.popupContainer} onClick={onClose}>
@@ -123,6 +125,7 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
                     <div className={styles.formButtonContainer}>
                         <button type="submit">Submit</button>
                         <button type="button" onClick={onClose}>Cancel</button>
+                        <button type="button" onClick={test}>TEST</button>
                     </div>
 
                 </form>

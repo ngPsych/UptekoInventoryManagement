@@ -29,11 +29,12 @@ export const testCreateNewAssembly = async (imageURL: string, id: string, subAss
 
             const subassemblyIndex = subAsssemblyDocIDs.indexOf(subassemblyDocID); // Finding the index of subassemblyDocID
             if (subassemblyIndex !== -1) { // Check if the subassemblyDocID exists in the array
-                for (let i = 0; i < selectedMaterials[0].length; i++) {
-                    const materialsNeededDocRef = doc(db, `assembly/${id}/subassembly/${subassemblyDocID}/materials_needed`, selectedMaterials[0][i].sku);
+                for (let i = 0; i < selectedMaterials[subassemblyIndex].length; i++) {
+                    console.log(selectedMaterials[subassemblyIndex][i])
+                    const materialsNeededDocRef = doc(db, `assembly/${id}/subassembly/${subassemblyDocID}/materials_needed`, selectedMaterials[subassemblyIndex][i].sku);
                     await setDoc(materialsNeededDocRef, {
-                        quantity: selectedMaterials[0][i].quantity,
-                        name: selectedMaterials[0][i].name,
+                        quantity: selectedMaterials[subassemblyIndex][i].quantity,
+                        name: selectedMaterials[subassemblyIndex][i].name,
                     });
                 }
             }
