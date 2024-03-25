@@ -44,7 +44,9 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
     const handleSaveProgress = () => {
         if (assemblyId && subAssemblyId) {
             const checkedMaterialIds = Object.keys(checkedMaterials).filter(id => checkedMaterials[id]);
-            saveSubAssemblyProgress(assemblyId, subAssemblyId, checkedMaterialIds, currentUserFullName);
+            const materialIds = materials.map(material => material.id); // Extracting only the ids
+            console.log(materialIds);
+            saveSubAssemblyProgress(assemblyId, subAssemblyId, checkedMaterialIds, materialIds, currentUserFullName); // Pass materialIds instead of materials
             setShowExitConfirmation(false);
             onClose();
         }

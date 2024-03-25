@@ -21,13 +21,39 @@ export const QRCodeScanner = () => {
     if (!scanned) {
       setScanned(true);
       setIsScanningEnabled(false); // Disable scanning after successful scan
-      if (validateItemNumber(data)) {
-        navigation.navigate('PostScan', { currentScannedSKU: data }); // Pass data as parameter
-      } else {
+      if (data.startsWith("CONFIRM:")) {
+        Alert.alert(`Code: ${parseAssemblyText(data).code}, User: ${parseAssemblyText(data).currentUserFullName}`)
+      }
+      // if (validateItemNumber(data)) {
+      //   navigation.navigate('PostScan', { currentScannedSKU: data }); // Pass data as parameter
+      // } 
+      else {
         Alert.alert('INVALID ITEM NUMBER', 'Please scan a valid item number.');
       }
     }
   };
+
+  const parseAssemblyText = (text) => {
+    const parts = text.split(':');
+
+    // Extract necessary parts
+    const [confirm, assemblyId, subAssemblyId, fullName] = parts;
+
+    // Extract first characters of LA code and A code
+    const assemblyIdFirstChar = assemblyId.charAt(0);
+    const subAssemblyIdFirstChar = subAssemblyId.charAt(0);
+
+    // Concatenate the first characters of LA code and A code
+    const code = assemblyIdFirstChar + subAssemblyIdFirstChar;
+
+    // Extract the full name
+    const currentUserFullName = fullName.trim();
+
+    return {
+      code,
+      currentUserFullName
+    };
+  }
 
   const validateItemNumber = (data) => {
     // Define your item number patterns

@@ -60,7 +60,7 @@ export const confirmSubAssemblyFinished = async (assemblyId: string, subAssembly
 }
 
 export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId: string,
-    checkedMaterials: string[], user: string) => {
+    checkedMaterials: string[], usedMaterials: string[], user: string) => {
 
         try {
             const exist = await currentUserOngoingSubAssemblyExist(assemblyId, subAssemblyId, user)
@@ -85,6 +85,7 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
                         // assembly_id: assemblyId,
                         // subassembly_id: subAssemblyId,
                         checked_materials: checkedMaterials,
+                        used_materials: usedMaterials,
                         last_modified_by: user,
                         last_modified: serverTimestamp(),
                     });
@@ -111,6 +112,7 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
                     // assembly_id: assemblyId,
                     // subassembly_id: subAssemblyId,
                     checked_materials: checkedMaterials,
+                    used_materials: usedMaterials,
                     last_modified_by: user,
                     finished_by: "",
                     created_by: user,
