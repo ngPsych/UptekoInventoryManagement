@@ -5,7 +5,6 @@ import { updateItemQuantity } from '../../../services/firebase/inventoryManageme
 import ExitConfirmationPopup from '../ExitConfirmationPopup';
 import QRCodeGenerator from '../../QRCode/QRCodeGenerator';
 import { saveSubAssemblyProgress } from '../../../services/firebase/assemblyManagement';
-import { useUserInfo } from '../../../hooks/useUserInfo';
 
 interface MaterialListPopupCardProps {
     onClose: () => void;
@@ -13,9 +12,10 @@ interface MaterialListPopupCardProps {
     subAssemblyId: string | null;
     materials: Material[];
     defaultCheckedIds?: string[]; // Now an optional prop
+    currentUserFullName: string;
 }
 
-const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, assemblyId, subAssemblyId, materials, defaultCheckedIds = []}) => {
+const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, assemblyId, subAssemblyId, materials, defaultCheckedIds = [], currentUserFullName}) => {
     const initialCheckedState = materials.reduce((acc, material) => {
         acc[material.id] = defaultCheckedIds.includes(material.id);
         return acc;
@@ -23,7 +23,6 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
 
     const [checkedMaterials, setCheckedMaterials] = useState<{ [id: string]: boolean }>(initialCheckedState);
     const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-    const currentUser = useUserInfo();
     const [hasBeenRemoved, setHasBeenRemoved] = useState<boolean>(false);
 
     useEffect(() => {
@@ -44,9 +43,8 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
     // Clicking on "Yes" in the exit confirmation
     const handleSaveProgress = () => {
         if (assemblyId && subAssemblyId) {
-            const fullName = currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName;
             const checkedMaterialIds = Object.keys(checkedMaterials).filter(id => checkedMaterials[id]);
-            saveSubAssemblyProgress(assemblyId, subAssemblyId, checkedMaterialIds, fullName);
+            saveSubAssemblyProgress(assemblyId, subAssemblyId, checkedMaterialIds, currentUserFullName);
             setShowExitConfirmation(false);
             onClose();
         }
@@ -128,7 +126,7 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
 
                 {/* QR CODE CONTAINER*/}
                 <div>
-                    <QRCodeGenerator itemNumber={`CONFIRM:${subAssemblyId}` ?? 'undefined'} size={150}/>
+                    <QRCodeGenerator itemNumber={`CONFIRM:${assemblyId}:${subAssemblyId}:${currentUserFullName}` ?? 'undefined'} size={150}/>
                     <p>To confirm the sub-assembly is finished, please scan the QR code in the App.</p>
                 </div>
             </div>

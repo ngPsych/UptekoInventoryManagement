@@ -64,7 +64,7 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
 
         try {
             const exist = await currentUserOngoingSubAssemblyExist(assemblyId, subAssemblyId, user)
-            const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/ongoing`);
+            const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
             let ongoingSubAssemblyId;
 
             // checks if it already exist, if yes then update instead of create
@@ -79,7 +79,7 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
                     });
 
                     ongoingSubAssemblyId = ongoingSubAssemblyIds[0];
-                    const ongoingDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/ongoing`, ongoingSubAssemblyId);
+                    const ongoingDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`, ongoingSubAssemblyId);
 
                     await updateDoc(ongoingDocRef, {
                         // assembly_id: assemblyId,
@@ -104,7 +104,7 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
                     ongoingSubAssemblyId = `${assemblyId[0]}${subAssemblyId[0]}${nextSuffix}`;
                 }
 
-                const ongoingDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/ongoing`, ongoingSubAssemblyId);
+                const ongoingDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`, ongoingSubAssemblyId);
     
                 // Create or update the document with the necessary fields
                 await setDoc(ongoingDocRef, {
@@ -119,20 +119,38 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
                 });
             }
 
-            
-
-    
-
         } catch (error) {
             console.error("[assemblyManagement] Error creating sub-assembly progress:", error);
             throw error;
         }
 }
 
+export const deleteProgress = async (assemblyId: string, subAssemblyId: string, currentUser: string) => {
+    try {
+        const progressCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
+        const querySnapshot = await getDocs(progressCollectionRef);
+
+        querySnapshot.forEach(async doc => {
+            const docId = doc.id;
+            // Check if the first two characters of the document ID match assemblyId and subAssemblyId
+            if (docId.startsWith(assemblyId.charAt(0)) && docId.charAt(1) === subAssemblyId.charAt(0)) {
+                const data = doc.data();
+                if (data.created_by === currentUser) {
+                    await deleteDoc(doc.ref);
+                    console.log(`Progress deleted successfully for assembly ${assemblyId} and subassembly ${subAssemblyId}`);
+                }
+            }
+        });
+    } catch (error) {
+        console.error(`[assemblyManagement] Error deleting progress on subassembly ${subAssemblyId}:`, error);
+        throw error;
+    }
+}
+
 export const currentUserOngoingSubAssemblyExist = async (assemblyId: string, subAssemblyId: string, userFullName: string) => {
     try {
         // Reference to the ongoing collection
-        const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/ongoing`);
+        const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
 
         // Create a query to find documents where fullName matches
         const q = query(ongoingCollectionRef, where("created_by", "==", userFullName));
@@ -153,33 +171,30 @@ export const currentUserOngoingSubAssemblyExist = async (assemblyId: string, sub
     }
 }
 
-export const getProgressCheckedMaterials = async (assemblyId: string, subAssemblyId: string, createdBy: string) => {
-    try {
-        const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/ongoing`);
+export const subscribeToProgressCheckedMaterials = (assemblyId: string, subAssemblyId: string, createdBy: string, callback: (checkedMaterials: any[]) => void) => {
+    const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
 
-        // Query documents where the field "started_by" is equal to startedBy
-        const q = query(ongoingCollectionRef, where("created_by", "==", createdBy));
+    // Query documents where the field "created_by" is equal to createdBy
+    const q = query(ongoingCollectionRef, where("created_by", "==", createdBy));
 
-        // Get the documents that match the query
-        const querySnapshot = await getDocs(q);
-
+    return onSnapshot(q, (snapshot) => {
         let checkedMaterials: any[] = [];
 
         // Loop through the documents
-        querySnapshot.forEach((doc: DocumentSnapshot) => {
+        snapshot.forEach((doc) => {
             // Retrieve the field "checked_materials" from each document
             const data = doc.data();
             if (data && data.checked_materials) {
-                checkedMaterials = data.checked_materials;
+                checkedMaterials.push(...data.checked_materials);
             }
         });
-        console.log(checkedMaterials)
-        return checkedMaterials;
-    } catch (error) {
+        // Invoke the callback with checkedMaterials
+        callback(checkedMaterials);
+    }, (error) => {
         console.error("[assemblyManagement] Error retrieving checked materials:", error);
         throw error;
-    }
-}
+    });
+};
 
 export const createNewAssembly = async (imageURL: string, id: string, suDocIDs: string[]) => {
     try {
@@ -228,7 +243,7 @@ export const deleteAssembly = async (assemblyId: string) => {
             const subassemblyId = subassembly.id;
             await deleteCollection(`${subassembliesCollectionPath}/${subassemblyId}/materials_needed`);
             await deleteCollection(`${subassembliesCollectionPath}/${subassemblyId}/finished`);
-            await deleteCollection(`${subassembliesCollectionPath}/${subassemblyId}/ongoing`);
+            await deleteCollection(`${subassembliesCollectionPath}/${subassemblyId}/progress`);
     
             // Delete the subassembly document
             await deleteDoc(subassembly.ref);

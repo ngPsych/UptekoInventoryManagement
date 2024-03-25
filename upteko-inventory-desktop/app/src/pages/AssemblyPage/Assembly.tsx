@@ -4,7 +4,7 @@ import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
-import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, getProgressCheckedMaterials } from '../../services/firebase/assemblyManagement';
+import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, subscribeToProgressCheckedMaterials, deleteProgress, currentUserOngoingSubAssemblyExist } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem, Material, SubAssemblyItem } from '../../interfaces/IAssembly';
 import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
 import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialListPopupCard';
@@ -16,14 +16,21 @@ export default function AssemblyPage() {
     useRequireAuth();
     const MemoizedAssemblyCard = React.memo(Card);
 
+    // ----- SHOW COMPONENTS ----- //
     const [showCreateNewAssemblyPopup, setShowCreateNewAssemblyPupop] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [showMaterialListPopup, setShowMaterialListPopup] = useState(false);
+    const [showContinueProgressPopup, setShowContinueProgressPopup] = useState(false);
+    const [showTest, setShowTest] = useState(false);
+    
+    const currentUser = useUserInfo();
+    const currentUserFullName = currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName;
     const [assemblyItems, setAssemblyItems] = useState<AssemblyItem[]>([]);
     const [subassemblyItems, setSubassemblyItems] = useState<SubAssemblyItem[]>([]);
     const [selectedAssemblyId, setSelectedAssemblyId] = useState<string | null>(null);
     const [selectedSubAssemblyId, setSelectedSubAssemblyId] = useState<string | null>(null);
     const [materials, setMaterials] = useState<Material[]>([]);
-    const [showMaterialListPopup, setShowMaterialListPopup] = useState(false);
-    const [showTest, setShowTest] = useState(false);
+    const [checkedProgressMaterials, setCheckedProgressMaterials] = useState<string[]>([]);
     const [contextMenuState, setContextMenuState] = useState<{
         visible: boolean;
         position: { top: number; left: number };
@@ -33,16 +40,16 @@ export default function AssemblyPage() {
         position: { top: 0, left: 0 },
         cardId: null
     });
-    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-    const currentUser = useUserInfo();
-    const [checkedProgressMaterials, setCheckedProgressMaterials] = useState<string[]>([]);
 
     useEffect(() => {
         const fetchCheckedMaterials = async () => {
             try {
                 if (selectedAssemblyId  && selectedSubAssemblyId) {
-                    const mats = await getProgressCheckedMaterials(selectedAssemblyId, selectedSubAssemblyId, (currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName));
-                    setCheckedProgressMaterials(mats);
+                    // const mats = await getProgressCheckedMaterials(selectedAssemblyId, selectedSubAssemblyId, (currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName));
+                    // setCheckedProgressMaterials(mats);
+                    subscribeToProgressCheckedMaterials(selectedAssemblyId, selectedSubAssemblyId, currentUserFullName, (checkedMaterials) => {
+                        setCheckedProgressMaterials(checkedMaterials);
+                    })
                 }
             } catch (error) {
                 console.error("Error fetching checked materials:", error);
@@ -50,7 +57,7 @@ export default function AssemblyPage() {
         };
 
         fetchCheckedMaterials();
-    }, [selectedAssemblyId, selectedSubAssemblyId, (currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName)]);
+    }, [selectedAssemblyId, selectedSubAssemblyId, currentUserFullName]);
     
 // ----- ContextMenu handler ----- //
     // Function to handle context menu with type annotations
@@ -148,9 +155,24 @@ export default function AssemblyPage() {
     };
 
 // ----- SUB-ASSEMBLY CARD ----- //
-    const handleSubAssemblyCardClick = (subAssemblyId: string) => {
+    const handleSubAssemblyCardClick = async (subAssemblyId: string) => {
         setSelectedSubAssemblyId(subAssemblyId);
-        setShowMaterialListPopup(true);
+        if (selectedAssemblyId) {
+            const progressExists = await currentUserOngoingSubAssemblyExist(selectedAssemblyId, subAssemblyId, currentUserFullName)
+            if (progressExists) {
+                setShowContinueProgressPopup(true);
+            } else {
+                setShowMaterialListPopup(true);
+            }
+        }
+    }
+
+    const handleDeleteProgress = () => {
+        if (selectedAssemblyId && selectedSubAssemblyId) {
+            deleteProgress(selectedAssemblyId, selectedSubAssemblyId, currentUserFullName)
+            setShowContinueProgressPopup(false);
+            setShowMaterialListPopup(true)
+        }
     }
 
 // ----- BUTTON HANDLERS ----- //
@@ -199,6 +221,15 @@ export default function AssemblyPage() {
                     subAssemblyId={selectedSubAssemblyId}
                     materials={materials}
                     defaultCheckedIds={checkedProgressMaterials}
+                    currentUserFullName={currentUserFullName}
+                />
+            )}
+
+            {showContinueProgressPopup && (
+                <ExitConfirmationPopup
+                    confirmationText="Do you want to continue your progress?"
+                    onConfirmExit={() => {setShowMaterialListPopup(true); setShowContinueProgressPopup(false)}}
+                    onCancelExit={handleDeleteProgress}
                 />
             )}
 
@@ -240,7 +271,7 @@ export default function AssemblyPage() {
                                 handleDelete={handleDeleteAssembly}
                                 selectedAssemblyId={selectedAssemblyId}
                                 subAssemblyId={item.sku}
-                                userFullName={currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName}
+                                userFullName={currentUserFullName}
                             />
                         </div>
                     ))

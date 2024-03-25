@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import styles from './PopupCard.module.css';
 import { formatFirestoreTimestamp } from '../../utils/timeFormat';
 import { addNewPart } from '../../services/firebase/inventoryManagement';
-import { createNewAssembly } from '../../services/firebase/assemblyManagement';
 import QRCodeGenerator from '../QRCode/QRCodeGenerator';
 import { useReactToPrint } from 'react-to-print';
 import PopupCardProps from '../../interfaces/IPopupCardProps';
