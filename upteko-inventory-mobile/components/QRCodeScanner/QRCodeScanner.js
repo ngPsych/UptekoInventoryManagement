@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Camera } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
+import { confirmSubAssembly } from '../../api/firebase/assemblyManagement';
 
 export const QRCodeScanner = () => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -17,12 +18,19 @@ export const QRCodeScanner = () => {
     })();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     if (!scanned) {
       setScanned(true);
       setIsScanningEnabled(false); // Disable scanning after successful scan
       if (data.startsWith("CONFIRM:")) {
-        Alert.alert(`Code: ${parseAssemblyText(data).code}, User: ${parseAssemblyText(data).currentUserFullName}`)
+        const subAssemblyConfirmed = await confirmSubAssembly(parseAssemblyText(data).assemblyId, 
+          parseAssemblyText(data).subAssemblyId, parseAssemblyText(data).currentUserFullName, "Alexander Nguyen"); // Needs a function to get current user full name
+
+        if (subAssemblyConfirmed) {
+          Alert.alert(`Confirmed that ${parseAssemblyText(data).assemblyId}'s sub-assembly ${parseAssemblyText(data).subAssemblyId} has been finalized`)
+        } else {
+          Alert.alert("Error confirming. Sub-Assembly's materials are not all checked. Did you finish the sub-assembly?")
+        }
       }
       // if (validateItemNumber(data)) {
       //   navigation.navigate('PostScan', { currentScannedSKU: data }); // Pass data as parameter
@@ -39,18 +47,12 @@ export const QRCodeScanner = () => {
     // Extract necessary parts
     const [confirm, assemblyId, subAssemblyId, fullName] = parts;
 
-    // Extract first characters of LA code and A code
-    const assemblyIdFirstChar = assemblyId.charAt(0);
-    const subAssemblyIdFirstChar = subAssemblyId.charAt(0);
-
-    // Concatenate the first characters of LA code and A code
-    const code = assemblyIdFirstChar + subAssemblyIdFirstChar;
-
     // Extract the full name
     const currentUserFullName = fullName.trim();
 
     return {
-      code,
+      assemblyId,
+      subAssemblyId,
       currentUserFullName
     };
   }
