@@ -5,6 +5,7 @@ import { addNewPart } from '../../services/firebase/inventoryManagement';
 import QRCodeGenerator from '../QRCode/QRCodeGenerator';
 import { useReactToPrint } from 'react-to-print';
 import PopupCardProps from '../../interfaces/IPopupCardProps';
+import { generateUniquePartID } from '../../services/firebase/IDGenerationService';
 
 export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
     const componentRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,6 @@ export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
 
 
 export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
-    const [id, setId] = useState('');
     const [name, setName] = useState('');
     const [quantity, setQuantity] = useState(0);
     const [location, setLocation] = useState('');
@@ -65,7 +65,9 @@ export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await addNewPart(id, name, quantity, location, description, supplier, supplierItemNumber, minPoint);
+            const newUniqueID = await generateUniquePartID();
+
+            await addNewPart(newUniqueID, name, quantity, location, description, supplier, supplierItemNumber, minPoint);
             // Add on success, popup changes to "Added new part" then slowly fade away
             onClose();
         } catch (error) {
@@ -80,7 +82,6 @@ export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
                 <h2>Add New Part</h2>
 
                 <form onSubmit={handleSubmit}>
-                    <input type="text" placeholder="ID" value={id} onChange={(e) => setId(e.target.value)} />
                     <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
                     <input type="number" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} />
                     <input type="text" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
