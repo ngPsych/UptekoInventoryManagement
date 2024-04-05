@@ -13,17 +13,16 @@ interface MaterialListPopupCardProps {
     materials: Material[];
     defaultCheckedIds?: string[]; // Now an optional prop
     currentUserFullName: string;
+    progressId: Promise<string | null>;
 }
 
-const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, assemblyId, subAssemblyId, materials, defaultCheckedIds = [], currentUserFullName}) => {
+const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, assemblyId, subAssemblyId, materials, defaultCheckedIds = [], currentUserFullName, progressId}) => {
     const initialCheckedState = materials.reduce((acc, material) => {
         acc[material.id] = defaultCheckedIds.includes(material.id);
         return acc;
     }, {} as {[id: string]: boolean});
 
     const [checkedMaterials, setCheckedMaterials] = useState<{ [id: string]: boolean }>(initialCheckedState);
-    const [showExitConfirmation, setShowExitConfirmation] = useState(false);
-    const [hasBeenRemoved, setHasBeenRemoved] = useState<boolean>(false);
 
     useEffect(() => {
         // Update checked state when defaultCheckedIds change
@@ -37,7 +36,8 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
 
 
     const handleExitButton = () => {
-        setShowExitConfirmation(true);
+        handleSaveProgress();
+        onClose();
     }
 
     // Clicking on "Yes" in the exit confirmation
@@ -47,7 +47,6 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
             const materialIds = materials.map(material => material.id); // Extracting only the ids
             console.log(materialIds);
             saveSubAssemblyProgress(assemblyId, subAssemblyId, checkedMaterialIds, materialIds, currentUserFullName); // Pass materialIds instead of materials
-            setShowExitConfirmation(false);
             onClose();
         }
     }
@@ -55,23 +54,6 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
     const test = () => {
         const existingMaterials = materials.filter(material => checkedMaterials[material.id]);
         console.log(existingMaterials);
-    }
-
-    // Clicking on "No" in the exit confirmation
-    const handleNoSaveProgress = () => {
-        materials.forEach(material => {
-            if (checkedMaterials[material.id]) {
-                if(hasBeenRemoved) {
-                    try {
-                        updateItemQuantity("parts", material.id, material.quantity, "add");
-                    } catch (error) {
-                        console.error("[MaterialListPopupCard] Error reverting item quantity:", error);
-                    }
-                }
-            }
-        });
-        setShowExitConfirmation(false);
-        onClose();
     }
 
     const handleCheckboxChange = (material: Material) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,7 +70,6 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
             try {
                 if (isChecked) {
                     updateItemQuantity("parts", material.id, material.quantity, "remove");
-                    setHasBeenRemoved(true);
                 } else {
                     updateItemQuantity("parts", material.id, material.quantity, "add");
                 }
@@ -128,19 +109,10 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
 
                 {/* QR CODE CONTAINER*/}
                 <div>
-                    <QRCodeGenerator itemNumber={`CONFIRM:${assemblyId}:${subAssemblyId}:${currentUserFullName}` ?? 'undefined'} size={150}/>
+                    <QRCodeGenerator itemNumber={`CONFIRM:${progressId}` ?? 'undefined'} size={150}/>
                     <p>To confirm the sub-assembly is finished, please scan the QR code in the App.</p>
                 </div>
             </div>
-
-            {showExitConfirmation && (
-                <ExitConfirmationPopup 
-                    confirmationText="Do you want to save your progress?"
-                    onConfirmExit={() => handleSaveProgress()}
-                    onCancelExit={() => handleNoSaveProgress()}
-                />
-            )}
-
         </div>
     );
 }

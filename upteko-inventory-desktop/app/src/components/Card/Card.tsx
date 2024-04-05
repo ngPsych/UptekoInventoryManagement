@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./Card.module.css";
-import { currentUserOngoingSubAssemblyExist } from "../../services/firebase/assemblyManagement";
+import { currentUserProgressSubAssemblyExist } from "../../services/firebase/assemblyManagement";
 
 interface CardProps {
     imgSrc: string;
@@ -37,7 +37,7 @@ export const Card: React.FC<CardProps> = ({
     useEffect(() => {
         const fetchProgressExistence = async () => {
             if (selectedAssemblyId && subAssemblyId && userFullName) {
-                const exists = await currentUserOngoingSubAssemblyExist(selectedAssemblyId, subAssemblyId, userFullName);
+                const exists = await currentUserProgressSubAssemblyExist(selectedAssemblyId, subAssemblyId, userFullName);
                 setProgressExist(exists);
             }
         };

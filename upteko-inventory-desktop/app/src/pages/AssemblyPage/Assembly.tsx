@@ -4,13 +4,14 @@ import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
-import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, subscribeToProgressCheckedMaterials, deleteProgress, currentUserOngoingSubAssemblyExist } from '../../services/firebase/assemblyManagement';
+import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, subscribeToProgressCheckedMaterials, deleteProgress, currentUserProgressSubAssemblyExist, createSubAssemblyProgress, getProgressDocumentId, subscribeToProgressConfirmation } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem, Material, SubAssemblyItem } from '../../interfaces/IAssembly';
 import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
 import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialListPopupCard';
 import ExitConfirmationPopup from '../../components/PopupCard/ExitConfirmationPopup';
 import { deleteImage } from '../../services/firebase/storageManagement';
 import { useUserInfo } from '../../hooks/useUserInfo';
+import { generateUniqueMaterialListID } from '../../services/firebase/IDGenerationService';
 
 export default function AssemblyPage() {
     useRequireAuth();
@@ -58,6 +59,26 @@ export default function AssemblyPage() {
 
         fetchCheckedMaterials();
     }, [selectedAssemblyId, selectedSubAssemblyId, currentUserFullName]);
+
+    useEffect(() => {
+        const fetchProgress = async () => {
+            try {
+                if (selectedAssemblyId && selectedSubAssemblyId) {
+                    const progressId = await getProgressDocumentId(selectedAssemblyId, selectedSubAssemblyId)
+                    subscribeToProgressConfirmation(selectedAssemblyId, selectedSubAssemblyId, progressId, (isConfirmed) => {
+                        if (isConfirmed) {
+                            console.log(isConfirmed);
+                            setShowMaterialListPopup(false);
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching progress", error);
+            }
+        };
+
+        fetchProgress();
+    }, [selectedAssemblyId, selectedSubAssemblyId]);
     
 // ----- ContextMenu handler ----- //
     // Function to handle context menu with type annotations
@@ -158,21 +179,31 @@ export default function AssemblyPage() {
     const handleSubAssemblyCardClick = async (subAssemblyId: string) => {
         setSelectedSubAssemblyId(subAssemblyId);
         if (selectedAssemblyId) {
-            const progressExists = await currentUserOngoingSubAssemblyExist(selectedAssemblyId, subAssemblyId, currentUserFullName)
+            const progressExists = await currentUserProgressSubAssemblyExist(selectedAssemblyId, subAssemblyId, currentUserFullName)
             if (progressExists) {
                 setShowContinueProgressPopup(true);
             } else {
+                createSubAssemblyProgress(selectedAssemblyId, subAssemblyId, await generateUniqueMaterialListID(selectedAssemblyId, subAssemblyId), currentUserFullName, materials)
                 setShowMaterialListPopup(true);
             }
         }
     }
 
-    const handleDeleteProgress = () => {
+    const handleDeleteProgress = async () => {
         if (selectedAssemblyId && selectedSubAssemblyId) {
             deleteProgress(selectedAssemblyId, selectedSubAssemblyId, currentUserFullName)
             setShowContinueProgressPopup(false);
+            const progressId = await getProgressDocumentId(selectedAssemblyId, selectedSubAssemblyId)
+            createSubAssemblyProgress(selectedAssemblyId, selectedSubAssemblyId, progressId, currentUserFullName, materials)
             setShowMaterialListPopup(true)
         }
+    }
+
+    async function getProgressId() {
+        if (selectedAssemblyId && selectedSubAssemblyId) {
+            return await getProgressDocumentId(selectedAssemblyId, selectedSubAssemblyId);
+        }
+        return null;
     }
 
 // ----- BUTTON HANDLERS ----- //
@@ -222,6 +253,7 @@ export default function AssemblyPage() {
                     materials={materials}
                     defaultCheckedIds={checkedProgressMaterials}
                     currentUserFullName={currentUserFullName}
+                    progressId={getProgressId()}
                 />
             )}
 

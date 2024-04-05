@@ -1,5 +1,5 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, doc, setDoc, serverTimestamp, onSnapshot, getDocs, deleteDoc, query, where,
+import { getFirestore, collection, doc, setDoc, getDoc, serverTimestamp, onSnapshot, getDocs, deleteDoc, query, where,
 DocumentSnapshot, updateDoc } from "firebase/firestore";
 import { AssemblyItem, Material, SubAssemblyItem } from "../../interfaces/IAssembly";
 
@@ -63,7 +63,7 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
     checkedMaterials: string[], usedMaterials: string[], user: string) => {
 
         try {
-            const exist = await currentUserOngoingSubAssemblyExist(assemblyId, subAssemblyId, user)
+            const exist = await currentUserProgressSubAssemblyExist(assemblyId, subAssemblyId, user)
             const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
             let ongoingSubAssemblyId;
 
@@ -149,7 +149,7 @@ export const deleteProgress = async (assemblyId: string, subAssemblyId: string, 
     }
 }
 
-export const currentUserOngoingSubAssemblyExist = async (assemblyId: string, subAssemblyId: string, userFullName: string) => {
+export const currentUserProgressSubAssemblyExist = async (assemblyId: string, subAssemblyId: string, userFullName: string) => {
     try {
         // Reference to the ongoing collection
         const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
@@ -312,3 +312,61 @@ export const getMaterialsNeeded = async (assemblyId: string, subAssemblyId: stri
         throw error;
     }
 }
+
+export const createSubAssemblyProgress = async (assemblyId: string, subAssemblyId: string, progressId: string, currentUser: string, materials: Material[]) => {
+    try {
+        const progressDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`, progressId);
+        const materialIds = materials.map(material => material.id); // Extracting only the ids
+    
+        await setDoc(progressDocRef, {
+            checked_materials: [],
+            created_by: currentUser,
+            date_created: serverTimestamp(),
+            last_modified: serverTimestamp(),
+            last_modified_by: currentUser,
+            used_materials: materialIds,
+            confirmed: false
+        });
+
+    } catch (error) {
+        console.error("Error creating sub-assembly progress:", error);
+        throw error;
+    }
+}
+
+// This function subscribes to the "confirmed" field in progress to check if it is confirmed
+export const subscribeToProgressConfirmation = (assemblyId: string, subAssemblyId: string, progressId: string, callback: (isConfirmed: boolean) => void) => {
+    const progressDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress/${progressId}`);
+
+    return onSnapshot(progressDocRef, (doc: DocumentSnapshot) => {
+        if (doc.exists()) {
+            const data = doc.data();
+            const isConfirmed = data && data.confirmed ? data.confirmed : false;
+            callback(isConfirmed);
+        } else {
+            console.error(`[assemblyManagement] Progress document with ID ${progressId} does not exist.`);
+            callback(false);
+        }
+    }, (error) => {
+        console.error("[assemblyManagement] Error subscribing to progress document:", error);
+        throw error;
+    });
+};
+
+export const getProgressDocumentId = async (assemblyId: string, subAssemblyId: string): Promise<string> => {
+    try {
+        const progressCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
+        const querySnapshot = await getDocs(progressCollectionRef);
+
+        if (!querySnapshot.empty) {
+            // Since there should be only one document, directly return its ID
+            return querySnapshot.docs[0].id;
+        } else {
+            // No document found
+            return "NULL";
+        }
+    } catch (error) {
+        console.error(`[assemblyManagement] Error getting progress document ID for assembly ${assemblyId} and subassembly ${subAssemblyId}:`, error);
+        throw error;
+    }
+};
