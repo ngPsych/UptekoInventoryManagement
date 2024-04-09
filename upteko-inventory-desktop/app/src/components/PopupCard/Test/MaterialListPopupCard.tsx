@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styles from './MaterialListPopupCard.module.css';
 import { Material } from '../../../interfaces/IAssembly';
 import { updateItemQuantity } from '../../../services/firebase/inventoryManagement';
-import ExitConfirmationPopup from '../ExitConfirmationPopup';
 import QRCodeGenerator from '../../QRCode/QRCodeGenerator';
 import { saveSubAssemblyProgress } from '../../../services/firebase/assemblyManagement';
 
@@ -16,6 +15,21 @@ interface MaterialListPopupCardProps {
     progressId: Promise<string | null>;
 }
 
+// Custom hook
+const useCheckboxChangeEffect = (checkedMaterials: { [id: string]: boolean }, handleSaveProgress: () => void) => {
+    useEffect(() => {
+        const handleCheckboxChange = () => {
+            handleSaveProgress();
+        };
+
+        document.addEventListener('change', handleCheckboxChange);
+
+        return () => {
+            document.removeEventListener('change', handleCheckboxChange);
+        };
+    }, [checkedMaterials, handleSaveProgress]);
+};
+
 const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, assemblyId, subAssemblyId, materials, defaultCheckedIds = [], currentUserFullName, progressId}) => {
     const initialCheckedState = materials.reduce((acc, material) => {
         acc[material.id] = defaultCheckedIds.includes(material.id);
@@ -23,6 +37,13 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
     }, {} as {[id: string]: boolean});
 
     const [checkedMaterials, setCheckedMaterials] = useState<{ [id: string]: boolean }>(initialCheckedState);
+    const [resolvedProgressId, setResolvedProgressId] = useState<string | null>(null);
+
+    useEffect(() => {
+        progressId.then((resolvedId) => {
+            setResolvedProgressId(resolvedId);
+        });
+    }, [progressId]);
 
     useEffect(() => {
         // Update checked state when defaultCheckedIds change
@@ -34,31 +55,24 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
         setCheckedMaterials(updatedCheckedState);
     }, [defaultCheckedIds, materials]); // Listen for changes in defaultCheckedIds and materials
 
-
     const handleExitButton = () => {
-        handleSaveProgress();
         onClose();
+        handleSaveProgress();
     }
 
-    // Clicking on "Yes" in the exit confirmation
     const handleSaveProgress = () => {
         if (assemblyId && subAssemblyId) {
             const checkedMaterialIds = Object.keys(checkedMaterials).filter(id => checkedMaterials[id]);
-            const materialIds = materials.map(material => material.id); // Extracting only the ids
-            console.log(materialIds);
-            saveSubAssemblyProgress(assemblyId, subAssemblyId, checkedMaterialIds, materialIds, currentUserFullName); // Pass materialIds instead of materials
-            onClose();
+            const materialIds = materials.map(material => material.id);
+            saveSubAssemblyProgress(assemblyId, subAssemblyId, checkedMaterialIds, materialIds, currentUserFullName);
         }
     }
 
-    const test = () => {
-        const existingMaterials = materials.filter(material => checkedMaterials[material.id]);
-        console.log(existingMaterials);
-    }
+    useCheckboxChangeEffect(checkedMaterials, handleSaveProgress);
 
     const handleCheckboxChange = (material: Material) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = event.target.checked;
-    
+
         // Update checked state
         setCheckedMaterials(prevState => ({
             ...prevState,
@@ -70,6 +84,7 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
             try {
                 if (isChecked) {
                     updateItemQuantity("parts", material.id, material.quantity, "remove");
+                    const checkedMaterialIds = Object.keys(checkedMaterials).filter(id => checkedMaterials[id]);
                 } else {
                     updateItemQuantity("parts", material.id, material.quantity, "add");
                 }
@@ -79,13 +94,11 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
         }
     };
     
-
     return (
         <div className={styles.popupContainer}>
             <div className={styles.popupCard}>
                 <h1>{subAssemblyId} ASSEMBLY MATERIALS LIST</h1>
                 <button className={styles.exitButton} onClick={handleExitButton}>EXIT</button>
-                <button onClick={test}>Test</button>
                 
                 {/* LIST OF MATERIALS*/}
                 <ul>
@@ -105,11 +118,9 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
                     ))}
                 </ul>
 
-                {/* SUBASSEMBLY IMAGE*/}
-
                 {/* QR CODE CONTAINER*/}
                 <div>
-                    <QRCodeGenerator itemNumber={`CONFIRM:${progressId}` ?? 'undefined'} size={150}/>
+                    <QRCodeGenerator itemNumber={`CONFIRM:${assemblyId}:${subAssemblyId}:${resolvedProgressId}` ?? 'undefined'} size={150}/>
                     <p>To confirm the sub-assembly is finished, please scan the QR code in the App.</p>
                 </div>
             </div>
@@ -117,4 +128,4 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
     );
 }
 
-export default MaterialListPopupCard
+export default MaterialListPopupCard;

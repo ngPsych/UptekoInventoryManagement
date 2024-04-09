@@ -4,7 +4,7 @@ import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
-import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, subscribeToProgressCheckedMaterials, deleteProgress, currentUserProgressSubAssemblyExist, createSubAssemblyProgress, getProgressDocumentId, subscribeToProgressConfirmation } from '../../services/firebase/assemblyManagement';
+import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, subscribeToProgressCheckedMaterials, deleteProgress, currentUserProgressSubAssemblyExist, createSubAssemblyProgress, getProgressDocumentId, subscribeToProgressConfirmation, confirmSubAssembly } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem, Material, SubAssemblyItem } from '../../interfaces/IAssembly';
 import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
 import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialListPopupCard';
@@ -60,25 +60,26 @@ export default function AssemblyPage() {
         fetchCheckedMaterials();
     }, [selectedAssemblyId, selectedSubAssemblyId, currentUserFullName]);
 
+    // Hook to check when it is confirmed.
     useEffect(() => {
         const fetchProgress = async () => {
-            try {
-                if (selectedAssemblyId && selectedSubAssemblyId) {
-                    const progressId = await getProgressDocumentId(selectedAssemblyId, selectedSubAssemblyId)
-                    subscribeToProgressConfirmation(selectedAssemblyId, selectedSubAssemblyId, progressId, (isConfirmed) => {
-                        if (isConfirmed) {
-                            console.log(isConfirmed);
-                            setShowMaterialListPopup(false);
-                        }
-                    });
+            if (selectedAssemblyId && selectedSubAssemblyId && showMaterialListPopup) {
+                try {
+                        const progressId = await getProgressDocumentId(selectedAssemblyId, selectedSubAssemblyId)
+                        subscribeToProgressConfirmation(selectedAssemblyId, selectedSubAssemblyId, progressId, (isConfirmed) => {
+                            if (isConfirmed) {
+                                setShowMaterialListPopup(false);
+                                confirmSubAssembly(selectedAssemblyId, selectedSubAssemblyId, currentUserFullName);
+                            }
+                        });
+                } catch (error) {
+                    console.error("Error fetching progress", error);
                 }
-            } catch (error) {
-                console.error("Error fetching progress", error);
             }
         };
 
         fetchProgress();
-    }, [selectedAssemblyId, selectedSubAssemblyId]);
+    }, [showMaterialListPopup]);
     
 // ----- ContextMenu handler ----- //
     // Function to handle context menu with type annotations

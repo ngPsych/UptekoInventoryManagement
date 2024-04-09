@@ -1,6 +1,7 @@
 import app from "./firebaseConfig"
 import { getFirestore, collection, doc, setDoc, getDoc, serverTimestamp, onSnapshot, getDocs, deleteDoc, query, where,
-DocumentSnapshot, updateDoc } from "firebase/firestore";
+DocumentSnapshot, updateDoc, 
+DocumentData} from "firebase/firestore";
 import { AssemblyItem, Material, SubAssemblyItem } from "../../interfaces/IAssembly";
 
 const db = getFirestore(app);
@@ -46,18 +47,40 @@ export const testCreateNewAssembly = async (imageURL: string, id: string, subAss
     }
 }
 
-export const confirmSubAssemblyFinished = async (assemblyId: string, subAssemblyId: string) => {
+export const confirmSubAssembly = async (assemblyId: string, subAssemblyId: string, currentUser: string) => {
     try {
-        const finishedDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/finished`);
-        await setDoc(finishedDocRef, {
-            // Fields for 'finished' document
-            date_created: serverTimestamp()
-        });
+        const progress = await getProgress(assemblyId, subAssemblyId);
+
+        for (const data of progress) {
+            const checkedMaterials = data.checked_materials || [];
+            const usedMaterials = data.used_materials || [];
+
+            // This part checks if "checkedMaterials" is all checked compared to "usedMaterials", if yes then go through
+            if (usedMaterials.every((material: any) => checkedMaterials.includes(material))) {
+
+                // Functionality to create /finished
+                const finishedDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/finished`, data.id);
+                await setDoc(finishedDocRef, {
+                    checked_materials: data.checked_materials,
+                    created_by: data.created_by,
+                    date_created: data.date_created,
+                    finished_by: currentUser,
+                    last_modified: serverTimestamp(),
+                    last_modified_by: currentUser,
+                    used_materials: data.used_materials,
+                });
+
+                deleteProgress(assemblyId, subAssemblyId, currentUser);
+                return true;
+            }
+        }
+
+        return false;
     } catch (error) {
-        console.error("[assemblyManagement] Error confirming the sub-assembly is finished:", error);
+        console.error(`[assemblyManagement] Error confirming subassembly: ${error}`);
         throw error;
     }
-}
+};
 
 export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId: string,
     checkedMaterials: string[], usedMaterials: string[], user: string) => {
@@ -370,3 +393,27 @@ export const getProgressDocumentId = async (assemblyId: string, subAssemblyId: s
         throw error;
     }
 };
+
+export const getProgress = async (assemblyId: string, subAssemblyId: string) => {
+    try {
+        const progressCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
+        const querySnapshot = await getDocs(progressCollectionRef);
+
+        const progressData: DocumentData[] = []; // Array to store document data
+
+        querySnapshot.forEach(doc => {
+            const docId = doc.id;
+
+            if (docId.startsWith(assemblyId.charAt(0)) && docId.charAt(1) === subAssemblyId.charAt(0)) {
+                const data = doc.data();
+                data.id = docId;
+                progressData.push(data);
+            }
+        });
+
+        return progressData;
+    } catch (error) {
+        console.error(`Error getting progress: ${error}`);
+        throw error;
+    }
+}

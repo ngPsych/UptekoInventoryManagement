@@ -23,11 +23,12 @@ export const QRCodeScanner = () => {
       setScanned(true);
       setIsScanningEnabled(false); // Disable scanning after successful scan
       if (data.startsWith("CONFIRM:")) {
+        console.log(data);
         const subAssemblyConfirmed = await confirmSubAssembly(parseAssemblyText(data).assemblyId, 
-          parseAssemblyText(data).subAssemblyId, parseAssemblyText(data).currentUserFullName, "Alexander Nguyen"); // Needs a function to get current user full name
-
+          parseAssemblyText(data).subAssemblyId, parseAssemblyText(data).progressId, "Alexander Nguyen"); // Needs a function to get current user full name
+        console.log(parseAssemblyText(data).progressId);
         if (subAssemblyConfirmed) {
-          Alert.alert(`Confirmed that ${parseAssemblyText(data).assemblyId}'s sub-assembly ${parseAssemblyText(data).subAssemblyId} has been finalized`)
+          Alert.alert(`Confirmed that ${parseAssemblyText(data).progressId} has been finalized`)
         } else {
           Alert.alert("Error confirming. Sub-Assembly's materials are not all checked. Did you finish the sub-assembly?")
         }
@@ -44,18 +45,19 @@ export const QRCodeScanner = () => {
   const parseAssemblyText = (text) => {
     const parts = text.split(':');
 
-    // Extract necessary parts
-    const [confirm, assemblyId, subAssemblyId, fullName] = parts;
+    if (parts.length !== 4 || parts[0] !== 'CONFIRM') {
+        throw new Error('Invalid QR code format');
+    }
 
-    // Extract the full name
-    const currentUserFullName = fullName.trim();
+    // Extract necessary parts
+    const [_, assemblyId, subAssemblyId, progressId] = parts;
 
     return {
-      assemblyId,
-      subAssemblyId,
-      currentUserFullName
+        assemblyId,
+        subAssemblyId,
+        progressId
     };
-  }
+};
 
   const validateItemNumber = (data) => {
     // Define your item number patterns
