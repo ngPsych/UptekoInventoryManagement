@@ -1,5 +1,5 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, serverTimestamp, onSnapshot, updateDoc, query, collectionGroup } from "firebase/firestore";
+import { getFirestore, collection, doc, getDoc, setDoc, serverTimestamp, onSnapshot, updateDoc, query, collectionGroup, QueryDocumentSnapshot, getDocs } from "firebase/firestore";
 import { Item } from "../../interfaces/IItem";
 import { SubAssemblyItem } from "../../interfaces/IAssembly";
 
@@ -31,24 +31,39 @@ export const subscribeToAllSubAssemblies = (callback: (items: SubAssemblyItem[])
     // Collection group query for 'subassembly' collections
     const subassemblyGroupQuery = query(collectionGroup(db, "subassembly"));
 
-    const unsubscribe = onSnapshot(subassemblyGroupQuery, (snapshot) => {
+    const unsubscribe = onSnapshot(subassemblyGroupQuery, async (snapshot) => { // Ensure to mark the callback as async
+        const promises: Promise<void>[] = [];
         const subassemblies: SubAssemblyItem[] = [];
 
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            subassemblies.push({
-                sku: doc.id,
-                assembly: data.assembly,
-                name: data.name,
-                quantity: data.quantity,
-                minPoint: data.min_point,
-                location: data.location,
-                imageURL: data.imageURL,
-                lastModified: data.last_modified,
-                dateCreated: data.date_created
+        snapshot.forEach(async (doc: QueryDocumentSnapshot) => {
+            const subassemblyPath = `${doc.ref.path}/finished`; // Construct the path to the 'finished' subcollection
+            const subcollectionRef = collection(db, subassemblyPath); // Reference to the 'finished' subcollection
+            
+            const promise = getDocs(subcollectionRef).then(querySnapshot => {
+                const quantity = querySnapshot.size; // Get the count of documents in the subcollection
+                const data = doc.data();
+                if (data) {
+                    subassemblies.push({
+                        sku: doc.id,
+                        assembly: data.assembly,
+                        name: data.name,
+                        quantity: quantity,
+                        minPoint: data.min_point,
+                        location: data.location,
+                        imageURL: data.imageURL,
+                        lastModified: data.last_modified,
+                        dateCreated: data.date_created
+                    });
+                }
             });
+
+            promises.push(promise);
         });
 
+        // Wait for all promises to resolve
+        await Promise.all(promises);
+
+        // Once all promises have resolved and subassemblies are populated, invoke the callback
         callback(subassemblies);
     }, (error) => {
         console.error("[inventoryManagement] Error subscribing to Sub-Assemblies:", error);

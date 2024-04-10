@@ -23,15 +23,14 @@ export default function InventoryPage() {
         let unsubscribe = () => {}; // initialize with a no-op function
 
         if (tableMode === "Parts") {
-            unsubscribe = subscribeToInventoryParts((newItems) => {
-                setItems(newItems);
+            unsubscribe = subscribeToInventoryParts((partItems) => {
+                setItems(partItems);
                 setColumns(itemColumns);
             });
         } else if (tableMode === "Sub-Assemblies") {
-            unsubscribe = subscribeToAllSubAssemblies((newItems) => {
-                setItems(newItems);
+            unsubscribe = subscribeToAllSubAssemblies((subAssemblyItems) => {
+                setItems(subAssemblyItems);
                 setColumns(subAssemblyColumns);
-                console.log(newItems);
             });
         }
 
@@ -63,9 +62,8 @@ export default function InventoryPage() {
     ];
 
     const subAssemblyColumns: ColumnDefinition[] = [
-        { header: 'SKU', accessor: 'sku' },
         { header: 'Assembly', accessor: 'assembly'},
-        { header: 'Name', accessor: 'name' },
+        { header: 'Sub-Assembly', accessor: 'name' },
         { header: 'Quantity', accessor: 'quantity' },
         { header: 'Min. Point', accessor: 'minPoint' },
         { header: 'Location', accessor: 'location' },
