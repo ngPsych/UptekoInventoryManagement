@@ -1,0 +1,129 @@
+.list {
+    padding: 0 25px 25px 25px;
+}
+
+.list h2 {
+    margin-left: 1%;
+    font-size: 30px;
+}
+
+.userListContainer {
+    max-height: 40vw; /* Adjust max height as needed */
+    overflow-y: auto;
+    float: left; /* Align the table to the left */
+    width: 50%; /* Set the width to 50% to make room for the form */
+    border-radius: 10px;
+    box-shadow: 2px 3px 5px 5px #999;
+}
+
+.userTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.userTable thead th {
+    position: sticky;
+    top: 0;
+    background-color: #d3d3d3;
+    z-index: 1;
+}
+
+.userTable th,
+.userTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    height: 20px; /* Ensure cells have the same height as rows */
+}
+
+.userTable th {
+    background-color: #f2f2f2;
+}
+
+.userTable tbody tr {
+    height: 20px; /* Adjust the height as needed */
+}
+
+.userTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.userTable tbody tr:hover {
+    background-color: #c0c0c0;
+}
+
+/*****
+    FORM
+*****/
+
+.formContainer {
+    float: right;
+    width: 25%; /* Set the width to 50% to match the table */
+    background-color: lightgrey;
+    justify-content: center;
+    border-radius: 10px;
+    margin: 5% 12%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Ensures children stretch to container width */
+}
+
+.formContainer h2 {
+    margin-left: 7%;
+    font-size: 30px;
+}
+
+.formContainer form {
+    padding: 0 30px 30px 30px; /* Add some padding for spacing */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* Ensures children stretch to container width */
+    flex-grow: 1; /* Allow the form to grow to fill remaining space */
+    justify-content: space-between; /* Distribute space between form elements */
+}
+
+.formContainer input,
+.formContainer label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.formContainer label {
+    display: flex;
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+}
+
+.formContainer input[type="email"],
+.formContainer input[type="text"],
+.formContainer input[type="radio"] {
+    width: 100%; 
+    font-size: 14px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.formContainer input[type="radio"] {
+    width: auto;
+    margin-right: 10px;
+}
+
+.formContainer button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: center; /* Align button to the center horizontally */
+}
+
+.formContainer button:hover {
+    background-color: #0056b3;
+}

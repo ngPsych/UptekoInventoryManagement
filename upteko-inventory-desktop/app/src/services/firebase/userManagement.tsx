@@ -3,16 +3,17 @@ import { getFirestore, collection, addDoc, getDocs, query, where } from "firebas
 
 const db = getFirestore(app);
 
-export const addUserData = async (email: string, firstName: string, lastName: string) => {
+export const addUserData = async (email: string, firstName: string, lastName: string, role: string) => {
     try {
-        const docRef = await addDoc(collection(db, "users"), {
+        await addDoc(collection(db, "users"), {
             email: email,
             firstName: firstName,
-            lastName: lastName
+            lastName: lastName,
+            role: role,
         });
         
         // console.log("Document written with ID: ", docRef.id);
-        return docRef.id;
+        // return true
     } catch (error) {
         console.error("Error adding document: ", error);
         throw error;

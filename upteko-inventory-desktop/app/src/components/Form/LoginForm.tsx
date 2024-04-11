@@ -8,10 +8,9 @@ interface LoginFormProps {
     password: string;
     setPassword: (password: string) => void;
     handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-    error: string;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPassword, handleSubmit, error }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password, setPassword, handleSubmit }) => {
     const [imageURL, setImageURL] = useState<string | null>(null);
 
     useEffect(() => {
@@ -48,7 +47,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({ email, setEmail, password,
                     placeholder="Password"
                 />
                 <button className={styles.button}>Login</button>
-                {error && <p className={styles.error}>{error}</p>}
             </form>
         </div>
     );

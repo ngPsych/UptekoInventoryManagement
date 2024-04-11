@@ -8,6 +8,8 @@ import { ColumnDefinition } from "../../interfaces/IColumnDefinition";
 import { Item } from "../../interfaces/IItem";
 import styles from "./Inventory.module.css"
 import { SubAssemblyItem } from '../../interfaces/IAssembly';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function InventoryPage() {
     useRequireAuth();
@@ -78,6 +80,7 @@ export default function InventoryPage() {
     return (
         <div>
             <NavigationBar />
+            <ToastContainer />
 
             <div className={styles.tableMode}>
                 <button

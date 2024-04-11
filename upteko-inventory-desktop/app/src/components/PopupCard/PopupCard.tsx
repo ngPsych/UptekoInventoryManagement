@@ -6,6 +6,8 @@ import QRCodeGenerator from '../QRCode/QRCodeGenerator';
 import { useReactToPrint } from 'react-to-print';
 import PopupCardProps from '../../interfaces/IPopupCardProps';
 import { generateUniquePartID } from '../../services/firebase/IDGenerationService';
+import { Zoom, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
     const componentRef = useRef<HTMLDivElement>(null);
@@ -24,6 +26,22 @@ export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
             document.body.appendChild(downloadLink);
             downloadLink.click();
             document.body.removeChild(downloadLink);
+        }
+    };
+
+    // Checks if the item.supplier is a url link first
+    const handleReorderButton = () => {
+        if (item?.supplier) {
+            // Regular expression to check if the supplier is a URL
+            const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
+            if (urlRegex.test(item.supplier)) {
+                // Open the supplier link in a new tab
+                window.open(item.supplier, '_blank');
+            } else {
+                console.log("No link to supplier");
+            }
+        } else {
+            console.log("No supplier information available");
         }
     };
 
@@ -46,6 +64,7 @@ export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
                             <p>Reorder Point: {item?.minPoint}</p>
                         </div>
                     </div>
+                <button onClick={handleReorderButton}>Reorder</button>
                 <button onClick={onClose}>Close</button>
             </div>
         </div>
@@ -64,17 +83,46 @@ export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Check if any required field is empty
+        if (!name || quantity === 0 || !location || !supplier || !supplierItemNumber || minPoint === 0) {
+            toast.error("Please fill in all required fields", {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Zoom
+            });
+            return;
+        }
         try {
             const newUniqueID = await generateUniquePartID();
-
+    
             await addNewPart(newUniqueID, name, quantity, location, description, supplier, supplierItemNumber, minPoint);
-            // Add on success, popup changes to "Added new part" then slowly fade away
+    
+            // Notify
+            toast.success("Successfully added a new part to the inventory", {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Zoom
+            });
+    
             onClose();
         } catch (error) {
             console.error('Error adding new part:', error);
             throw error;
         }
     };
+    
 
     return (
         <div className={styles.popupContainer} onClick={onClose}>

@@ -12,6 +12,8 @@ import ExitConfirmationPopup from '../../components/PopupCard/ExitConfirmationPo
 import { deleteImage } from '../../services/firebase/storageManagement';
 import { useUserInfo } from '../../hooks/useUserInfo';
 import { generateUniqueMaterialListID } from '../../services/firebase/IDGenerationService';
+import { ToastContainer, toast, Zoom } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function AssemblyPage() {
     useRequireAuth();
@@ -104,8 +106,30 @@ export default function AssemblyPage() {
             setShowDeleteConfirmation(false);
             deleteAssembly(contextMenuState.cardId);
             deleteImage(contextMenuState.cardId);
+            toast.success(`Successfully deleted Assembly: ${contextMenuState.cardId}`, {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Zoom
+            });
         } else {
             console.log("[Assembly] Missing ID to delete Assembly");
+            toast.error("Error deleting Assembly", {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Zoom
+            });
         }
     };
 
@@ -220,6 +244,8 @@ export default function AssemblyPage() {
     return (
         <div className={styles.assemblyContainer}>
             <NavigationBar />
+            <ToastContainer />
+
             {!selectedAssemblyId && (
                 <div>
                     <button onClick={() => setShowCreateNewAssemblyPupop(true)}>Create new assembly</button>

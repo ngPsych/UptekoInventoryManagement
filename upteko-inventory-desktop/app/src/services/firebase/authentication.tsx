@@ -1,22 +1,22 @@
 import app from "./firebaseConfig";
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, updatePassword, User, sendPasswordResetEmail, signOut } from "firebase/auth";
 
-
 const auth = getAuth(app)
 
 // Function to sign up a new user
-export const signUp = (email: string, password: string) => {
+export const signUp = async (email: string, password: string) => {
     return createUserWithEmailAndPassword(auth, email, password)
         .then(userCredentials => {
-            const user = userCredentials.user;
 
-            return user;
+            return true;
         })
         .catch(error => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
+            // const errorCode = error.code;
+            // const errorMessage = error.message;
 
-            throw error;
+            // throw error;
+            console.log("Error signing up user:", error);
+            return false;
         });
 };
 
@@ -37,7 +37,7 @@ export const signIn = (email: string, password: string) => {
 export const getSignIn = () => {
     return onAuthStateChanged(auth, (user) => {
         if (user) {
-            const uid = user.uid;
+            // const uid = user.uid;
             // and other info then return
         } else {
             // user is signed out
@@ -53,7 +53,7 @@ export const getCurrentUser = () => {
 }
 
 // Function to update password for a logged-in user
-export const updateUserPassword = (user: User, newPassword: string) => {
+export const updateUserPassword = async (user: User, newPassword: string) => {
     return updatePassword(user, newPassword)
         .then(() => {
             // update successful
@@ -64,10 +64,21 @@ export const updateUserPassword = (user: User, newPassword: string) => {
 }
 
 // Function for when forgetting password
-export const sendUserPasswordResetEmail = (email: string) => {
+export const sendUserPasswordResetEmail = async (email: string) => {
     return sendPasswordResetEmail(auth, email)
     .then(() => {
         // update success
+        // toast.success(`Sent password reset link.`, {
+        //     position: "bottom-right",
+        //     autoClose: 5000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: false,
+        //     draggable: true,
+        //     progress: undefined,
+        //     theme: "dark",
+        //     transition: Zoom
+        // });
     })
     .catch(error => {
         throw error;

@@ -1,5 +1,5 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, doc, setDoc, getDoc, serverTimestamp, onSnapshot, getDocs, deleteDoc, query, where,
+import { getFirestore, collection, doc, setDoc, serverTimestamp, onSnapshot, getDocs, deleteDoc, query, where,
 DocumentSnapshot, updateDoc, 
 DocumentData} from "firebase/firestore";
 import { AssemblyItem, Material, SubAssemblyItem } from "../../interfaces/IAssembly";

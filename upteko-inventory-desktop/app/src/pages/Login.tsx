@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signIn, getCurrentUser } from '../services/firebase/authentication';
 import { LoginForm } from '../components/Form/LoginForm'
+import { ToastContainer, toast, Zoom } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,7 +23,7 @@ export default function LoginPage() {
         };
 
         checkUserSignIn();
-    }, []); // Empty dependency array ensures the effect runs only on mount
+    }, [navigate]); // Empty dependency array ensures the effect runs only on mount
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -35,18 +36,30 @@ export default function LoginPage() {
             })
             .catch(error => {
                 console.error('Login error:', error);
-                setError(error.message);
+                toast.error("Failed to login. Wrong e-mail or password!", {
+                    position: "bottom-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Zoom
+                });
             })
     };
 
     return (
-        <LoginForm 
-            email={email}
-            setEmail={setEmail}
-            password={password}
-            setPassword={setPassword}
-            handleSubmit={handleSubmit}
-            error={error}
-        />
+        <div>
+            <ToastContainer />
+            <LoginForm 
+                email={email}
+                setEmail={setEmail}
+                password={password}
+                setPassword={setPassword}
+                handleSubmit={handleSubmit}
+            />
+        </div>
     );
 };

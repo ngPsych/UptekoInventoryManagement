@@ -4,6 +4,7 @@ import PopupCardProps from '../../../interfaces/IPopupCardProps';
 import { getFileDownloadURL, uploadFile } from '../../../services/firebase/storageManagement';
 import AddMatPopup from './AddMatPopup';
 import { testCreateNewAssembly } from '../../../services/firebase/assemblyManagement';
+import { toast, Zoom } from 'react-toastify';
 
 export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
     const [name, setName] = useState('');
@@ -16,6 +17,21 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Check if any required field is empty
+        if (!name || subNames.length === 0 || Object.keys(selectedMaterials).length  === 0) {
+            toast.error("Please fill in all required fields", {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Zoom
+            });
+            return;
+        }
         try {
             let imageURL = '';
             if (imageFile) {
@@ -23,15 +39,27 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
             } else {
                 imageURL = await getFileDownloadURL("images/Default.png");
             }
-
+    
             onClose();
-            // await createNewAssembly(imageURL, name, subAssemblyInputs);
             await testCreateNewAssembly(imageURL, name, subNames, selectedMaterials);
+    
+            toast.success("Successfully created a new assembly", {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Zoom
+            });
         } catch (error) {
-            console.log("Error creating new assembly");
+            console.log("Error creating new assembly:", error);
             throw error;
         }
     };
+    
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
