@@ -1,5 +1,6 @@
 import app from "./firebaseConfig";
-import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, updatePassword, User, sendPasswordResetEmail, signOut } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword,
+    updatePassword, User, sendPasswordResetEmail, signOut, deleteUser } from "firebase/auth";
 
 const auth = getAuth(app)
 
@@ -94,4 +95,11 @@ export const signOutUser = () => {
         .catch(error => {
             // error occured
         })
+}
+
+// Currently not implemented
+export const deleteUserByEmail = async () => {
+    return (
+        null
+    );
 }

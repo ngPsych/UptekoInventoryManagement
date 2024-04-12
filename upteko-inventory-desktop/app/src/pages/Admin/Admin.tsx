@@ -1,31 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { ToastContainer, toast, Zoom } from 'react-toastify';
 import { sendUserPasswordResetEmail, signUp } from '../../services/firebase/authentication';
 import { addUserData } from '../../services/firebase/userManagement';
 import { User } from '../../interfaces/IUser';
-import { getAllUsers } from "../../services/firebase/userManagement";
+import { subscribeToAllUsers } from "../../services/firebase/userManagement";
 import styles from "../Admin/Admin.module.css";
 
 export default function AdminPage() {
+    useRequireAuth();
+
     const [users, setUsers] = useState<User[]>([]);
     const [email, setEmail] = useState<string>('');
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
     const [role, setRole] = useState<string>('');
-
-    useRequireAuth();
+    const [isTableMenuVisible, setTableMenuVisible] = useState<boolean>(false);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [contextMenuPosition, setContextMenuPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+    
+    const contextMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        getAllUsers()
-        .then(users => {
-            setUsers(users as User[]);
-        })
-        .catch(error => {
-            console.error('Error fetching users:', error);
-            // Handle the error appropriately
+        const unsubscribe = subscribeToAllUsers((users: User[]) => { // Subscribe to user updates
+            setUsers(users);
         });
+        
+        return () => unsubscribe(); // Cleanup function to unsubscribe when component unmounts
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (contextMenuRef.current && !contextMenuRef.current.contains(event.target as Node)) {
+                setTableMenuVisible(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     const renderEmptyRows = () => {
@@ -45,6 +61,51 @@ export default function AdminPage() {
         return emptyRows;
     };
 
+    const handleContextMenu = (event: React.MouseEvent<HTMLTableRowElement>, user: User) => {
+        event.preventDefault();
+        setSelectedUser(user);
+        setContextMenuPosition({ top: event.clientY, left: event.clientX });
+        setTableMenuVisible(true);
+    };
+
+    const handleModify = () => {
+        // Implement modify functionality here using selectedUser.email
+        toast.info(`Modify ${selectedUser?.email}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Zoom
+        });
+        handleCloseMenu();
+    };
+
+    const handleDelete = () => {
+        // Implement delete functionality here using selectedUser.email
+        toast.error(`Delete ${selectedUser?.email}`, {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Zoom
+        });
+        handleCloseMenu();
+    };
+
+    const handleCloseMenu = () => {
+        setSelectedUser(null);
+        setTableMenuVisible(false);
+    };
+
+// -------- CREATE USER --------- //
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
@@ -126,7 +187,7 @@ export default function AdminPage() {
                         </thead>
                         <tbody>
                             {users.map(user => (
-                                <tr key={user.id}>
+                                <tr key={user.id} onContextMenu={(e) => handleContextMenu(e, user)}>
                                     <td>{user.email}</td>
                                     <td>{user.firstName} {user.lastName}</td>
                                     <td className={styles.userRole}>{user.role}</td>
@@ -137,6 +198,17 @@ export default function AdminPage() {
                     </table>
                 </div>
             </div>
+
+            {isTableMenuVisible && (
+                <div 
+                    ref={contextMenuRef}
+                    className={styles.contextMenu} 
+                    style={{ top: contextMenuPosition.top, left: contextMenuPosition.left }}
+                >
+                    <div onClick={handleModify}>Modify</div>
+                    <div onClick={handleDelete}>Delete</div>
+                </div>
+            )}
 
             <div className={styles.formContainer}>
                 <h2>Create new account</h2>

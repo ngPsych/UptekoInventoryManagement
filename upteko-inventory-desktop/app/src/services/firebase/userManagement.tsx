@@ -1,5 +1,6 @@
 import app from "./firebaseConfig"
-import { getFirestore, collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs, query, where,
+    onSnapshot, QuerySnapshot, DocumentData, doc, deleteDoc } from "firebase/firestore";
 
 const db = getFirestore(app);
 
@@ -20,21 +21,24 @@ export const addUserData = async (email: string, firstName: string, lastName: st
     }
 };
 
-export const getAllUsers = async () => {
+export const subscribeToAllUsers = (callback: (users: any[]) => void) => {
     try {
         const usersCollection = collection(db, "users");
-        const userDocsSnapshot = await getDocs(usersCollection);
-        const users = userDocsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
+        const unsubscribe = onSnapshot(usersCollection, (querySnapshot: QuerySnapshot<DocumentData>) => {
+            const users = querySnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            callback(users);
+        });
         
-        return users; // This will be an array of user objects
+        return unsubscribe;
     } catch (error) {
-        console.error("Error fetching users: ", error);
+        console.error("Error subscribing to users: ", error);
         throw error;
     }
 };
+
 
 export const getCurrentUserInfo = async (email: string) => {
     try {
@@ -52,6 +56,25 @@ export const getCurrentUserInfo = async (email: string) => {
         return userData;
     } catch (error) {
         console.error("Error fetching current user info: ", error);
+        throw error;
+    }
+};
+
+export const deleteUser = async (email: string) => {
+    try {
+        const usersCollection = collection(db, "users");
+        const userQuery = query(usersCollection, where("email", "==", email));
+        const userDocsSnapshot = await getDocs(userQuery);
+
+        if (userDocsSnapshot.empty) {
+            throw new Error("User document not found in Firestore.");
+        }
+
+        const userDocId = userDocsSnapshot.docs[0].id;
+
+        await deleteDoc(doc(db, "users", userDocId));
+    } catch (error) {
+        console.error("Error deleting user: ", error);
         throw error;
     }
 };
