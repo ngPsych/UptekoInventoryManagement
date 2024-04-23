@@ -102,7 +102,7 @@ export const QRCodeScanner = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#666',
     justifyContent: 'center',
   },
   cameraContainer: {
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 70,
+    bottom: 100,
     alignSelf: 'center',
     backgroundColor: '#007bff',
     borderRadius: 5,
@@ -126,8 +126,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   text: {
-    backgroundColor: 'white',
     padding: 10,
     textAlign: 'center',
+    color: 'white',
   },
 });

@@ -23,7 +23,7 @@ export const ProfileScreen = () => {
                 <Text>Profile</Text>
                 <Button title="Sign out" onPress={handleSignOut} />
             </View>
-            <NavBar activeItem="Assembly" />
+            <NavBar activeItem="Profile" />
         </View>
     );
 };
@@ -31,6 +31,7 @@ export const ProfileScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#666',
     },
     content: {
         flex: 1,

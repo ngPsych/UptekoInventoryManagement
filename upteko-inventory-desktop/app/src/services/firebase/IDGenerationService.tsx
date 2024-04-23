@@ -11,14 +11,14 @@ export const generateUniquePartID = async (): Promise<string> => {
         // Extract IDs from documents
         const partDocumentIds = partsDocsSnapshot.docs.map(doc => doc.id);
 
-        // If parts collection is empty, return the first ID "P000001"
+        // If parts collection is empty, return the first ID "P0001"
         if (partDocumentIds.length === 0) {
-            return "P000001";
+            return "P0001";
         }
 
         const highestIDNumber = findHighestIDNumber(partDocumentIds, 1);
 
-        const newID = `P${(highestIDNumber + 1).toString().padStart(6, '0')}`;
+        const newID = `P${(highestIDNumber + 1).toString().padStart(Math.max(4, String(highestIDNumber + 1).length), '0')}`;
 
         return newID;
     } catch (error) {
@@ -50,14 +50,16 @@ export const generateUniqueMaterialListID = async (assemblyID: string, subAssemb
             highestFinishedNumber = findHighestIDNumber(finishedIDs, 2);
         }
 
-        // If both ongoing and finished are empty, create an ID with XX000001
+        // If both ongoing and finished are empty, create an ID with XX001
         if (ongoingIDs.length === 0 && finishedIDs.length === 0) {
-            return `${assemblyID.charAt(0)}${subAssemblyID.charAt(0)}000001`;
+            return `${assemblyID.charAt(0)}${subAssemblyID.charAt(0)}001`;
         }
 
         const highestNumber = Math.max(highestOngoingNumber, highestFinishedNumber);
 
-        const newID = `${assemblyID.charAt(0)}${subAssemblyID.charAt(0)}${(highestNumber + 1).toString().padStart(6, '0')}`;
+        // const newID = `${assemblyID.charAt(0)}${subAssemblyID.charAt(0)}${(highestNumber + 1).toString().padStart(3, '0')}`;
+        const newID = `${assemblyID.charAt(0)}${subAssemblyID.charAt(0)}${(highestNumber + 1).toString().padStart(Math.max(3, String(highestNumber + 1).length), '0')}`;
+
         return newID;
     } catch (error) {
         console.error("Error generating unique Material List ID:", error);

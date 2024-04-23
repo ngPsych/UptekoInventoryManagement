@@ -1,19 +1,24 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { InventoryScreen } from '../screens/Inventory/InventoryScreen';
+// import { InventoryScreen } from '../screens/Inventory/InventoryScreen';
+import { InventoryNavigator } from './InventoryNavigator';
 import { AssemblyScreen } from '../screens/Assembly/AssemblyScreen';
 import { ScannerNavigator } from './ScannerNavigator';
 import { OrderScreen } from '../screens/Order/OrderScreen';
 import { ProfileScreen } from '../screens/Profile/ProfileScreen';
 import { LoginScreen } from '../screens/Login/LoginScreen';
 import { NavBar } from '../components/NavBar/NavBar';
+import CustomHeader from '../components/CustomHeader/CustomHeader';
 
 const Stack = createStackNavigator();
 
 export const AppNavigator = () => {
     return (
         <Stack.Navigator
-            screenOptions={{ animationEnabled: false }}>
+            screenOptions={{
+                // header: () => <CustomHeader title="UPTEKO" />,
+                animationEnabled: false
+            }}>
                 
             <Stack.Screen
                 name="Login"
@@ -22,28 +27,39 @@ export const AppNavigator = () => {
             />
             <Stack.Screen
                 name="Inventory"
-                component={InventoryScreen}
-                options={{ headerLeft: null }}
+                component={InventoryNavigator}
+                options={
+                    // {header: () => <CustomHeader title="UPTEKO" screen="Inventory" />,}
+                    {headerShown: false}
+                }
             />
             <Stack.Screen
                 name="Assembly"
                 component={AssemblyScreen}
-                options={{ headerLeft: null }}
+                options={
+                    {header: () => <CustomHeader title="UPTEKO" />,}
+                }
             />
             <Stack.Screen
                 name="Scanner"
                 component={ScannerNavigator}
-                options={{ headerLeft: null }}
+                options={
+                    {header: () => <CustomHeader title="UPTEKO" />,}
+                }
             />
             <Stack.Screen
                 name="Order"
                 component={OrderScreen}
-                options={{ headerLeft: null }}
+                options={
+                    {header: () => <CustomHeader title="UPTEKO" />,}
+                }
             />
             <Stack.Screen
                 name="Profile"
                 component={ProfileScreen}
-                options={{ headerLeft: null }}
+                options={
+                    {header: () => <CustomHeader title="UPTEKO" />,}
+                }
             />
             <Stack.Screen
                 name="NavBar"

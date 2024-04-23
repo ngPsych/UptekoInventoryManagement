@@ -18,6 +18,7 @@ export const ScannerScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#666',
     },
     content: {
         flex: 1,
