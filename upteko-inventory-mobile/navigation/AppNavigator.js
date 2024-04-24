@@ -2,7 +2,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 // import { InventoryScreen } from '../screens/Inventory/InventoryScreen';
 import { InventoryNavigator } from './InventoryNavigator';
-import { AssemblyScreen } from '../screens/Assembly/AssemblyScreen';
+import { AssemblyNavigator } from './AssemblyNavigator';
 import { ScannerNavigator } from './ScannerNavigator';
 import { OrderScreen } from '../screens/Order/OrderScreen';
 import { ProfileScreen } from '../screens/Profile/ProfileScreen';
@@ -29,15 +29,14 @@ export const AppNavigator = () => {
                 name="Inventory"
                 component={InventoryNavigator}
                 options={
-                    // {header: () => <CustomHeader title="UPTEKO" screen="Inventory" />,}
                     {headerShown: false}
                 }
             />
             <Stack.Screen
                 name="Assembly"
-                component={AssemblyScreen}
+                component={AssemblyNavigator}
                 options={
-                    {header: () => <CustomHeader title="UPTEKO" />,}
+                    {headerShown: false}
                 }
             />
             <Stack.Screen

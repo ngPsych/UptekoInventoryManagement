@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { NavBar } from '../../components/NavBar/NavBar';
 import { Card } from '../../components/Card/Card';
 import { subscribeToAssemblyItems } from '../../api/firebase/assemblyManagement';
+import { useNavigation } from '@react-navigation/native';
 
-export const AssemblyScreen = ({ navigation }) => {
+export const AssemblyScreen = () => {
+    const navigation = useNavigation();
     const [assemblyItems, setAssemblyItems] = useState([]);
 
     useEffect(() => {
@@ -24,7 +26,7 @@ export const AssemblyScreen = ({ navigation }) => {
 
     const renderAssemblyItems = () => {
         return assemblyItems.map(item => (
-            <TouchableOpacity key={item.id} style={styles.assemblyCard} onPress={() => handleAssemblyCardClick(item.id)}>
+            <TouchableOpacity key={item.id} style={styles.assemblyCard} onPress={() => navigation.navigate('SubAssembly', item.id)}>
                 <Card title={item.id} imageURL={item.imageURL} />
             </TouchableOpacity>
         ));

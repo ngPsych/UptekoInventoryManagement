@@ -5,34 +5,34 @@ import { ItemPartScreen } from '../screens/Inventory/ItemPartScreen';
 import { AddPartScreen } from '../screens/Inventory/AddPartScreen'
 import CustomHeader from '../components/CustomHeader/CustomHeader';
 
-const Scanner = createStackNavigator();
+const Inventory = createStackNavigator();
 
 export const InventoryNavigator = () => {
     return (
-        <Scanner.Navigator
+        <Inventory.Navigator
             screenOptions={{ animationEnabled: false }}>
 
-            <Scanner.Screen
-                name="Inventory"
+            <Inventory.Screen
+                name="InventoryScreen"
                 component={InventoryScreen}
                 options={
                     {header: () => <CustomHeader title="UPTEKO" screen="Inventory" />}
                 }
             />
-            <Scanner.Screen
+            <Inventory.Screen
                 name="Part"
                 component={ItemPartScreen}
                 options={
                     {header: () => <CustomHeader title="Part" screen="Part" />}
                 }
             />
-            <Scanner.Screen
+            <Inventory.Screen
                 name="AddPart"
                 component={AddPartScreen}
                 options={
-                    {header: () => <CustomHeader title="AddPart" screen="AddPart" />}
+                    {header: () => <CustomHeader title="Add Part" screen="AddPart" />}
                 }
             />
-        </Scanner.Navigator>
+        </Inventory.Navigator>
     );
 };

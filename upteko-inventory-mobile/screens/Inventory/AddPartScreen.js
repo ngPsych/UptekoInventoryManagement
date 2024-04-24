@@ -137,7 +137,7 @@ export const AddPartScreen = ({ navigation }) => {
                         disabled={false}
                     />
                 </View>
-                <NavBar activeItem="Order" />
+                <NavBar activeItem="Inventory" />
             </View>
         </TouchableWithoutFeedback>
     );
@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         padding: 10,
         marginBottom: 10,
-        keyboardType: 'numeric',
     },
     errorInput: {
         borderColor: 'red',

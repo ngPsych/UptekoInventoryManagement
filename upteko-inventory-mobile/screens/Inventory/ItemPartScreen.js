@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { NavBar } from '../../components/NavBar/NavBar';
-import { subscribeToPart } from '../../api/firebase/inventoryManagement';
+import { subscribeToPart, deletePartBySKU } from '../../api/firebase/inventoryManagement';
 import { formatFirestoreTimestamp } from '../../utils/TimeFormat';
 import { ImageButton } from '../../components/Button/ImageButton';
-import { deletePartBySKU } from '../../api/firebase/inventoryManagement';
 import { useNavigation } from '@react-navigation/native';
 
 import deleteIcon from '../../assets/icons/delete.png';

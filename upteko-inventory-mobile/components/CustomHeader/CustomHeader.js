@@ -23,7 +23,10 @@ const CustomHeader = ({ title, screen }) => {
     return (
         <View style={[styles.container, { height: Platform.OS === 'ios' ? 100 : 60 }]}>
             <View style={styles.content}>
-                {screen === "Part" || screen === "AddPart" ? (
+                {screen === "Part" ||
+                screen === "AddPart" || 
+                screen === "SubAssembly"
+                ? (
                     <ImageButton
                         style={{ marginLeft: 20, marginTop: Platform.OS === 'ios' ? 40 : 0 }}
                         onPress={handleBackPress}

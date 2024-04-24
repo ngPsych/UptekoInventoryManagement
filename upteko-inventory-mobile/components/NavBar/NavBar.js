@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Image, useWindowDimensions } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CommonActions } from '@react-navigation/native';
 
 // Import images
 import inventoryIcon from '../../assets/icons/inventory.png';
@@ -21,7 +21,13 @@ export const NavBar = ({ activeItem, onNavBarLayout }) => {
     }, [navBarHeight, onNavBarLayout]);
 
     const onSelect = (screenName) => {
-        navigation.navigate(screenName);
+        // Reset the navigation stack
+        navigation.dispatch(
+            CommonActions.reset({
+                index: 0,
+                routes: [{ name: screenName }],
+            })
+        );
     };
 
     // Helper function to get the appropriate image source based on the active item
