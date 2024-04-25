@@ -1,25 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { NavBar } from '../../components/NavBar/NavBar';
 import { Card } from '../../components/Card/Card';
-import { getMaterialsNeeded, subscribeToSubAssemblyItems } from '../../api/firebase/assemblyManagement';
+import { subscribeToSubAssemblyItems } from '../../api/firebase/assemblyManagement';
+import { useNavigation } from '@react-navigation/native';
 
 export const SubAssemblyScreen = ({ route }) => {
+    const navigation = useNavigation();
     const assemblyId = route.params;
     const [subAssemblyItems, setSubAssemblyItems] = useState([]);
-    
-    //test
-    const [materialsNeeded, setMaterialsNeeded] = useState([]);
-
-    const fetchMaterialsNeeded = async (assemblyId, subAssemblyId) => {
-        try {
-            const materialsNeeded = await getMaterialsNeeded(assemblyId, subAssemblyId);
-            setMaterialsNeeded(materialsNeeded);
-            console.log(materialsNeeded)
-        } catch (error) {
-            console.error('Error fetching materials needed:', error);
-        }
-    }
 
     useEffect(() => {
         const unsubscribe = subscribeToSubAssemblyItems(assemblyId, (items) => {
@@ -31,14 +20,13 @@ export const SubAssemblyScreen = ({ route }) => {
         };
     }, []);
 
-    const handleSubAssemblyCardClick = (itemId) => {
-        // Handle click event for assembly card
-        console.log('Clicked on sub-assembly item with ID:', itemId);
-    };
-
     const renderSubAssemblyItems = () => {
         return subAssemblyItems.map(item => (
-            <TouchableOpacity key={item.sku} style={styles.subAssemblyCard} onPress={() => fetchMaterialsNeeded(assemblyId, item.sku)}>
+            <TouchableOpacity 
+                key={item.sku} 
+                style={styles.subAssemblyCard} 
+                onPress={() => navigation.navigate('MaterialsList', {assemblyId: assemblyId, subAssemblyId: item.sku})}
+            >
                 <Card title={item.sku} imageURL={item.imageURL} />
             </TouchableOpacity>
         ));

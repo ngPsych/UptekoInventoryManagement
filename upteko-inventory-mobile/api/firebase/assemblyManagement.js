@@ -60,7 +60,7 @@ export const getMaterialsNeeded = async (assemblyId, subAssemblyId) => {
 
 export const getMaterialLocation = async (partId) => {
     try {
-        const partDocRef = doc(db, "part", partId);
+        const partDocRef = doc(db, "parts", partId);
         const partDocSnapshot = await getDoc(partDocRef)
         
         if (partDocSnapshot.exists()) {

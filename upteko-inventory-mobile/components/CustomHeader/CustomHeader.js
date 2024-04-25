@@ -25,7 +25,8 @@ const CustomHeader = ({ title, screen }) => {
             <View style={styles.content}>
                 {screen === "Part" ||
                 screen === "AddPart" || 
-                screen === "SubAssembly"
+                screen === "SubAssembly" ||
+                screen === "MaterialsList"
                 ? (
                     <ImageButton
                         style={{ marginLeft: 20, marginTop: Platform.OS === 'ios' ? 40 : 0 }}
