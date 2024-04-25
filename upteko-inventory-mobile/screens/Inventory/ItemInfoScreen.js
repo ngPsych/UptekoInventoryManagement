@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { NavBar } from '../../components/NavBar/NavBar';
-import { subscribeToPart, deletePartBySKU } from '../../api/firebase/inventoryManagement';
+import { subscribeToPart, deletePartBySKU, subscribeToSubAssembly } from '../../api/firebase/inventoryManagement';
 import { formatFirestoreTimestamp } from '../../utils/TimeFormat';
 import { ImageButton } from '../../components/Button/ImageButton';
 import { useNavigation } from '@react-navigation/native';
 
 import deleteIcon from '../../assets/icons/delete.png';
 
-export const ItemPartScreen = ({ route }) => {
-    const { partSKU } = route.params;
+export const ItemInfoScreen = ({ route }) => {
+    const { itemSKU } = route.params;
     const navigation = useNavigation();
-    const [partData, setPartData] = useState(null);
+    const [itemData, setItemData] = useState(null);
 
     useEffect(() => {
-        const unsubscribe = subscribeToPart(partSKU, (data) => {
-            setPartData(data);
+        const unsubscribe = subscribeToPart(itemSKU, (data) => {
+            setItemData(data);
         });
 
         return () => {
@@ -25,7 +25,7 @@ export const ItemPartScreen = ({ route }) => {
 
     const handleDeletePart = async () => {
         try {
-            const deleted = await deletePartBySKU(partSKU);
+            const deleted = await deletePartBySKU(itemSKU);
             if (deleted) {
                 navigation.goBack();
                 Alert.alert("Success", "Part deleted successfully");
@@ -43,7 +43,7 @@ export const ItemPartScreen = ({ route }) => {
     }
 
     const handleDeletePartButton = () => {
-        Alert.alert(`Delete ${partSKU}`, "Click confirm to delete.", [
+        Alert.alert(`Delete ${itemSKU}`, "Click confirm to delete.", [
             {
                 text: 'Cancel',
                 style: 'cancel',
@@ -71,17 +71,17 @@ export const ItemPartScreen = ({ route }) => {
                         <Text style={styles.titleText}>Last Modified:</Text>
                     </View>
                     <View style={styles.dataColumn}>
-                        {partData && (
+                        {itemData && (
                             <>
-                                <Text style={styles.partDataText}>{partData ? partData.id : "-"}</Text>
-                                <Text style={styles.partDataText}>{partData ? partData.name : "-"}</Text>
-                                <Text style={styles.partDataText}>{partData ? partData.location : "-"}</Text>
-                                <Text style={styles.partDataText}>{partData ? "x" + partData.quantity : "-"}</Text>
-                                <Text style={styles.partDataText}>{partData ? "x" + partData.min_point : "-"}</Text>
-                                <Text style={styles.partDataText}>{partData ? partData.description : "-"}</Text>
-                                <Text style={styles.partDataText}>{partData ? partData.supplier : "-"}</Text>
-                                <Text style={styles.partDataText}>{partData ? partData.supplier_item_number : "-"}</Text>
-                                <Text style={styles.partDataText}>{partData ? formatFirestoreTimestamp(partData.last_modified) : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? itemData.id : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? itemData.name : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? itemData.location : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? "x" + itemData.quantity : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? "x" + itemData.min_point : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? itemData.description : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? itemData.supplier : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? itemData.supplier_item_number : "-"}</Text>
+                                <Text style={styles.partDataText}>{itemData ? formatFirestoreTimestamp(itemData.last_modified) : "-"}</Text>
                             </>
                         )}
                     </View>

@@ -78,11 +78,30 @@ export const getMaterialLocation = async (partId) => {
 export const confirmSubAssembly = async (assemblyId, subAssemblyId, progressId, currentUser) => {
     try {
         const progressDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`, progressId);
-        await updateDoc(progressDocRef, {
-            confirmed: true,
-            last_modified_by: currentUser,
-            last_modified: serverTimestamp(),
-        });
+        const progressDocSnapshot = await getDoc(progressDocRef);
+        
+        if (!progressDocSnapshot.exists()) {
+            throw new Error('Progress document does not exist');
+        }
+        
+        const progressData = progressDocSnapshot.data();
+        const checkedMaterials = progressData.checked_materials;
+        const usedMaterials = progressData.used_materials;
+        console.log("checked", checkedMaterials);
+        console.log("used", usedMaterials);
+        
+        // Check if checkedMaterials is not empty and all materials in checked_materials exist in used_materials
+        if (checkedMaterials.length > 0 && checkedMaterials.every(material => usedMaterials.includes(material))) {
+            await updateDoc(progressDocRef, {
+                confirmed: true,
+                last_modified_by: currentUser,
+                last_modified: serverTimestamp(),
+            });
+            
+            return true;
+        } else {
+            return false;
+        }
     } catch (error) {
         console.error(`Error updating progress confirmation: ${error}`);
         throw error;

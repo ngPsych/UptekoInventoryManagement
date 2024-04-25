@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { NavBar } from '../../components/NavBar/NavBar';
-import { subscribeToAllParts } from '../../api/firebase/inventoryManagement';
+import { subscribeToAllParts, subscribeToAllSubAssemblies } from '../../api/firebase/inventoryManagement';
 import { useNavigation } from '@react-navigation/native';
 
 const windowHeight = Dimensions.get('window').height;
@@ -10,16 +10,26 @@ export const InventoryScreen = () => {
     const [items, setItems] = useState([]);
     const [navbarHeight, setNavbarHeight] = useState(0);
     const navigation = useNavigation();
+    const [listMode, setListMode] = useState('Parts');
 
     useEffect(() => {
-        const unsubscribe = subscribeToAllParts((items) => {
-            setItems(items);
-        });
+        let unsubscribe = () => {}
+
+        if (listMode === 'Parts') {
+            unsubscribe = subscribeToAllParts((items) => {
+                setItems(items);
+            });
+        } else if (listMode === 'Sub-Assemblies') {
+            unsubscribe = subscribeToAllSubAssemblies((items) => {
+                setItems(items);
+                console.log(items);
+            });
+        }
 
         return () => {
             unsubscribe();
         };
-    }, []);
+    }, [listMode]);
 
     const handleNavBarLayout = (height) => {
         setNavbarHeight(height);
@@ -27,42 +37,78 @@ export const InventoryScreen = () => {
 
     const renderItem = ({ item }) => (
         <View>
-            <TouchableHighlight
-                underlayColor="#777"
-                onPress={() => {
-                    navigation.navigate('Part', { partSKU: item.sku });
-                }}
-            >
+            {listMode === 'Parts' ? (
+                <TouchableHighlight
+                    underlayColor="#777"
+                    onPress={() => {
+                        navigation.navigate('ItemInfo', { itemSKU: item.sku });
+                    }}
+                >
+                    <View style={styles.item}>
+                        <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.sku}</Text>
+                        <Text style={[styles.itemText, styles.itemName]} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+                        <Text style={[styles.itemText, styles.itemLocation]} numberOfLines={1} ellipsizeMode="tail">{item.location}</Text>
+                        <Text style={[styles.itemText, styles.itemQuantity]}>x{item.quantity}</Text>
+                    </View>
+                </TouchableHighlight>
+            ) : (
                 <View style={styles.item}>
-                    <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.sku}</Text>
+                    <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.assembly}</Text>
                     <Text style={[styles.itemText, styles.itemName]} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-                    <Text style={[styles.itemText, styles.itemLocation]} numberOfLines={1} ellipsizeMode="tail">{item.location}</Text>
                     <Text style={[styles.itemText, styles.itemQuantity]}>x{item.quantity}</Text>
                 </View>
-            </TouchableHighlight>
+            )}
+    
             {/* ADD SEPARATOR */}
             <View style={styles.separator} />
         </View>
     );
+    
+
+    const handleListModeClick = () => {
+        if (listMode === 'Parts') {
+            setListMode('Sub-Assemblies');
+            console.log(listMode);
+        } else {
+            setListMode('Parts');
+            console.log(listMode)
+        }
+    }
 
     // Calculate the maximum height the list should occupy
     const maxListHeight = windowHeight - navbarHeight - 150;
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={[styles.headerText, styles.headerId]}>ID</Text>
-                <Text style={[styles.headerText, styles.headerName]}>Name</Text>
-                <Text style={[styles.headerText, styles.headerLocation]}>Location</Text>
-                <Text style={[styles.headerText, styles.headerQuantity]}>Qty</Text>
-            </View>
+            {listMode === 'Parts' ? (
+                <View style={styles.header}>
+                    <Text style={[styles.headerText, styles.headerId]}>ID</Text>
+                    <Text style={[styles.headerText, styles.headerName]}>Name</Text>
+                    <Text style={[styles.headerText, styles.headerLocation]}>Location</Text>
+                    <Text style={[styles.headerText, styles.headerQuantity]}>Qty</Text>
+                </View>
+            ) : (
+                <View style={styles.header}>
+                    <Text style={[styles.headerText, styles.headerId]}>Assembly</Text>
+                    <Text style={[styles.headerText, styles.headerName]}>Sub-Assembly</Text>
+                    <Text style={[styles.headerText, styles.headerQuantity]}>Quantity</Text>
+                </View>
+            )}
             <View style={[styles.content, { maxHeight: maxListHeight }]}>
                 <FlatList
                     data={items}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.sku}
+                    // keyExtractor={(item) => item.sku}
                 />
             </View>
+            <TouchableOpacity
+                style={[styles.listModeButton, { bottom: navbarHeight + 30}]}
+                onPress={handleListModeClick}
+            >
+                <Text style={styles.listModeButtonText}>
+                    {listMode === 'Parts' ? 'PART' : 'SUB'}
+                </Text>
+            </TouchableOpacity>
             <NavBar activeItem="Inventory" onNavBarLayout={handleNavBarLayout} />
         </View>
     );
@@ -137,5 +183,19 @@ const styles = StyleSheet.create({
     separator: {
         height: 1,
         backgroundColor: '#ccc',
-    },    
+    },
+    listModeButton: {
+        position: 'absolute',
+        right: 30,
+        width: 60,
+        height: 60,
+        borderRadius: 30,
+        backgroundColor: 'rgba(76, 175, 80, 0.7)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    listModeButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    }
 });

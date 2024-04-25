@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
 import { getPartBySKU, updateItemQuantity } from '../../api/firebase/inventoryManagement';
+import { NavBar } from '../../components/NavBar/NavBar';
+import { useNavigation } from '@react-navigation/native';
 
 export const PostScanScreen = ({ route }) => {
     const { currentScannedSKU } = route.params;
+    const navigation = useNavigation();
     const [currentScannedPart, setCurrentScannedPart] = useState(null);
     const [newQuantity, setNewQuantity] = useState("1");
 
@@ -38,21 +41,14 @@ export const PostScanScreen = ({ route }) => {
             return;
         }
 
-        // this checks through if the sku/item number starts with 'p' then it is from parts inventory else 's' for subassembly
-        let collectionName;
-        if (currentScannedPart.id.startsWith('P')) {
-            collectionName = 'parts';
-        } else if (currentScannedPart.id.startsWith('S')) {
-            collectionName = 'subassembly';
-        } else {
-            alert('Invalid part ID');
-            return;
-        }
-
         try {
-            await updateItemQuantity({ collectionName, sku: currentScannedSKU, quantity: updatedQuantity });
-            alert('Amount added/removed successfully');
-            fetchScannedPart();
+            await updateItemQuantity({ sku: currentScannedSKU, quantity: updatedQuantity });
+            if (isAdding) {
+                alert('Amount added successfully');
+            } else {
+                alert('Amount removed successfully');
+            }
+            navigation.navigate('QRScanner');
         } catch (error) {
             console.error('Error updating quantity:', error);
             alert('Error adding/removing amount');
@@ -60,52 +56,62 @@ export const PostScanScreen = ({ route }) => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View style={styles.container}>
-                <Text style={styles.title}>Current Scanned SKU: {currentScannedSKU}</Text>
-                {currentScannedPart && (
-                    <View style={styles.partDetails}>
-                        <Text style={styles.partText}>Part ID: {currentScannedPart.id}</Text>
-                        <Text style={styles.partText}>Part Name: {currentScannedPart.name}</Text>
-                        <Text style={styles.partText}>Quantity: {currentScannedPart.quantity}</Text>
+        <View style={styles.container}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+                <View style={styles.content}>
+                    <Text style={styles.title}>Scanned SKU: {currentScannedSKU}</Text>
+                    {currentScannedPart && (
+                        <View style={styles.partDetails}>
+                            <Text style={styles.partText}>Part ID: {currentScannedPart.id}</Text>
+                            <Text style={styles.partText}>Part Name: {currentScannedPart.name}</Text>
+                            <Text style={styles.partText}>Quantity: {currentScannedPart.quantity}</Text>
 
-                        <Text style={styles.quantityText}>Quantity to Add/Remove:</Text>
-                        <TextInput 
-                            style={styles.input}
-                            placeholder="1"
-                            value={newQuantity}
-                            onChangeText={setNewQuantity}
-                            keyboardType="numeric"
-                        />
-                        <View style={styles.buttonContainer}>
-                            <Button 
-                                title="Add" 
-                                onPress={() => updateQuantity(true)} 
+                            <Text style={styles.quantityText}>Quantity to Add/Remove:</Text>
+                            <TextInput 
+                                style={styles.input}
+                                placeholder="1"
+                                value={newQuantity}
+                                onChangeText={setNewQuantity}
+                                keyboardType="numeric"
                             />
-                            <Button 
-                                title="Remove" 
-                                onPress={() => updateQuantity(false)} 
-                            />
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity 
+                                    style={styles.button}
+                                    onPress={() => updateQuantity(true)} 
+                                >
+                                    <Text style={styles.buttonText}>Add</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    style={styles.button}
+                                    onPress={() => updateQuantity(false)} 
+                                >
+                                    <Text style={styles.buttonText}>Remove</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    </View>
-                )}
-            </View>
-        </TouchableWithoutFeedback>
+                    )}
+                </View>
+            </TouchableWithoutFeedback>
+            <NavBar activeItem="Scanner" />
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 20,
         backgroundColor: '#666',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    content: {
+        marginBottom: 100,
     },
     title: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
+        textAlign: 'center',
+        color: 'white',
     },
     partDetails: {
         alignItems: 'center',
@@ -116,7 +122,8 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
         shadowRadius: 4,
-        elevation: 5, // Shadow effect for elevation
+        elevation: 5,
+        margin: 35,
     },
     partText: {
         fontSize: 16,
@@ -140,5 +147,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         width: '100%',
+    },
+    button: {
+        backgroundColor: '#007bff',
+        borderRadius: 5,
+        padding: 10,
+        width: 100,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     }
 });

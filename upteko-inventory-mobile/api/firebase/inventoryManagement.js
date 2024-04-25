@@ -1,4 +1,4 @@
-import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, onSnapshot, deleteDoc, setDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, collection, onSnapshot, deleteDoc, setDoc, query, collectionGroup, getDocs } from "firebase/firestore";
 import app from "./firebaseConfig";
 
 const db = getFirestore(app);
@@ -57,9 +57,9 @@ export const getPartBySKU = async ({ sku }) => {
     }
 };
 
-export const updateItemQuantity = async ({ collectionName, sku, quantity }) => {
+export const updateItemQuantity = async ({ sku, quantity }) => {
     try {
-        const itemRef = doc(db, collectionName, sku);
+        const itemRef = doc(db, 'parts', sku);
         
         await updateDoc(itemRef, {
             quantity: quantity,
@@ -104,4 +104,66 @@ export const deletePartBySKU = async (sku) => {
         console.error("Error deleting part document:", error);
         throw error;
     }
+};
+
+export const subscribeToAllSubAssemblies = (callback) => {
+    const subassemblyGroupQuery = query(collectionGroup(db, "subassembly"));
+
+    const unsubscribe = onSnapshot(subassemblyGroupQuery, async (snapshot) => { 
+        const promises = [];
+        const subassemblies = [];
+
+        snapshot.forEach(async (doc) => {
+            const subassemblyPath = `${doc.ref.path}/finished`;
+            const subcollectionRef = collection(db, subassemblyPath);
+            
+            const promise = getDocs(subcollectionRef).then(querySnapshot => {
+                const quantity = querySnapshot.size;
+                const data = doc.data();
+                if (data) {
+                    subassemblies.push({
+                        sku: doc.id,
+                        assembly: data.assembly,
+                        name: data.name,
+                        quantity: quantity,
+                        minPoint: data.min_point,
+                        location: data.location,
+                        imageURL: data.imageURL,
+                        lastModified: data.last_modified,
+                        dateCreated: data.date_created
+                    });
+                }
+            });
+
+            promises.push(promise);
+        });
+
+        // Wait for all promises to resolve
+        await Promise.all(promises);
+
+        // Once all promises have resolved and subassemblies are populated, invoke the callback
+        callback(subassemblies);
+    }, (error) => {
+        console.error("[inventoryManagement] Error subscribing to Sub-Assemblies:", error);
+        throw error;
+    });
+
+    return unsubscribe;
+};
+
+export const subscribeToSubAssembly = (assemblyId, subAssemblyId, id, callback) => {
+    const subAssemblyRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/finished`, id);
+
+    return onSnapshot(subAssemblyRef, (docSnapshot) => {
+        if (docSnapshot.exists()) {
+            const subAssemblyData = {
+                id: docSnapshot.id,
+                ...docSnapshot.data()
+            };
+            callback(subAssemblyData);
+        }
+    }, (error) => {
+        console.error("Error subscribing to sub-assembly:", error);
+        throw error;
+    });
 };

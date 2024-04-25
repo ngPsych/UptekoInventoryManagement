@@ -7,7 +7,6 @@ import { confirmSubAssembly } from '../../api/firebase/assemblyManagement';
 export const QRCodeScanner = () => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [isScanningEnabled, setIsScanningEnabled] = useState(false); // Initially disable scanning
   const cameraRef = useRef(null);
   const navigation = useNavigation();
 
@@ -21,22 +20,45 @@ export const QRCodeScanner = () => {
   const handleBarCodeScanned = async ({ type, data }) => {
     if (!scanned) {
       setScanned(true);
-      setIsScanningEnabled(false); // Disable scanning after successful scan
       if (data.startsWith("CONFIRM:")) {
         console.log(data);
         const subAssemblyConfirmed = await confirmSubAssembly(parseAssemblyText(data).assemblyId, 
           parseAssemblyText(data).subAssemblyId, parseAssemblyText(data).progressId, "Alexander Nguyen"); // Needs a function to get current user full name
         console.log(parseAssemblyText(data).progressId);
+        console.log("confirmed", subAssemblyConfirmed);
         if (subAssemblyConfirmed) {
-          Alert.alert(`Confirmed that ${parseAssemblyText(data).progressId} has been finalized`)
+          Alert.alert(
+            `Confirmed that ${parseAssemblyText(data).progressId} has been finalized`,
+            '',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  setScanned(false);
+                },
+              },
+            ],
+            { cancelable: false }
+          );
         } else {
-          Alert.alert("Error confirming. Sub-Assembly's materials are not all checked. Did you finish the sub-assembly?")
+          Alert.alert(
+            'Error confirming. Please CHECK all materials!',
+            '',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  setScanned(false);
+                },
+              },
+            ],
+            { cancelable: false }
+          );
         }
-      }
-      // if (validateItemNumber(data)) {
-      //   navigation.navigate('PostScan', { currentScannedSKU: data }); // Pass data as parameter
-      // } 
-      else {
+      } else if (validateItemNumber(data)) {
+        navigation.navigate('PostScan', { currentScannedSKU: data }); // Pass data as parameter
+        setScanned(false);
+      } else {
         Alert.alert('INVALID ITEM NUMBER', 'Please scan a valid item number.');
       }
     }
@@ -61,16 +83,10 @@ export const QRCodeScanner = () => {
 
   const validateItemNumber = (data) => {
     // Define your item number patterns
-    const itemNumberPattern1 = /^P\d{6}$/; // P followed by 6 digits
-    const itemNumberPattern2 = /^A\d{6}$/; // A followed by 6 digits
+    const itemNumberPattern1 = /^P\d{4}$/; // P followed by 4 digits
 
     // Check if data matches any of the patterns
-    return itemNumberPattern1.test(data) || itemNumberPattern2.test(data);
-  };
-
-  const toggleScanning = () => {
-    setIsScanningEnabled(!isScanningEnabled);
-    setScanned(false);
+    return itemNumberPattern1.test(data) ;
   };
   
   if (hasCameraPermission === null) {
@@ -83,18 +99,12 @@ export const QRCodeScanner = () => {
 
   return (
     <View style={styles.container}>
-      {!isScanningEnabled && <Text style={styles.text}>Click Scan to start scanning QR Code</Text>}
-      {isScanningEnabled && (
-        <Camera
-          style={styles.camera}
-          type={Camera.Constants.Type.back}
-          ref={cameraRef}
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        />
-      )}
-      <TouchableOpacity style={styles.buttonContainer} onPress={toggleScanning}>
-        <Text style={styles.buttonText}>{isScanningEnabled ? 'Scanning' : 'Scan'}</Text>
-      </TouchableOpacity>
+      <Camera
+        style={styles.camera}
+        type={Camera.Constants.Type.back}
+        ref={cameraRef}
+        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+      />
     </View>
   );
 };
@@ -105,29 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#666',
     justifyContent: 'center',
   },
-  cameraContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
   camera: {
     flex: 1,
-  },
-  buttonContainer: {
-    position: 'absolute',
-    bottom: 100,
-    alignSelf: 'center',
-    backgroundColor: '#007bff',
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  text: {
-    padding: 10,
-    textAlign: 'center',
-    color: 'white',
   },
 });

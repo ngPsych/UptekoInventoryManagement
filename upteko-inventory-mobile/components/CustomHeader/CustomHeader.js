@@ -23,7 +23,7 @@ const CustomHeader = ({ title, screen }) => {
     return (
         <View style={[styles.container, { height: Platform.OS === 'ios' ? 100 : 60 }]}>
             <View style={styles.content}>
-                {screen === "Part" ||
+                {screen === "ItemInfo" ||
                 screen === "AddPart" || 
                 screen === "SubAssembly" ||
                 screen === "MaterialsList"

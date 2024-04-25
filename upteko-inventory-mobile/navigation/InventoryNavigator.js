@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { InventoryScreen } from '../screens/Inventory/InventoryScreen';
-import { ItemPartScreen } from '../screens/Inventory/ItemPartScreen';
+import { ItemInfoScreen } from '../screens/Inventory/ItemInfoScreen';
 import { AddPartScreen } from '../screens/Inventory/AddPartScreen'
 import CustomHeader from '../components/CustomHeader/CustomHeader';
 
@@ -20,10 +20,10 @@ export const InventoryNavigator = () => {
                 }
             />
             <Inventory.Screen
-                name="Part"
-                component={ItemPartScreen}
+                name="ItemInfo"
+                component={ItemInfoScreen}
                 options={
-                    {header: () => <CustomHeader title="Part" screen="Part" />}
+                    {header: () => <CustomHeader title="Info" screen="ItemInfo" />}
                 }
             />
             <Inventory.Screen
