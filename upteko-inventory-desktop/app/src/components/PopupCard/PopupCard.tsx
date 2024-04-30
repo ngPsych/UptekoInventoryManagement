@@ -48,8 +48,6 @@ export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
     return (
         <div className={styles.popupContainer} onClick={onClose}>
             <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
-                <button onClick={handlePrint}>Print</button>
-                <button onClick={downloadQRCode}>Download QR Code</button>
                     <div className={styles.printable} ref={componentRef}>
                         <QRCodeGenerator itemNumber={item?.sku ?? 'undefined'} size={150} />
                         <h2>{item?.sku}</h2>
@@ -64,6 +62,8 @@ export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
                             <p>Reorder Point: {item?.minPoint}</p>
                         </div>
                     </div>
+                <button onClick={handlePrint}>Print</button>
+                <button onClick={downloadQRCode}>Download QR Code</button>
                 <button onClick={handleReorderButton}>Reorder</button>
                 <button onClick={onClose}>Close</button>
             </div>
@@ -128,20 +128,20 @@ export const AddNewPartPopupCard: React.FC<PopupCardProps> = ({ onClose }) => {
         <div className={styles.popupContainer} onClick={onClose}>
             <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
                 <h2>Add New Part</h2>
-
                 <form onSubmit={handleSubmit}>
                     <input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-                    <input type="number" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} />
+                    <input type="number" placeholder="Quantity" value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value, 10))} />
                     <input type="text" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
                     <input type="text" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
                     <input type="text" placeholder="Supplier" value={supplier} onChange={(e) => setSupplier(e.target.value)} />
                     <input type="text" placeholder="Supplier Item Number" value={supplierItemNumber} onChange={(e) => setSupplierItemNumber(e.target.value)} />
-                    <input type="number" placeholder="Reorder Point" value={minPoint} onChange={(e) => setMinPoint(parseInt(e.target.value))} />
-
+                    <input type="number" placeholder="Reorder Point" value={minPoint} onChange={(e) => setMinPoint(parseInt(e.target.value, 10))} />
+        
                     <button type="submit">Add Part</button>
-                    <button onClick={onClose}>Close</button>
+                    <button type="button" onClick={onClose}>Close</button>
                 </form>
             </div>
         </div>
+    
     );
 };

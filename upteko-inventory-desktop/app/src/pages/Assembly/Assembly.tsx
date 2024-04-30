@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styles from './Assembly.module.css';
 import { NavigationBar } from '../../components/NavBar/NavBar';
 import { useRequireAuth } from "../../hooks/useRequireAuth"
-import { CreateNewAssemblyPopupCard } from '../../components/PopupCard/CreateNewAssemblyPopupCard';
 import { Card } from '../../components/Card/Card';
 import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, subscribeToProgressCheckedMaterials, deleteProgress, currentUserProgressSubAssemblyExist, createSubAssemblyProgress, getProgressDocumentId, subscribeToProgressConfirmation, confirmSubAssembly } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem, Material, SubAssemblyItem } from '../../interfaces/IAssembly';
@@ -248,8 +247,7 @@ export default function AssemblyPage() {
 
             {!selectedAssemblyId && (
                 <div>
-                    <button onClick={() => setShowCreateNewAssemblyPupop(true)}>Create new assembly</button>
-                    <button onClick={() => setShowTest(true)}>CREATE TEST</button>
+                    <button onClick={() => setShowTest(true)}>Create new Assembly</button>
                 </div>
             )}
             {selectedAssemblyId && (
@@ -257,12 +255,6 @@ export default function AssemblyPage() {
                     <button onClick={handleBackButtonClick}>Back</button>
                     <button onClick={handleAddSubassemblyButtonClick}>Add subassembly</button>
                 </div>
-            )}
-
-            {showCreateNewAssemblyPopup && (
-                <CreateNewAssemblyPopupCard
-                    onClose={() => setShowCreateNewAssemblyPupop(false)}
-                />
             )}
 
             {/* remove below later, this is for testing*/}

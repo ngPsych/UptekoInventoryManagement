@@ -97,7 +97,7 @@ export default function InventoryPage() {
                 </button>
             </div>
 
-            <div>
+            {/* <div>
                 <div>
                     <button onClick={() => setShowAddPartPopup(true)}>Add new part</button>
                 </div>
@@ -107,6 +107,23 @@ export default function InventoryPage() {
                     placeholder="Search by SKU or Name"
                     value={searchInput}
                     onChange={handleSearchInputChange}
+                />
+            </div> */}
+
+            <div className={styles.addButtonSearchContainer}>
+                <button
+                    onClick={() => setShowAddPartPopup(true)}
+                    className={styles.addButton}
+                >
+                    Add New Part
+                </button>
+
+                <input
+                    type="text"
+                    placeholder="Search by SKU or Name"
+                    value={searchInput}
+                    onChange={handleSearchInputChange}
+                    className={styles.searchInput}
                 />
             </div>
 

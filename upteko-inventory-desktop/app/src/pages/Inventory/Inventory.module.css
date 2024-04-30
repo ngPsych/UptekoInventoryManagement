@@ -36,3 +36,34 @@
 .tableMode button.inactiveButton:hover {
     background-color: #d9d9d9;
 }
+
+.addButtonSearchContainer {
+    display: flex;
+    margin: 20px;
+}
+
+.addButton {
+    flex-grow: 0;
+    width: 150px;
+    height: 40px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.addButton:hover {
+    background-color: #5bcf5f;
+}
+
+.searchInput {
+    flex-grow: 1;
+    height: 40px;
+    font-size: 16px;
+    padding-left: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
