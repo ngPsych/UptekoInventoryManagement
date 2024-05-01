@@ -36,6 +36,7 @@ const CustomHeader = ({ title, screen }) => {
                         height={28}
                         whiteTint={true}
                         disabled={false}
+                        testID="back-button"
                     />
                 ) : (
                     <Image source={cameraDroneIcon} style={[styles.image, { marginTop: Platform.OS === 'ios' ? 40 : 0 }]} />
@@ -51,6 +52,7 @@ const CustomHeader = ({ title, screen }) => {
                             height={28}
                             whiteTint={true}
                             disabled={false}
+                            testID="add-item-button"
                         />
                     )}
                 </View>

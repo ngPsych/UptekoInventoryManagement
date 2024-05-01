@@ -1,4 +1,3 @@
-// useUserInfo.js
 import { useState, useEffect } from 'react';
 import { getCurrentUser, signOutUser } from '../services/firebase/authentication';
 import { getCurrentUserInfo } from '../services/firebase/userManagement';

@@ -5,7 +5,7 @@ import { ImageButton } from '../../components/Button/ImageButton';
 import { generateUniquePartID } from '../../api/firebase/IDGenerationService';
 
 import AddPartIcon from '../../assets/icons/add-part.png';
-import { addNewPart } from '../../api/firebase/inventoryManagement';
+import { addNewPart } from '../../api/firebase/InventoryManagement';
 
 export const AddPartScreen = ({ navigation }) => {
     const [name, setName] = useState('');

@@ -11,7 +11,6 @@ interface CardProps {
     contextMenuPosition: { top: number; left: number };
     handleModify: () => void;
     handleDelete: () => void;
-    // progressExist: boolean;
     selectedAssemblyId?: string | null;
     subAssemblyId?: string;
     userFullName?: string;
@@ -26,7 +25,6 @@ export const Card: React.FC<CardProps> = ({
     contextMenuPosition,
     handleModify,
     handleDelete,
-    // progressExist,
     selectedAssemblyId,
     subAssemblyId,
     userFullName,

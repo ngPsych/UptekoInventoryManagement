@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Dimensions, TouchableHighlight, TouchableOpacity } from 'react-native';
 import { NavBar } from '../../components/NavBar/NavBar';
-import { subscribeToAllParts, subscribeToAllSubAssemblies } from '../../api/firebase/inventoryManagement';
+import { subscribeToAllParts, subscribeToAllSubAssemblies } from '../../api/firebase/InventoryManagement';
 import { useNavigation } from '@react-navigation/native';
 
 const windowHeight = Dimensions.get('window').height;

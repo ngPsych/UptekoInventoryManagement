@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Camera } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
-import { confirmSubAssembly } from '../../api/firebase/assemblyManagement';
+import { confirmSubAssembly } from '../../api/firebase/AssemblyManagement';
 
 export const QRCodeScanner = () => {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);

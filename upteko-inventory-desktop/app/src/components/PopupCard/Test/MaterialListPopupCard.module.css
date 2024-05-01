@@ -13,23 +13,78 @@
 }
 
 .popupCard {
-    background-color: white;
+    background-color: #f9f9f9;
     width: 90%;
-    height: 90%;
-    padding: 1vw;
+    max-width: 800px;
+    padding: 3rem;
     border-radius: 1rem;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
     position: relative;
     z-index: 10009;
+    height: 80vh;
 }
 
 .exitButton {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.exitButton:hover {
+    background-color: #c82333;
 }
 
 ul {
     list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 1rem;
+}
+
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+}
+
+input[type="checkbox"] {
+    margin-right: 0.5rem;
+    appearance: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid #ccc;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+input[type="checkbox"]:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+label {
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.qrCodeContainer {
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    text-align: right;
+}
+
+.qrCodeMessage {
+    margin-top: 1rem;
+    font-style: italic;
+    color: #6c757d;
 }

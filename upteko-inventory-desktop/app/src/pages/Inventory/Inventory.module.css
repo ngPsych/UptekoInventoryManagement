@@ -67,3 +67,8 @@
     border: 1px solid #ccc;
     border-radius: 5px;
 }
+
+.disabledButton {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

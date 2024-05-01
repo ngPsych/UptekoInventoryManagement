@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { NavBar } from '../../components/NavBar/NavBar';
-import { subscribeToPart, deletePartBySKU, subscribeToSubAssembly } from '../../api/firebase/inventoryManagement';
+import { subscribeToPart, deletePartBySKU } from '../../api/firebase/InventoryManagement';
 import { formatFirestoreTimestamp } from '../../utils/TimeFormat';
 import { ImageButton } from '../../components/Button/ImageButton';
 import { useNavigation } from '@react-navigation/native';

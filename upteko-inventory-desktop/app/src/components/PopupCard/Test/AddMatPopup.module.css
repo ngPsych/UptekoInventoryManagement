@@ -92,7 +92,7 @@
 }
 
 .quantityInput:focus {
-    border-color: #007bff; /* Adjust border color on focus */
+    border-color: #007bff;
 }
 
 .quantityInput:disabled {

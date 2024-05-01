@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity } from 'react-native';
-import { getPartBySKU, updateItemQuantity } from '../../api/firebase/inventoryManagement';
+import { getPartBySKU, updateItemQuantity } from '../../api/firebase/InventoryManagement';
 import { NavBar } from '../../components/NavBar/NavBar';
 import { useNavigation } from '@react-navigation/native';
 
@@ -30,17 +30,21 @@ export const PostScanScreen = ({ route }) => {
             alert('Please enter a valid amount');
             return;
         }
-
+    
         // checks if isAdding is true/false, if true then increment else decrement
-        let updatedQuantity = isAdding
-            ? currentScannedPart.quantity + quantityChange
-            : currentScannedPart.quantity - quantityChange;
-
-        if (updatedQuantity < 0) {
-            alert('Cannot have negative amount');
+        let updatedQuantity;
+        if (isAdding) {
+            updatedQuantity = currentScannedPart.quantity + quantityChange;
+        } else {
+            // Ensure updatedQuantity doesn't become negative or exceed current quantity
+            updatedQuantity = Math.max(0, currentScannedPart.quantity - quantityChange);
+        }
+    
+        if (!isAdding && updatedQuantity > currentScannedPart.quantity) {
+            alert('Updated quantity cannot be greater than current quantity');
             return;
         }
-
+    
         try {
             await updateItemQuantity({ sku: currentScannedSKU, quantity: updatedQuantity });
             if (isAdding) {
@@ -54,6 +58,7 @@ export const PostScanScreen = ({ route }) => {
             alert('Error adding/removing amount');
         }
     };
+    
 
     return (
         <View style={styles.container}>

@@ -8,21 +8,40 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 100002; /* Ensure the popup is above other elements */
+    z-index: 100002;
 }
 
 .popup {
-    background-color: white;
+    background-color: #f9f9f9;
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     text-align: center;
-    z-index: 10001; /* Ensure the popup is above other elements */
+    max-width: 400px;
+    width: 80%;
+}
+
+.popup p {
+    margin-bottom: 20px;
 }
 
 .buttonContainer {
-    margin-top: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .buttonContainer button {
+    padding: 10px 20px;
     margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #4caf50;
+    color: #fff;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.buttonContainer button:hover {
+    background-color: #45a049;
 }

@@ -21,10 +21,11 @@ export const ImageButton = ({ style, onPress, disabled, imageSource, width, heig
     }
 
     return (
-        <TouchableOpacity onPress={onPress} style={[styles.buttonContainer, style]}>
+        <TouchableOpacity onPress={onPress} style={[styles.buttonContainer, style]} testID="image-button">
             <Image
                 source={imageSource}
                 style={imageStyle}
+                testID="image"
             />
         </TouchableOpacity>
     );

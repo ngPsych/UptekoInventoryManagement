@@ -247,13 +247,13 @@ export default function AssemblyPage() {
 
             {!selectedAssemblyId && (
                 <div>
-                    <button onClick={() => setShowTest(true)}>Create new Assembly</button>
+                    <button className={styles.createButton} onClick={() => setShowTest(true)}>Create new Assembly</button>
                 </div>
             )}
             {selectedAssemblyId && (
                 <div>
-                    <button onClick={handleBackButtonClick}>Back</button>
-                    <button onClick={handleAddSubassemblyButtonClick}>Add subassembly</button>
+                    <button className={styles.createButton} onClick={handleBackButtonClick}>Back</button>
+                    <button className={styles.createButton} onClick={handleAddSubassemblyButtonClick}>Add subassembly</button>
                 </div>
             )}
 

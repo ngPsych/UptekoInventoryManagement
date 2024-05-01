@@ -31,7 +31,7 @@ export const NavigationBar = () => {
         const target = event.currentTarget.getAttribute('href');
         if (target === '#signout') {
             handleSignOut();
-            toggleDropdown(); // Close dropdown after sign-out
+            toggleDropdown();
         }
     }, [handleSignOut]);
 
@@ -74,7 +74,6 @@ export const NavigationBar = () => {
         <div className={styles.navbar}>
             <div className={styles.logo}>
                 <img src={uptekoLogoWhite} alt=""/>
-                {/* {imageURL && <img src={imageURL} alt="Upteko Icon" draggable="false" />} */}
             </div>
             <div className={styles.pages}>
                 <ul>

@@ -23,7 +23,7 @@ export default function AdminPage() {
     const contextMenuRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const unsubscribe = subscribeToAllUsers((users: User[]) => { // Subscribe to user updates
+        const unsubscribe = subscribeToAllUsers((users: User[]) => {
             setUsers(users);
         });
         
@@ -69,7 +69,6 @@ export default function AdminPage() {
     };
 
     const handleModify = () => {
-        // Implement modify functionality here using selectedUser.email
         toast.info(`Modify ${selectedUser?.email}`, {
             position: "bottom-right",
             autoClose: 3000,
@@ -85,7 +84,6 @@ export default function AdminPage() {
     };
 
     const handleDelete = () => {
-        // Implement delete functionality here using selectedUser.email
         toast.error(`Delete ${selectedUser?.email}`, {
             position: "bottom-right",
             autoClose: 3000,

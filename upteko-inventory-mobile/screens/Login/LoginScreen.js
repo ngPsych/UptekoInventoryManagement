@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet } from 'react-native';
-import { signIn } from '../../api/firebase/authentication';
+import { signIn } from '../../api/firebase/Authentication';
 import { useNavigation } from '@react-navigation/native';
 
 export const LoginScreen = () => {

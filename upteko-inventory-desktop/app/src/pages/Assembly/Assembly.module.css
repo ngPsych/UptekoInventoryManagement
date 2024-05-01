@@ -6,10 +6,28 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    padding: 3rem 4rem 0 6rem;
+    padding: 2.5rem 4rem 0 6rem;
 }
 
 .assemblyCard {
     flex-basis: calc(25% - 1rem);
-    margin: 0 1rem 1rem 0;
+    margin: 0 1rem 0.5rem 0;
+}
+
+.createButton {
+    flex-grow: 0;
+    width: 150px;
+    height: 50px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 2rem;
+    margin-left: 8rem;
+}
+
+.createButton:hover {
+    background-color: #5bcf5f;
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { NavBar } from '../../components/NavBar/NavBar';
 import { Card } from '../../components/Card/Card';
-import { subscribeToSubAssemblyItems } from '../../api/firebase/assemblyManagement';
+import { subscribeToSubAssemblyItems } from '../../api/firebase/AssemblyManagement';
 import { useNavigation } from '@react-navigation/native';
 
 export const SubAssemblyScreen = ({ route }) => {

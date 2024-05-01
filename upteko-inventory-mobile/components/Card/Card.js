@@ -4,8 +4,8 @@ import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 export const Card = ({ title, imageURL }) => {
     return (
         <View style={styles.cardContainer}>
-            {imageURL && <Image source={{ uri: imageURL }} style={styles.image} />}
-            <Text style={styles.titleText}>{title}</Text>
+            {imageURL && <Image source={{ uri: imageURL }} style={styles.image} testID="card-image" />}
+            <Text style={styles.titleText} testID="card-title" >{title}</Text>
         </View>
     )
 }

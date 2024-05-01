@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions, FlatList } from "react-native";
 import { NavBar } from "../../components/NavBar/NavBar";
-import { getMaterialLocation, getMaterialsNeeded } from "../../api/firebase/assemblyManagement";
+import { getMaterialLocation, getMaterialsNeeded } from "../../api/firebase/AssemblyManagement";
 
 const windowHeight = Dimensions.get('window').height;
 

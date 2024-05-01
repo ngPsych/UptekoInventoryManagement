@@ -28,19 +28,18 @@ export const subscribeToInventoryParts = (callback: (items: Item[]) => void) => 
 };
 
 export const subscribeToAllSubAssemblies = (callback: (items: SubAssemblyItem[]) => void): () => void => {
-    // Collection group query for 'subassembly' collections
     const subassemblyGroupQuery = query(collectionGroup(db, "subassembly"));
 
-    const unsubscribe = onSnapshot(subassemblyGroupQuery, async (snapshot) => { // Ensure to mark the callback as async
+    const unsubscribe = onSnapshot(subassemblyGroupQuery, async (snapshot) => {
         const promises: Promise<void>[] = [];
         const subassemblies: SubAssemblyItem[] = [];
 
         snapshot.forEach(async (doc: QueryDocumentSnapshot) => {
-            const subassemblyPath = `${doc.ref.path}/finished`; // Construct the path to the 'finished' subcollection
-            const subcollectionRef = collection(db, subassemblyPath); // Reference to the 'finished' subcollection
+            const subassemblyPath = `${doc.ref.path}/finished`;
+            const subcollectionRef = collection(db, subassemblyPath);
             
             const promise = getDocs(subcollectionRef).then(querySnapshot => {
-                const quantity = querySnapshot.size; // Get the count of documents in the subcollection
+                const quantity = querySnapshot.size;
                 const data = doc.data();
                 if (data) {
                     subassemblies.push({
@@ -60,10 +59,8 @@ export const subscribeToAllSubAssemblies = (callback: (items: SubAssemblyItem[])
             promises.push(promise);
         });
 
-        // Wait for all promises to resolve
         await Promise.all(promises);
 
-        // Once all promises have resolved and subassemblies are populated, invoke the callback
         callback(subassemblies);
     }, (error) => {
         console.error("[inventoryManagement] Error subscribing to Sub-Assemblies:", error);
@@ -83,7 +80,6 @@ export const addNewPart = async (
     supplierItemNumber: string,
     minPoint: number) => {
 
-        // Adds a new document for "parts"
         await setDoc(doc(db, "parts", id), {
             name: name,
             quantity: quantity,
@@ -101,17 +97,13 @@ export const updateItemQuantity = async (collection: string, sku: string, quanti
     try {
         const itemRef = doc(db, collection, sku);
 
-        // Get the current document
         const docSnap = await getDoc(itemRef);
 
         if (docSnap.exists()) {
-            // Get current quantity
             const currentQuantity = docSnap.data().quantity || 0;
 
-            // Calculate new quantity (use add to add and remove to subtract)
             let newQuantity = action === "add" ? currentQuantity + quantity : currentQuantity - quantity;
 
-            // Ensure the quantity doesn't go negative
             newQuantity = Math.max(newQuantity, 0);
 
             await updateDoc(itemRef, {

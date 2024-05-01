@@ -1,11 +1,9 @@
-/* Table Container */
 .tableContainer {
     overflow: auto;
     width: 100%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Table Styles */
 .tableContainer table {
     border-collapse: collapse;
     width: 100%;
@@ -17,7 +15,6 @@
     padding: 12px;
 }
 
-/* Header Styles */
 .tableContainer th {
     background-color: #d4d4d4;
     color: #333;
@@ -25,18 +22,15 @@
     text-align: left;
 }
 
-/* Body Styles */
 .tableContainer td {
     background-color: #fff;
     color: #333;
 }
 
-/* Striped Rows */
 .tableContainer tr:nth-child(even) td {
     background-color: #f9f9f9;
 }
 
-/* Hover Effect */
 .tableContainer tr:hover td {
     background-color: #f0f0f0;
 }

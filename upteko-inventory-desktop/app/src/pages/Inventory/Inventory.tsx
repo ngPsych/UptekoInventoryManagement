@@ -97,26 +97,15 @@ export default function InventoryPage() {
                 </button>
             </div>
 
-            {/* <div>
-                <div>
-                    <button onClick={() => setShowAddPartPopup(true)}>Add new part</button>
-                </div>
-
-                <input
-                    type="text"
-                    placeholder="Search by SKU or Name"
-                    value={searchInput}
-                    onChange={handleSearchInputChange}
-                />
-            </div> */}
-
             <div className={styles.addButtonSearchContainer}>
                 <button
                     onClick={() => setShowAddPartPopup(true)}
-                    className={styles.addButton}
+                    className={`${styles.addButton} ${tableMode === 'Sub-Assemblies' ? styles.disabledButton : ''}`}
+                    disabled={tableMode === 'Sub-Assemblies'}
                 >
                     Add New Part
                 </button>
+
 
                 <input
                     type="text"

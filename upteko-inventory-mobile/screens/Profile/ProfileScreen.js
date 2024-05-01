@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NavBar } from '../../components/NavBar/NavBar';
-import { signOutUser } from '../../api/firebase/authentication';
+import { signOutUser } from '../../api/firebase/Authentication';
 
 export const ProfileScreen = () => {
     const navigation = useNavigation(); 

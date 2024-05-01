@@ -10,7 +10,7 @@ interface CustomSelectProps {
     options: Option[];
     onSelect: (material: { sku: string; name: string }) => void;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    disabled?: boolean; // Add disabled prop with optional boolean type
+    disabled?: boolean;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({ options, onSelect, disabled = false }) => {

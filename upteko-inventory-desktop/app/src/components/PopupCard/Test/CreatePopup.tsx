@@ -10,7 +10,7 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
     const [name, setName] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [subNames, setSubNames] = useState<string[]>(['']);
-    const [subAssemblyCount, setSubAssemblyCount] = useState(0); // Used to track added subassembly
+    const [subAssemblyCount, setSubAssemblyCount] = useState(0);
     const [showAddMatPopup, setShowAddMatPopup] = useState(false);
     const [seletedSubAssemblyIndex, setSelectedSubAssemblyIndex] = useState(0);
     const [selectedMaterials, setSelectedMaterials] = useState<{ [key: number]: { sku: string; name: string, quantity: number }[] }>({});
@@ -105,10 +105,6 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
         });
     };
 
-    const test = () => {
-        console.log(selectedMaterials);
-    }
-
     return (
         <div className={styles.popupContainer} onClick={onClose}>
             <div className={styles.popupCard} onClick={(e) => e.stopPropagation()}>
@@ -153,7 +149,6 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
                     <div className={styles.formButtonContainer}>
                         <button type="submit">Submit</button>
                         <button type="button" onClick={onClose}>Cancel</button>
-                        <button type="button" onClick={test}>TEST</button>
                     </div>
 
                 </form>

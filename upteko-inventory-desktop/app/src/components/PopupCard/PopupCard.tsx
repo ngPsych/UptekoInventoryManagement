@@ -17,8 +17,8 @@ export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
     });
 
     const downloadQRCode = () => {
-        const canvas = document.querySelector('canvas'); // Get the canvas element
-        const pngUrl = canvas?.toDataURL('image/png'); // Convert the canvas to a PNG image
+        const canvas = document.querySelector('canvas');
+        const pngUrl = canvas?.toDataURL('image/png');
         if (pngUrl && item?.sku) {
             const downloadLink = document.createElement('a');
             downloadLink.href = pngUrl;
