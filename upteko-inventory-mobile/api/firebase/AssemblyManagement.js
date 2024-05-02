@@ -91,7 +91,7 @@ export const confirmSubAssembly = async (assemblyId, subAssemblyId, progressId, 
         console.log("used", usedMaterials);
         
         // Check if checkedMaterials is not empty and all materials in checked_materials exist in used_materials
-        if (checkedMaterials.length > 0 && checkedMaterials.every(material => usedMaterials.includes(material))) {
+        if (checkedMaterials.length > 0 && usedMaterials.every(material => checkedMaterials.includes(material))) {
             await updateDoc(progressDocRef, {
                 confirmed: true,
                 last_modified_by: currentUser,

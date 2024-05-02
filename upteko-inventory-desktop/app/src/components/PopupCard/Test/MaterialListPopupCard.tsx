@@ -15,6 +15,21 @@ interface MaterialListPopupCardProps {
     progressId: Promise<string | null>;
 }
 
+// custom hook
+const useCheckboxChangeEffect = (checkedMaterials: { [id: string]: boolean }, handleSaveProgress: () => void) => {
+    useEffect(() => {
+        const handleCheckboxChange = () => {
+            handleSaveProgress();
+        };
+
+        document.addEventListener('change', handleCheckboxChange);
+
+        return () => {
+            document.removeEventListener('change', handleCheckboxChange);
+        };
+    }, [checkedMaterials, handleSaveProgress]);
+}
+
 const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, assemblyId, subAssemblyId, materials, defaultCheckedIds = [], currentUserFullName, progressId }) => {
     const [checkedMaterials, setCheckedMaterials] = useState<{ [id: string]: boolean }>({});
     const [resolvedProgressId, setResolvedProgressId] = useState<string | null>(null);
@@ -45,6 +60,8 @@ const MaterialListPopupCard: React.FC<MaterialListPopupCardProps> = ({ onClose, 
             saveSubAssemblyProgress(assemblyId, subAssemblyId, checkedMaterialIds, materialIds, currentUserFullName);
         }
     };
+
+    useCheckboxChangeEffect(checkedMaterials, handleSaveProgress);
 
     const handleCheckboxChange = (material: Material) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = event.target.checked;
