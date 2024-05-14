@@ -1,29 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Text, View, StyleSheet, Alert } from 'react-native';
+import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
 import { confirmSubAssembly } from '../../api/firebase/AssemblyManagement';
 
 export const QRCodeScanner = () => {
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
+  const [hasCameraPermission, setHasCameraPermission] = useCameraPermissions();//useState(false);
   const [scanned, setScanned] = useState(false);
   const cameraRef = useRef(null);
   const navigation = useNavigation();
 
-  useEffect(() => {
-    (async () => {
-      const cameraPermission = await Camera.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraPermission.status === 'granted');
-    })();
-  }, []);
+  console.log("CAMERA", Camera);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const { status } = await Camera.requestCameraPermissionsAsync();
+  //     console.log(status === 'granted');
+  //     setHasCameraPermission(status === 'granted');
+  //   })();
+  // }, []);
 
   const handleBarCodeScanned = async ({ type, data }) => {
     if (!scanned) {
       setScanned(true);
       if (data.startsWith("CONFIRM:")) {
         console.log(data);
-        const subAssemblyConfirmed = await confirmSubAssembly(parseAssemblyText(data).assemblyId, 
-          parseAssemblyText(data).subAssemblyId, parseAssemblyText(data).progressId, "Alexander Nguyen"); // Needs a function to get current user full name
+        const subAssemblyConfirmed = await confirmSubAssembly(
+          parseAssemblyText(data).assemblyId, 
+          parseAssemblyText(data).subAssemblyId, 
+          parseAssemblyText(data).progressId, 
+          "Alexander Nguyen" // Needs a function to get current user full name
+        );
         console.log(parseAssemblyText(data).progressId);
         console.log("confirmed", subAssemblyConfirmed);
         if (subAssemblyConfirmed) {
@@ -79,31 +86,43 @@ export const QRCodeScanner = () => {
         subAssemblyId,
         progressId
     };
-};
+  };
 
   const validateItemNumber = (data) => {
     // Define your item number patterns
     const itemNumberPattern1 = /^P\d{4}$/; // P followed by 4 digits
 
     // Check if data matches any of the patterns
-    return itemNumberPattern1.test(data) ;
+    return itemNumberPattern1.test(data);
   };
   
-  if (hasCameraPermission === null) {
+  if (!hasCameraPermission) {
     return <View />;
   }
 
-  if (hasCameraPermission === false) {
-    return <Text>No access to camera</Text>;
+  if (!hasCameraPermission.granted) {
+    // return <Text>No access to camera</Text>;
+    <View style={styles.container}>
+      <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+      <Button onPress={setHasCameraPermission} title="grant permission" />
+    </View>
   }
 
   return (
     <View style={styles.container}>
-      <Camera
+      {/* <Camera
         style={styles.camera}
-        type={Camera.Constants.Type.back}
+        type={"back"}
         ref={cameraRef}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+      /> */}
+      <CameraView
+        style={styles.camera}
+        facing={'back'}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ["qr", "pdf417"],
+        }}
       />
     </View>
   );
