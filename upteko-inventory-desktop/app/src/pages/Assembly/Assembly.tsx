@@ -5,8 +5,8 @@ import { useRequireAuth } from "../../hooks/useRequireAuth"
 import { Card } from '../../components/Card/Card';
 import { subscribeToAssemblyItems, subscribeToSubassemblyItems, getMaterialsNeeded, deleteAssembly, subscribeToProgressCheckedMaterials, deleteProgress, currentUserProgressSubAssemblyExist, createSubAssemblyProgress, getProgressDocumentId, subscribeToProgressConfirmation, confirmSubAssembly } from '../../services/firebase/assemblyManagement';
 import { AssemblyItem, Material, SubAssemblyItem } from '../../interfaces/IAssembly';
-import { CreatePopup } from '../../components/PopupCard/Test/CreatePopup';
-import MaterialListPopupCard from '../../components/PopupCard/Test/MaterialListPopupCard';
+import { CreatePopup } from '../../components/PopupCard/CreatePopup';
+import MaterialListPopupCard from '../../components/PopupCard/MaterialListPopupCard';
 import ExitConfirmationPopup from '../../components/PopupCard/ExitConfirmationPopup';
 import { deleteImage } from '../../services/firebase/storageManagement';
 import { useUserInfo } from '../../hooks/useUserInfo';
@@ -19,7 +19,6 @@ export default function AssemblyPage() {
     const MemoizedAssemblyCard = React.memo(Card);
 
     // ----- SHOW COMPONENTS ----- //
-    const [showCreateNewAssemblyPopup, setShowCreateNewAssemblyPupop] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [showMaterialListPopup, setShowMaterialListPopup] = useState(false);
     const [showContinueProgressPopup, setShowContinueProgressPopup] = useState(false);
@@ -36,7 +35,7 @@ export default function AssemblyPage() {
     const [contextMenuState, setContextMenuState] = useState<{
         visible: boolean;
         position: { top: number; left: number };
-        cardId: string | null; // Assuming cardId is of type string
+        cardId: string | null;
     }>({
         visible: false,
         position: { top: 0, left: 0 },
@@ -47,8 +46,6 @@ export default function AssemblyPage() {
         const fetchCheckedMaterials = async () => {
             try {
                 if (selectedAssemblyId  && selectedSubAssemblyId) {
-                    // const mats = await getProgressCheckedMaterials(selectedAssemblyId, selectedSubAssemblyId, (currentUser.userInfo?.firstName + " " + currentUser.userInfo?.lastName));
-                    // setCheckedProgressMaterials(mats);
                     subscribeToProgressCheckedMaterials(selectedAssemblyId, selectedSubAssemblyId, currentUserFullName, (checkedMaterials) => {
                         setCheckedProgressMaterials(checkedMaterials);
                     })

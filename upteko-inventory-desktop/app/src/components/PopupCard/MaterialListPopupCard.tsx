@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './MaterialListPopupCard.module.css';
-import { Material } from '../../../interfaces/IAssembly';
-import { updateItemQuantity } from '../../../services/firebase/inventoryManagement';
-import QRCodeGenerator from '../../QRCode/QRCodeGenerator';
-import { saveSubAssemblyProgress } from '../../../services/firebase/assemblyManagement';
+import { Material } from '../../interfaces/IAssembly';
+import { updateItemQuantity } from '../../services/firebase/inventoryManagement';
+import QRCodeGenerator from '../QRCode/QRCodeGenerator';
+import { saveSubAssemblyProgress } from '../../services/firebase/assemblyManagement';
 
 interface MaterialListPopupCardProps {
     onClose: () => void;
@@ -15,7 +15,6 @@ interface MaterialListPopupCardProps {
     progressId: Promise<string | null>;
 }
 
-// custom hook
 const useCheckboxChangeEffect = (checkedMaterials: { [id: string]: boolean }, handleSaveProgress: () => void) => {
     useEffect(() => {
         const handleCheckboxChange = () => {

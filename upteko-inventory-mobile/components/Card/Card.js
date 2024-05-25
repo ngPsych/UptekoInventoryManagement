@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         color: 'white',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background for better readability
-        padding: 10, // Add padding for better aesthetics
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        padding: 10,
     },
 
     image: {

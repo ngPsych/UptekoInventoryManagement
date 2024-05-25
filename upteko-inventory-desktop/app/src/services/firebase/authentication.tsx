@@ -63,18 +63,7 @@ export const updateUserPassword = async (user: User, newPassword: string) => {
 export const sendUserPasswordResetEmail = async (email: string) => {
     return sendPasswordResetEmail(auth, email)
     .then(() => {
-        // update success
-        // toast.success(`Sent password reset link.`, {
-        //     position: "bottom-right",
-        //     autoClose: 5000,
-        //     hideProgressBar: false,
-        //     closeOnClick: true,
-        //     pauseOnHover: false,
-        //     draggable: true,
-        //     progress: undefined,
-        //     theme: "dark",
-        //     transition: Zoom
-        // });
+        // success
     })
     .catch(error => {
         throw error;

@@ -12,9 +12,6 @@ export const addUserData = async (email: string, firstName: string, lastName: st
             lastName: lastName,
             role: role,
         });
-        
-        // console.log("Document written with ID: ", docRef.id);
-        // return true
     } catch (error) {
         console.error("Error adding document: ", error);
         throw error;

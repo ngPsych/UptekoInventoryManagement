@@ -5,20 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import { confirmSubAssembly } from '../../api/firebase/AssemblyManagement';
 
 export const QRCodeScanner = () => {
-  const [hasCameraPermission, setHasCameraPermission] = useCameraPermissions();//useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
-  const cameraRef = useRef(null);
   const navigation = useNavigation();
-
-  console.log("CAMERA", Camera);
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const { status } = await Camera.requestCameraPermissionsAsync();
-  //     console.log(status === 'granted');
-  //     setHasCameraPermission(status === 'granted');
-  //   })();
-  // }, []);
 
   const handleBarCodeScanned = async ({ type, data }) => {
     if (!scanned) {
@@ -63,7 +52,7 @@ export const QRCodeScanner = () => {
           );
         }
       } else if (validateItemNumber(data)) {
-        navigation.navigate('PostScan', { currentScannedSKU: data }); // Pass data as parameter
+        navigation.navigate('PostScan', { currentScannedSKU: data });
         setScanned(false);
       } else {
         Alert.alert('INVALID ITEM NUMBER', 'Please scan a valid item number.');
@@ -89,7 +78,7 @@ export const QRCodeScanner = () => {
   };
 
   const validateItemNumber = (data) => {
-    // Define your item number patterns
+    // Define item number patterns
     const itemNumberPattern1 = /^P\d{4}$/; // P followed by 4 digits
 
     // Check if data matches any of the patterns
@@ -101,7 +90,6 @@ export const QRCodeScanner = () => {
   }
 
   if (!hasCameraPermission.granted) {
-    // return <Text>No access to camera</Text>;
     <View style={styles.container}>
       <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
       <Button onPress={setHasCameraPermission} title="grant permission" />
@@ -110,12 +98,6 @@ export const QRCodeScanner = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Camera
-        style={styles.camera}
-        type={"back"}
-        ref={cameraRef}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-      /> */}
       <CameraView
         style={styles.camera}
         facing={'back'}

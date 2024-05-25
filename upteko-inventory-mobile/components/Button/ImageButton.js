@@ -36,7 +36,4 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    image: {
-        // No default tint color applied
-    },
 });

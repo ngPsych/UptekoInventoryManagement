@@ -6,7 +6,7 @@ import { AssemblyItem, Material, SubAssemblyItem } from "../../interfaces/IAssem
 
 const db = getFirestore(app);
 
-export const testCreateNewAssembly = async (imageURL: string, id: string, subAsssemblyDocIDs: string[], selectedMaterials: { [key: number]: { sku: string; name: string, quantity: number}[] }) => {
+export const createNewAssembly = async (imageURL: string, id: string, subAsssemblyDocIDs: string[], selectedMaterials: { [key: number]: { sku: string; name: string, quantity: number}[] }) => {
     try {
         const assemblyDocRef = doc(db, "assembly", id);
         await setDoc(assemblyDocRef, {
@@ -28,7 +28,7 @@ export const testCreateNewAssembly = async (imageURL: string, id: string, subAss
                 date_created: serverTimestamp(),
             });
 
-            const subassemblyIndex = subAsssemblyDocIDs.indexOf(subassemblyDocID); // Finding the index of subassemblyDocID
+            const subassemblyIndex = subAsssemblyDocIDs.indexOf(subassemblyDocID);
             if (subassemblyIndex !== -1) { // Check if the subassemblyDocID exists in the array
                 for (let i = 0; i < selectedMaterials[subassemblyIndex].length; i++) {
                     console.log(selectedMaterials[subassemblyIndex][i])
@@ -105,8 +105,6 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
                     const ongoingDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`, ongoingSubAssemblyId);
 
                     await updateDoc(ongoingDocRef, {
-                        // assembly_id: assemblyId,
-                        // subassembly_id: subAssemblyId,
                         checked_materials: checkedMaterials,
                         used_materials: usedMaterials,
                         last_modified_by: user,
@@ -121,7 +119,6 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
                 if (querySnapshot.docs.length === 0) {
                     ongoingSubAssemblyId = `${assemblyId[0]}${subAssemblyId[0]}000001`;
                 } else {
-                    // Extract numeric parts of document IDs, find the maximum, and increment it
                     const numericSuffixes = querySnapshot.docs.map(doc => parseInt(doc.id.match(/\d+$/)?.[0] || "0"));
                     const maxSuffix = Math.max(...numericSuffixes);
                     const nextSuffix = (maxSuffix + 1).toString().padStart(6, '0');
@@ -130,10 +127,7 @@ export const saveSubAssemblyProgress = async (assemblyId: string, subAssemblyId:
 
                 const ongoingDocRef = doc(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`, ongoingSubAssemblyId);
     
-                // Create or update the document with the necessary fields
                 await setDoc(ongoingDocRef, {
-                    // assembly_id: assemblyId,
-                    // subassembly_id: subAssemblyId,
                     checked_materials: checkedMaterials,
                     used_materials: usedMaterials,
                     last_modified_by: user,
@@ -174,13 +168,8 @@ export const deleteProgress = async (assemblyId: string, subAssemblyId: string, 
 
 export const currentUserProgressSubAssemblyExist = async (assemblyId: string, subAssemblyId: string, userFullName: string) => {
     try {
-        // Reference to the ongoing collection
         const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
-
-        // Create a query to find documents where fullName matches
         const q = query(ongoingCollectionRef, where("created_by", "==", userFullName));
-
-        // Execute the query
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -199,54 +188,23 @@ export const currentUserProgressSubAssemblyExist = async (assemblyId: string, su
 export const subscribeToProgressCheckedMaterials = (assemblyId: string, subAssemblyId: string, createdBy: string, callback: (checkedMaterials: any[]) => void) => {
     const ongoingCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
 
-    // Query documents where the field "created_by" is equal to createdBy
     const q = query(ongoingCollectionRef, where("created_by", "==", createdBy));
 
     return onSnapshot(q, (snapshot) => {
         let checkedMaterials: any[] = [];
 
-        // Loop through the documents
         snapshot.forEach((doc) => {
-            // Retrieve the field "checked_materials" from each document
             const data = doc.data();
             if (data && data.checked_materials) {
                 checkedMaterials.push(...data.checked_materials);
             }
         });
-        // Invoke the callback with checkedMaterials
         callback(checkedMaterials);
     }, (error) => {
         console.error("[assemblyManagement] Error retrieving checked materials:", error);
         throw error;
     });
 };
-
-export const createNewAssembly = async (imageURL: string, id: string, suDocIDs: string[]) => {
-    try {
-        const assemblyDocRef = doc(db, "assembly", id);
-        await setDoc(assemblyDocRef, {
-            quantity: 0,
-            imageURL: imageURL,
-        });
-
-        for (const subDocID of suDocIDs) {
-            const subDocRef = doc(db, `assembly/${id}/subassembly`, subDocID);
-
-            await setDoc(subDocRef, {
-                imageURL: "https://firebasestorage.googleapis.com/v0/b/uptekoinventory.appspot.com/o/images%2FAlba?alt=media&token=a806efdb-c916-4642-add0-957b405f8d2a",
-                name: subDocID,
-                dateCreated: serverTimestamp(),
-                lastModified: serverTimestamp(),
-                quantity: 0,
-                location: "",
-                description: ""
-            });
-        }
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
 
 const deleteCollection = async (collectionPath: string) => {
     const collectionRef = collection(db, collectionPath)
@@ -270,11 +228,9 @@ export const deleteAssembly = async (assemblyId: string) => {
             await deleteCollection(`${subassembliesCollectionPath}/${subassemblyId}/finished`);
             await deleteCollection(`${subassembliesCollectionPath}/${subassemblyId}/progress`);
     
-            // Delete the subassembly document
             await deleteDoc(subassembly.ref);
         }
     
-        // Finally, delete the main assembly document
         const assemblyDocRef = doc(db, "assembly", assemblyId);
         await deleteDoc(assemblyDocRef);
     } catch (error) {
@@ -385,7 +341,6 @@ export const getProgressDocumentId = async (assemblyId: string, subAssemblyId: s
             // Since there should be only one document, directly return its ID
             return querySnapshot.docs[0].id;
         } else {
-            // No document found
             return "NULL";
         }
     } catch (error) {
@@ -399,7 +354,7 @@ export const getProgress = async (assemblyId: string, subAssemblyId: string) => 
         const progressCollectionRef = collection(db, `assembly/${assemblyId}/subassembly/${subAssemblyId}/progress`);
         const querySnapshot = await getDocs(progressCollectionRef);
 
-        const progressData: DocumentData[] = []; // Array to store document data
+        const progressData: DocumentData[] = [];
 
         querySnapshot.forEach(doc => {
             const docId = doc.id;

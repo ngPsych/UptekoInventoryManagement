@@ -8,11 +8,9 @@ import addItemIcon from '../../assets/icons/add.png';
 import backButtonIcon from '../../assets/icons/back-button.png'
 
 const CustomHeader = ({ title, screen }) => {
-    // const [addItemPressed, setAddItemPressed] = useState(false);
     const navigation = useNavigation();
 
     const handleAddItemPress = () => {
-        // add additional functionality here
         navigation.navigate('AddPart');
     };
 

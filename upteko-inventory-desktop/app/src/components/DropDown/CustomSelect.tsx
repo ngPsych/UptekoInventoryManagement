@@ -54,7 +54,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ({ options, onSelect, disabled
             setSelectedOption(option);
             setIsOpen(false);
         } else {
-            // If the label format doesn't match, fallback to using the whole label
             onSelect({ sku: value, name: label });
             setSelectedOption(option);
             setIsOpen(false);

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styles from './CreatePopup.module.css'
-import PopupCardProps from '../../../interfaces/IPopupCardProps';
-import { getFileDownloadURL, uploadFile } from '../../../services/firebase/storageManagement';
+import PopupCardProps from '../../interfaces/IPopupCardProps';
+import { getFileDownloadURL, uploadFile } from '../../services/firebase/storageManagement';
 import AddMatPopup from './AddMatPopup';
-import { testCreateNewAssembly } from '../../../services/firebase/assemblyManagement';
+import { createNewAssembly } from '../../services/firebase/assemblyManagement';
 import { toast, Zoom } from 'react-toastify';
 
 export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
@@ -41,7 +41,7 @@ export const CreatePopup: React.FC<PopupCardProps> = ({ onClose }) => {
             }
     
             onClose();
-            await testCreateNewAssembly(imageURL, name, subNames, selectedMaterials);
+            await createNewAssembly(imageURL, name, subNames, selectedMaterials);
     
             toast.success("Successfully created a new assembly", {
                 position: "bottom-right",

@@ -49,11 +49,6 @@ export const MaterialsListScreen = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            {/* {materialsNeeded.map(material => (
-                <Text key={material.id}>
-                    ID: {material.id}, Name: {material.name}, Quantity: {material.quantity}
-                </Text>
-            ))} */}
             <View style={styles.header}>
                 <Text style={[styles.headerText, styles.headerId]}>ID</Text>
                 <Text style={[styles.headerText, styles.headerName]}>Name</Text>

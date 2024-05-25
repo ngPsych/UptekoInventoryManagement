@@ -23,13 +23,11 @@ export default function LoginPage() {
         };
 
         checkUserSignIn();
-    }, [navigate]); // Empty dependency array ensures the effect runs only on mount
+    }, [navigate]);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         localStorage.clear();
-        // Handle login logic here
-        // If login is successful:
         signIn(email, password)
             .then(user => {
                 navigate('/dashboard')

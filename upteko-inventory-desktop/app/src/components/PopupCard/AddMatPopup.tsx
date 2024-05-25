@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './AddMatPopup.module.css'
-import CustomSelect from '../../DropDown/CustomSelect';
-import ExitConfirmationPopup from '../ExitConfirmationPopup';
-import { subscribeToInventoryParts } from '../../../services/firebase/inventoryManagement';
+import CustomSelect from '../DropDown/CustomSelect';
+import ExitConfirmationPopup from './ExitConfirmationPopup';
+import { subscribeToInventoryParts } from '../../services/firebase/inventoryManagement';
 
 interface AddMaterialsPopupCardProps {
     onClose: () => void;
@@ -39,7 +39,6 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
     useEffect(() => {
         const handleOutsideClick = (e: MouseEvent) => {
             if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
-                // setShowConfirmation(true);
                 if (selectedMaterials.length > 0) {
                     setShowConfirmation(true);
                 } else {
@@ -178,7 +177,7 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
                             value={selectMaterialQuantities[index]} 
                             onChange={(e) => handleQuantityInputChange(index, e.target.value)}
                             disabled={!inputsEnabled[index]} // Disable input if inputsEnabled for the index is false
-                            title={!inputsEnabled[index] ? "Please select material first" : ""} // Tooltip message for hover
+                            title={!inputsEnabled[index] ? "Please select material first" : ""}
                         />
                     </div>
                 ))}
@@ -195,7 +194,7 @@ const AddMatPopup: React.FC<AddMaterialsPopupCardProps> = ({ onClose, onSelectMa
                 <div className={styles.buttonContainer}>
                         <button onClick={handleMaterialSelect}>Select</button>
                         <button onClick={onClose}>Cancel</button>
-                        <button onClick={handleTest}>Test</button>
+                        {/* <button onClick={handleTest}>Test</button> */}
                 </div>
             </div>
 

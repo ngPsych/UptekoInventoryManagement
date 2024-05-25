@@ -18,7 +18,6 @@ function App() {
         <Route path="/assembly" element={<AssemblyPage />} />
         <Route path="/order" element={<OrderPage />} />
         <Route path="/admin" element={<AdminPage />} />
-        {/* Other routes here */}
       </Routes>
     </Router>
   );

@@ -21,7 +21,6 @@ export const OrderScreen = () => {
         return () => {
             unsubscribe();
         };
-
     }, []);
 
     const handleNavBarLayout = (height) => {
