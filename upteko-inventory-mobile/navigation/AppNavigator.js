@@ -1,6 +1,5 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-// import { InventoryScreen } from '../screens/Inventory/InventoryScreen';
 import { InventoryNavigator } from './InventoryNavigator';
 import { AssemblyNavigator } from './AssemblyNavigator';
 import { ScannerNavigator } from './ScannerNavigator';

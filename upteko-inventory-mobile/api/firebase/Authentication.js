@@ -6,7 +6,6 @@ const auth = initializeAuth(app, {
     persistence: getReactNativePersistence(ReactNativeAsyncStorage)
 });
 
-
 export const signIn = async ({ email, password }) => {
     return await signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -19,7 +18,7 @@ export const signIn = async ({ email, password }) => {
         const errorMessage = error.message;
         console.log('Error Code:', errorCode);
         console.log('Error Message:', errorMessage);
-        throw error; // You may want to rethrow the error to handle it in the calling code
+        throw error;
     });
 }
 

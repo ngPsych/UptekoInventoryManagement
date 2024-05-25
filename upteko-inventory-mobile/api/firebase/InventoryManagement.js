@@ -44,7 +44,7 @@ export const subscribeToPart = (sku, callback) => {
 
 export const getPartBySKU = async ({ sku }) => {
     try {
-        const partRef = doc(db, "parts", sku); // "parts" is the name of your collection
+        const partRef = doc(db, "parts", sku);
         const docSnap = await getDoc(partRef);
         if (docSnap.exists()) {
             return { id: docSnap.id, ...docSnap.data() };
@@ -97,7 +97,6 @@ export const deletePartBySKU = async (sku) => {
         
         if (docSnap.exists()) {
             await deleteDoc(partRef);
-            console.log(`${sku} Part document deleted successfully`);
             return true;
         }
     } catch (error) {
@@ -134,7 +133,6 @@ export const subscribeToAllSubAssemblies = (callback) => {
                     });
                 }
             });
-
             promises.push(promise);
         });
 
@@ -147,7 +145,6 @@ export const subscribeToAllSubAssemblies = (callback) => {
         console.error("[inventoryManagement] Error subscribing to Sub-Assemblies:", error);
         throw error;
     });
-
     return unsubscribe;
 };
 

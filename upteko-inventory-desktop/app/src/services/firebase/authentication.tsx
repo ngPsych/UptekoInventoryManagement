@@ -1,6 +1,6 @@
 import app from "./firebaseConfig";
 import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword,
-    updatePassword, User, sendPasswordResetEmail, signOut, deleteUser } from "firebase/auth";
+    updatePassword, User, sendPasswordResetEmail, signOut } from "firebase/auth";
 
 const auth = getAuth(app)
 
@@ -8,14 +8,9 @@ const auth = getAuth(app)
 export const signUp = async (email: string, password: string) => {
     return createUserWithEmailAndPassword(auth, email, password)
         .then(userCredentials => {
-
             return true;
         })
         .catch(error => {
-            // const errorCode = error.code;
-            // const errorMessage = error.message;
-
-            // throw error;
             console.log("Error signing up user:", error);
             return false;
         });

@@ -11,14 +11,12 @@ export const generateUniquePartID = async () => {
         // Extract IDs from documents
         const partDocumentIds = partsDocsSnapshot.docs.map(doc => doc.id);
 
-        // If parts collection is empty, return the first ID "P000001"
+        // If parts collection is empty, return the first ID "P0001"
         if (partDocumentIds.length === 0) {
-            return "P000001";
+            return "P0001";
         }
 
         const highestIDNumber = findHighestIDNumber(partDocumentIds, 1);
-
-        // const newID = `P${(highestIDNumber + 1).toString().padStart(4, '0')}`;
         const newID = `P${(highestIDNumber + 1).toString().padStart(Math.max(4, String(highestIDNumber + 1).length), '0')}`;
 
         return newID;

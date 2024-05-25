@@ -20,7 +20,7 @@ export const testCreateNewAssembly = async (imageURL: string, id: string, subAss
             await setDoc(subassemblyDocRef, {
                 assembly: id,
                 name: subassemblyDocID,
-                imageURL: "https://firebasestorage.googleapis.com/v0/b/uptekoinventory.appspot.com/o/images%2FAlba?alt=media&token=a806efdb-c916-4642-add0-957b405f8d2a",
+                imageURL: "https://firebasestorage.googleapis.com/v0/b/uptekoinventory.appspot.com/o/images%2FDefault.png?alt=media&token=d9c61c9b-bcc5-4fde-abcc-a6e7f60901c3",
                 quantity: 0,
                 min_point: 0,
                 location: "",

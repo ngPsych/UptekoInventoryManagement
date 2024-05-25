@@ -38,7 +38,6 @@ export const generateUniqueMaterialListID = async (assemblyID: string, subAssemb
         const ongoingIDs = ongoingDocsSnapshot.docs.map(doc => doc.id);
         const finishedIDs = finishedDocsSnapshot.docs.map(doc => doc.id);
 
-        // Find the highest number in ongoing and finished IDs
         let highestOngoingNumber = 0;
         let highestFinishedNumber = 0;
 
@@ -56,8 +55,6 @@ export const generateUniqueMaterialListID = async (assemblyID: string, subAssemb
         }
 
         const highestNumber = Math.max(highestOngoingNumber, highestFinishedNumber);
-
-        // const newID = `${assemblyID.charAt(0)}${subAssemblyID.charAt(0)}${(highestNumber + 1).toString().padStart(3, '0')}`;
         const newID = `${assemblyID.charAt(0)}${subAssemblyID.charAt(0)}${(highestNumber + 1).toString().padStart(Math.max(3, String(highestNumber + 1).length), '0')}`;
 
         return newID;
