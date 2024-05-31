@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableHighlight, Dimensions, FlatList } from 'react-native';
 import { NavBar } from '../../components/NavBar/NavBar';
 import { subscribeToAllParts } from '../../api/firebase/InventoryManagement';
+import { startTimer, endTimer } from '../../utils/Timer';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -10,13 +11,14 @@ export const OrderScreen = () => {
     const [navbarHeight, setNavbarHeight] = useState(0);
 
     useEffect(() => {
+        startTimer('OrderScreen Data fetching');
         let unsubscribe = () => {}
 
         unsubscribe = subscribeToAllParts((items) => {
             // Filter items where item.quantity > item.minPoint
             const filteredItems = items.filter(item => item.quantity < item.minPoint);
-            console.log(items)
             setItems(filteredItems);
+            endTimer('OrderScreen Data fetching');
         });
         return () => {
             unsubscribe();
@@ -27,29 +29,34 @@ export const OrderScreen = () => {
         setNavbarHeight(height);
     };
 
-    const renderItem = ({ item }) => (
-        <View>
-            <TouchableHighlight
-                underlayColor="#777"
-                onPress={() => {
-                    console.log('HI');
-                }}
-            >
-                <View style={styles.item}>
-                    <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.sku}</Text>
-                    <Text style={[styles.itemText, styles.itemName]} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-                    <Text style={[styles.itemText, styles.itemQuantity]}>x{item.quantity}</Text>
-                    <Text style={[styles.itemText, styles.itemMinPoint]} numberOfLines={1} ellipsizeMode="tail">x{item.minPoint}</Text>
-                </View>
-            </TouchableHighlight>
-            
-            <View style={styles.separator} />
-        </View>
-    );
+    const renderItem = ({ item }) => {
+        startTimer('OrderScreen Render item');
+        const renderedItem = (
+            <View>
+                <TouchableHighlight
+                    underlayColor="#777"
+                    onPress={() => {
+                        console.log('HI');
+                    }}
+                >
+                    <View style={styles.item}>
+                        <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.sku}</Text>
+                        <Text style={[styles.itemText, styles.itemName]} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+                        <Text style={[styles.itemText, styles.itemQuantity]}>x{item.quantity}</Text>
+                        <Text style={[styles.itemText, styles.itemMinPoint]} numberOfLines={1} ellipsizeMode="tail">x{item.minPoint}</Text>
+                    </View>
+                </TouchableHighlight>
+                <View style={styles.separator} />
+            </View>
+        );
+        endTimer('OrderScreen Render item');
+        return renderedItem;
+    };
 
     const maxListHeight = windowHeight - navbarHeight - 150;
 
-    return (
+    startTimer('OrderScreen render');
+    const renderedScreen = (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={[styles.headerText, styles.headerId]}>ID</Text>
@@ -67,6 +74,9 @@ export const OrderScreen = () => {
             <NavBar activeItem="Order" onNavBarLayout={handleNavBarLayout} />
         </View>
     );
+    endTimer('OrderScreen render');
+
+    return renderedScreen;
 };
 
 const styles = StyleSheet.create({

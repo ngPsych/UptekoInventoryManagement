@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, Dimensions, TouchableHighlight, Touch
 import { NavBar } from '../../components/NavBar/NavBar';
 import { subscribeToAllParts, subscribeToAllSubAssemblies } from '../../api/firebase/InventoryManagement';
 import { useNavigation } from '@react-navigation/native';
+import { startTimer, endTimer } from '../../utils/Timer';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -13,7 +14,7 @@ export const InventoryScreen = () => {
     const [listMode, setListMode] = useState('Parts');
 
     useEffect(() => {
-        let unsubscribe = () => {}
+        let unsubscribe = () => {};
 
         if (listMode === 'Parts') {
             unsubscribe = subscribeToAllParts((items) => {
@@ -35,35 +36,37 @@ export const InventoryScreen = () => {
         setNavbarHeight(height);
     };
 
-    const renderItem = ({ item }) => (
-        <View>
-            {listMode === 'Parts' ? (
-                <TouchableHighlight
-                    underlayColor="#777"
-                    onPress={() => {
-                        navigation.navigate('ItemInfo', { itemSKU: item.sku });
-                    }}
-                >
+    const renderItem = ({ item }) => {
+        startTimer('Inventory RenderItem');
+        const renderedItem = (
+            <View>
+                {listMode === 'Parts' ? (
+                    <TouchableHighlight
+                        underlayColor="#777"
+                        onPress={() => {
+                            navigation.navigate('ItemInfo', { itemSKU: item.sku });
+                        }}
+                    >
+                        <View style={styles.item}>
+                            <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.sku}</Text>
+                            <Text style={[styles.itemText, styles.itemName]} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+                            <Text style={[styles.itemText, styles.itemLocation]} numberOfLines={1} ellipsizeMode="tail">{item.location}</Text>
+                            <Text style={[styles.itemText, styles.itemQuantity]}>x{item.quantity}</Text>
+                        </View>
+                    </TouchableHighlight>
+                ) : (
                     <View style={styles.item}>
-                        <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.sku}</Text>
+                        <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.assembly}</Text>
                         <Text style={[styles.itemText, styles.itemName]} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-                        <Text style={[styles.itemText, styles.itemLocation]} numberOfLines={1} ellipsizeMode="tail">{item.location}</Text>
                         <Text style={[styles.itemText, styles.itemQuantity]}>x{item.quantity}</Text>
                     </View>
-                </TouchableHighlight>
-            ) : (
-                <View style={styles.item}>
-                    <Text style={[styles.itemText, styles.itemId]} numberOfLines={1} ellipsizeMode="tail">{item.assembly}</Text>
-                    <Text style={[styles.itemText, styles.itemName]} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-                    <Text style={[styles.itemText, styles.itemQuantity]}>x{item.quantity}</Text>
-                </View>
-            )}
-    
-            {/* ADD SEPARATOR */}
-            <View style={styles.separator} />
-        </View>
-    );
-    
+                )}
+                <View style={styles.separator} />
+            </View>
+        );
+        endTimer('Inventory RenderItem');
+        return renderedItem;
+    };
 
     const handleListModeClick = () => {
         if (listMode === 'Parts') {
@@ -71,14 +74,15 @@ export const InventoryScreen = () => {
             console.log(listMode);
         } else {
             setListMode('Parts');
-            console.log(listMode)
+            console.log(listMode);
         }
-    }
+    };
 
     // Calculate the maximum height the list should occupy
     const maxListHeight = windowHeight - navbarHeight - 150;
 
-    return (
+    startTimer('InventoryScreen render');
+    const renderedScreen = (
         <View style={styles.container}>
             {listMode === 'Parts' ? (
                 <View style={styles.header}>
@@ -102,7 +106,7 @@ export const InventoryScreen = () => {
                 />
             </View>
             <TouchableOpacity
-                style={[styles.listModeButton, { bottom: navbarHeight + 30}]}
+                style={[styles.listModeButton, { bottom: navbarHeight + 30 }]}
                 onPress={handleListModeClick}
             >
                 <Text style={styles.listModeButtonText}>
@@ -112,6 +116,9 @@ export const InventoryScreen = () => {
             <NavBar activeItem="Inventory" onNavBarLayout={handleNavBarLayout} />
         </View>
     );
+    endTimer('InventoryScreen render');
+
+    return renderedScreen;
 };
 
 const styles = StyleSheet.create({
@@ -197,5 +204,5 @@ const styles = StyleSheet.create({
     listModeButtonText: {
         color: 'white',
         fontWeight: 'bold',
-    }
+    },
 });

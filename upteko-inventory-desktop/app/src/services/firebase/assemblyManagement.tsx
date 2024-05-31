@@ -10,7 +10,6 @@ export const createNewAssembly = async (imageURL: string, id: string, subAsssemb
     try {
         const assemblyDocRef = doc(db, "assembly", id);
         await setDoc(assemblyDocRef, {
-            quantity: 0,
             imageURL: imageURL,
         });
 

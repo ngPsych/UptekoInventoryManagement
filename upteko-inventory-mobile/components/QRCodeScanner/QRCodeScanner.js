@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, StyleSheet, Alert } from 'react-native';
-import { Camera, CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
 import { confirmSubAssembly } from '../../api/firebase/AssemblyManagement';
+import { startTimer, endTimer } from '../../utils/Timer';
 
 export const QRCodeScanner = () => {
   const [hasCameraPermission, setHasCameraPermission] = useCameraPermissions();
@@ -10,18 +11,16 @@ export const QRCodeScanner = () => {
   const navigation = useNavigation();
 
   const handleBarCodeScanned = async ({ type, data }) => {
+    startTimer("handleBarCodeScanner Render");
     if (!scanned) {
       setScanned(true);
       if (data.startsWith("CONFIRM:")) {
-        console.log(data);
         const subAssemblyConfirmed = await confirmSubAssembly(
           parseAssemblyText(data).assemblyId, 
           parseAssemblyText(data).subAssemblyId, 
           parseAssemblyText(data).progressId, 
-          "Alexander Nguyen" // Needs a function to get current user full name
+          "Alexander Nguyen" // Needs a function to track user that confirms
         );
-        console.log(parseAssemblyText(data).progressId);
-        console.log("confirmed", subAssemblyConfirmed);
         if (subAssemblyConfirmed) {
           Alert.alert(
             `Confirmed that ${parseAssemblyText(data).progressId} has been finalized`,
@@ -58,6 +57,7 @@ export const QRCodeScanner = () => {
         Alert.alert('INVALID ITEM NUMBER', 'Please scan a valid item number.');
       }
     }
+    endTimer("handleBarCodeScanner Render")
   };
 
   const parseAssemblyText = (text) => {

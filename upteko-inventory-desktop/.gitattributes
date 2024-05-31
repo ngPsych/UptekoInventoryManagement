@@ -1,0 +1,2 @@
+upteko-inventory-desktop/dist/linux-unpacked/app filter=lfs diff=lfs merge=lfs -text
+upteko-inventory-desktop/dist/linux-unpacked/resources/app.asar filter=lfs diff=lfs merge=lfs -text
