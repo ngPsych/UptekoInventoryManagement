@@ -32,7 +32,7 @@ export const PartPopupCard: React.FC<PopupCardProps> = ({ item, onClose }) => {
     // Checks if the item.supplier is a url link first
     const handleReorderButton = () => {
         if (item?.supplier) {
-            // Regular expression to check if the supplier is a URL
+            // Regex to check if the supplier is a URL
             const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
             if (urlRegex.test(item.supplier)) {
                 // Open the supplier link in a new tab

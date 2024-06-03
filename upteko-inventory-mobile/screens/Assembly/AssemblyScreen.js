@@ -19,11 +19,6 @@ export const AssemblyScreen = () => {
         };
     }, []);
 
-    const handleAssemblyCardClick = (itemId) => {
-        // Handle click event for assembly card
-        console.log('Clicked on assembly item with ID:', itemId);
-    };
-
     const renderAssemblyItems = () => {
         return assemblyItems.map(item => (
             <TouchableOpacity key={item.id} style={styles.assemblyCard} onPress={() => navigation.navigate('SubAssembly', item.id)}>

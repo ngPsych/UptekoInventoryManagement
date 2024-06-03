@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
         borderRadius: 10,
-        backgroundColor: '#fff', // White background for part details
+        backgroundColor: '#fff',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,

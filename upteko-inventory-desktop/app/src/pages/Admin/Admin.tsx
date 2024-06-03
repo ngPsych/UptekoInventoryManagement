@@ -27,7 +27,7 @@ export default function AdminPage() {
             setUsers(users);
         });
         
-        return () => unsubscribe(); // Cleanup function to unsubscribe when component unmounts
+        return () => unsubscribe();
     }, []);
 
     useEffect(() => {

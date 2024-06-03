@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         height: 3,
         backgroundColor: '#4CAF50',
-        width: `${100 / 5}%`, // assuming there are 5 buttons
+        width: `${100 / 5}%`, // Assuming there are 5 buttons
         top: 0,
     },
 });

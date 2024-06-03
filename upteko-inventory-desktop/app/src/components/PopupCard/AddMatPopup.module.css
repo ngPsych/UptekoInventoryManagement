@@ -8,7 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10000; /* Ensures the overlay is on top */
+    z-index: 10000;
 }
 
 .popup {
@@ -17,11 +17,11 @@
     border-radius: 8px;
     width: 300px;
     height: 50%;
-    overflow-y: auto; /* Enable scrolling if needed */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     display: flex;
-    flex-direction: column; /* Arrange children vertically */
-    justify-content: flex-start; /* Align items to the start and end */
+    flex-direction: column;
+    justify-content: flex-start;
     z-index: 9999;
 }
 
